@@ -1,2 +1,2 @@
 # Done-geon
-Senior Project at UF from team Dungeon Masters
+Senior Project at UF for Dungeon Masters

@@ -11,7 +11,7 @@ height = display_info.current_h - 70  # 70 for window headers
 NUM_TILES_X, NUM_TILES_Y = 16, 9
 # 16x9 tiles
 ASSET_SIZE = 32
-scale = min(floor(height/NUM_TILES_Y/ASSET_SIZE), floor(width/NUM_TILES_X/ASSET_SIZE))
+scale = min(floor(height / NUM_TILES_Y / ASSET_SIZE), floor(width / NUM_TILES_X / ASSET_SIZE))
 TILE_SIZE = ASSET_SIZE * scale
 print(height)
 print("TILE_SIZE =", TILE_SIZE)
@@ -24,6 +24,7 @@ WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Done-geon")
 
 print("Created Window")
+
 
 def scale_image(image):
     return pygame.transform.scale(image, (TILE_SIZE, TILE_SIZE))

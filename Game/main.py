@@ -1,14 +1,19 @@
 import os
+import sys
 from math import floor
 from time import sleep
 from wsgiref.simple_server import sys_version
 import pygame
+from pygame import QUIT
 
-pygame.display.init()
+pygame.init()
+
 display_info = pygame.display.Info()
 width = display_info.current_w
 height = display_info.current_h - 70  # 70 for window headers
 NUM_TILES_X, NUM_TILES_Y = 16, 9
+
+
 # 16x9 tiles
 ASSET_SIZE = 32
 scale = min(floor(height / NUM_TILES_Y / ASSET_SIZE), floor(width / NUM_TILES_X / ASSET_SIZE))
@@ -38,9 +43,11 @@ STONE_TILE = scale_image(pygame.image.load(os.path.join(os.path.dirname(__file__
 print("Created STONE_TILE")
 
 while True:
+    for event in pygame.event.get():
+        if event.type == QUIT:
+            pygame.quit()
+            sys.exit()
     for x in range(NUM_TILES_X):
         for y in range(NUM_TILES_Y):
             WIN.blit(STONE_TILE, (x * TILE_SIZE, y * TILE_SIZE))
-    # print("Rendered Map")
     pygame.display.update()
-    sleep(1)

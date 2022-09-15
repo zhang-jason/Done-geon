@@ -5,10 +5,10 @@ from time import sleep
 
 # Modular Files
 import components
+from Entities.playerChar import Player
 
 import pygame
 from pygame import QUIT
-from Entities.playerChar import Player
 
 pygame.init()
 

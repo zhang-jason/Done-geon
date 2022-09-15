@@ -5,6 +5,7 @@ from time import sleep
 from wsgiref.simple_server import sys_version
 import pygame
 from pygame import QUIT
+from Entities.playerChar import Player
 
 pygame.init()
 
@@ -42,6 +43,8 @@ STONE_TILE = scale_image(pygame.image.load(os.path.join(os.path.dirname(__file__
 # convert it to usable pygame image object, then load scale it to the biggest factor of 32x32 we can fit in the screen
 print("Created STONE_TILE")
 
+player = Player()
+
 while True:
     for event in pygame.event.get():
         if event.type == QUIT:
@@ -50,4 +53,9 @@ while True:
     for x in range(NUM_TILES_X):
         for y in range(NUM_TILES_Y):
             WIN.blit(STONE_TILE, (x * TILE_SIZE, y * TILE_SIZE))
+
+    WIN.blit(player.image, player.rect)
+    keys = pygame.key.get_pressed()
+    player.move(keys)
+
     pygame.display.update()

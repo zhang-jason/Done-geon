@@ -2,10 +2,13 @@ import os
 import sys
 from math import floor
 from time import sleep
-from wsgiref.simple_server import sys_version
+
+# Modular Files
+import components
+from Entities.playerChar import Player
+
 import pygame
 from pygame import QUIT
-from Entities.playerChar import Player
 
 pygame.init()
 

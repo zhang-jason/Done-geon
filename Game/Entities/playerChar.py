@@ -4,10 +4,11 @@ import pygame
 import pygame.locals as c
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, startPosition):
         super(Player, self).__init__()
         self.image = pygame.transform.scale(pygame.image.load(join(dirname(dirname(__file__)), 'assets', 'candleA_01.png')),(32,32))
         self.rect = self.image.get_rect()
+        self.rect.left, self.rect.top = startPosition
         self.canMove = pygame.time.get_ticks() + 5  #how often the character can move (every five ticks)
         self.speed = 1  #how far it moves
 

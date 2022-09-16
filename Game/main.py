@@ -3,11 +3,14 @@ import os
 import sys
 from math import floor
 from time import sleep
-from wsgiref.simple_server import sys_version
-import pygame
-from pygame import QUIT
+
+# Modular Files
+import components
 from Entities.playerChar import Player
 from Entities.nonMoveObj import Obj
+
+import pygame
+from pygame import QUIT
 
 pygame.init()
 

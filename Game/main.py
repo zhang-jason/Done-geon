@@ -1,13 +1,13 @@
-from distutils.command.build_scripts import build_scripts
 import os
+from random import randint
 import sys
 from math import floor
-from time import sleep
 
 # Modular Files
 import components
 from Entities.playerChar import Player
 from Entities.nonMoveObj import Obj
+from Entities.enemy import Enemy
 
 import pygame
 from pygame import QUIT
@@ -48,7 +48,10 @@ STONE_TILE = scale_image(pygame.image.load(os.path.join(os.path.dirname(__file__
 # convert it to usable pygame image object, then load scale it to the biggest factor of 32x32 we can fit in the screen
 print("Created STONE_TILE")
 
-player = Player((0,0))
+enemies = pygame.sprite.Group()
+player = Player((width/2,height/2))
+for i in range(5):
+    enemies.add(Enemy((randint(0,width),randint(0,height)),player))
 
 #testing collision - bush object
 bush = Obj((150,150))
@@ -71,10 +74,14 @@ while True:
     # testing collision - printing
     WIN.blit(bush.image, bush.rect)
 
-
     WIN.blit(player.image, player.rect)
+
+    for e in enemies:
+        WIN.blit(e.image,e.rect)
+        e.update()
     keys = pygame.key.get_pressed()
-    player.move(keys)
+    player.update(keys,enemies)
+
 
     #detecting collision - TODO this should be func later 
     if player.rect.colliderect(bush.rect):

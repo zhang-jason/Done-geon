@@ -8,6 +8,7 @@ import components
 from Entities.playerChar import Player
 from Entities.nonMoveObj import Obj
 from Entities.enemy import Enemy
+from gui import HealthBar
 
 import pygame
 from pygame import QUIT
@@ -32,6 +33,7 @@ print(WIDTH)
 print(HEIGHT)  # Just double-checking my math here
 
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
+#GUI = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Done-geon")
 
 print("Created Window")
@@ -50,6 +52,7 @@ print("Created STONE_TILE")
 
 enemies = pygame.sprite.Group()
 player = Player((width/2,height/2))
+health = HealthBar(WIN, player, (20, 20))
 for i in range(5):
     enemies.add(Enemy((randint(0,width),randint(0,height)),player))
 
@@ -73,18 +76,19 @@ while True:
 
     # testing collision - printing
     WIN.blit(bush.image, bush.rect)
-
     WIN.blit(player.image, player.rect)
 
+    # Update Functions
     for e in enemies:
         WIN.blit(e.image,e.rect)
         e.update()
     keys = pygame.key.get_pressed()
     player.update(keys,enemies)
-
+    health.update(WIN, player)
 
     #detecting collision - TODO this should be func later 
     if player.rect.colliderect(bush.rect):
+        player.get_regen(1) # Test Regen Health Capability
         print("collision detected")
 
     pygame.display.update()

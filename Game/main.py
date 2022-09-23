@@ -90,6 +90,7 @@ while True:
         e.collide(nonMovingObj)
     keys = pygame.key.get_pressed()
     player.update(keys,enemies)
+    health.update(WIN, player)
 
     #detecting collision
     player.collide(nonMovingObj)

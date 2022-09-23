@@ -8,6 +8,7 @@ import components
 from Entities.playerChar import Player
 from Entities.nonMoveObj import Obj
 from Entities.enemy import Enemy
+from gui import HealthBar
 
 import pygame
 from pygame import QUIT
@@ -32,6 +33,7 @@ print(WIDTH)
 print(HEIGHT)  # Just double-checking my math here
 
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
+#GUI = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Done-geon")
 
 print("Created Window")
@@ -50,9 +52,7 @@ print("Created STONE_TILE")
 
 enemies = pygame.sprite.Group()
 player = Player((width/2,height/2))
-playerGroup = pygame.sprite.Group()
-playerGroup.add(player)
-
+health = HealthBar(WIN, player, (20, 20))
 for i in range(5):
     enemies.add(Enemy((randint(0,width),randint(0,height)),player))
 
@@ -77,6 +77,7 @@ while True:
 
     WIN.blit(player.image, player.rect)
 
+    # Update Functions
     for e in enemies:
         WIN.blit(e.image,e.rect)
         e.update()

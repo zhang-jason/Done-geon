@@ -14,9 +14,11 @@ class Player(Entity):
         self.rect.left, self.rect.top = startPosition
         # how often the character can move (every five ticks)
         self.canMove = pygame.time.get_ticks() + 5
-        self.speed = 2  # how far it moves
-        self.health = 10
+        self.speed = 5  # how far it moves
+        self.current_health = 4
+        self.max_health = 4
         self.iframes = 0
+        self.alive = True
 
     def move(self, keys):
         move = pygame.math.Vector2()
@@ -35,21 +37,38 @@ class Player(Entity):
             self.collideDir = 0
         self.rect.move_ip(move)
 
-    # temp function to demo how health system could look
-
     def checkCollide(self, group):
-        health = self.health
+        health = self.current_health
         if (pygame.time.get_ticks() >= self.iframes):
             for e in group:
                 if self.rect.colliderect(e.rect):
                     self.iframes = pygame.time.get_ticks() + 1000
-                    self.health -= 1
+                    self.get_hit(1)
                     break
-        if self.health != health:
-            print(self.health)
+        if self.current_health != health:
+            print(self.current_health)
+
+    def get_health(self):
+        return self.current_health
+
+    def get_hit(self, hitDmg):
+        if (self.current_health - hitDmg) > 0:
+            self.current_health -= hitDmg
+        else:
+            self.current_health = 0
+            self.alive = False
+
+    def get_regen(self, regenAmt):
+        if (regenAmt + self.current_health) < self.max_health:
+            self.current_health += regenAmt
+        else:
+            self.current_health = self.max_health
 
     def update(self, keys, group):
         self.move(keys)
         self.checkCollide(group)
 
-   
+    # Reset char after dying; doesn't work quite yet
+    def reset(self):
+        self.current_health = 4
+        self.alive = True

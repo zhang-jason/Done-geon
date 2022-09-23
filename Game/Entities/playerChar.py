@@ -14,24 +14,25 @@ class Player(Entity):
         self.rect.left, self.rect.top = startPosition
         # how often the character can move (every five ticks)
         self.canMove = pygame.time.get_ticks() + 5
-        self.speed = 5  # how far it moves
+        self.speed = 2  # how far it moves
         self.health = 10
         self.iframes = 0
 
     def move(self, keys):
         move = pygame.math.Vector2()
         if pygame.time.get_ticks() >= self.canMove:
-            if keys[c.K_UP]:
+            if keys[c.K_UP] and self.collideDir != 2:
                 move.y -= self.speed
-            if keys[c.K_DOWN]:
+            if keys[c.K_DOWN] and self.collideDir != 1:
                 move.y += self.speed
-            if keys[c.K_LEFT]:
+            if keys[c.K_LEFT] and self.collideDir != 3:
                 move.x -= self.speed
-            if keys[c.K_RIGHT]:
+            if keys[c.K_RIGHT] and self.collideDir != 4:
                 move.x += self.speed
             if (move.x != 0 or move.y != 0):
                 move.scale_to_length(self.speed)
             self.canMove = pygame.time.get_ticks() + 5
+            self.collideDir = 0
         self.rect.move_ip(move)
 
     # temp function to demo how health system could look
@@ -50,3 +51,5 @@ class Player(Entity):
     def update(self, keys, group):
         self.move(keys)
         self.checkCollide(group)
+
+   

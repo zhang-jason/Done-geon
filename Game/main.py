@@ -50,18 +50,17 @@ print("Created STONE_TILE")
 
 enemies = pygame.sprite.Group()
 player = Player((width/2,height/2))
+playerGroup = pygame.sprite.Group()
+playerGroup.add(player)
+
 for i in range(5):
     enemies.add(Enemy((randint(0,width),randint(0,height)),player))
 
-#testing collision - bush object
-bush = Obj((150,150))
+#non movable object group
+nonMovingObj = pygame.sprite.Group()
+for i in range(10):
+    nonMovingObj.add(Obj((randint(0,width),randint(0,height))))
 
-'''
-TODO put non move objs in group for easy collision detecting
-adding obj to object group
-objects = pygame.sprite.Group()
-objects.add(bush)
-'''
 while True:
     for event in pygame.event.get():
         if event.type == QUIT:
@@ -71,20 +70,21 @@ while True:
         for y in range(NUM_TILES_Y):
             WIN.blit(STONE_TILE, (x * TILE_SIZE, y * TILE_SIZE))
 
-    # testing collision - printing
-    WIN.blit(bush.image, bush.rect)
+    # printing bushes 
+    for i in nonMovingObj:
+        WIN.blit(i.image, i.rect)
+        i.update()
 
     WIN.blit(player.image, player.rect)
 
     for e in enemies:
         WIN.blit(e.image,e.rect)
         e.update()
+        e.collide(nonMovingObj)
     keys = pygame.key.get_pressed()
     player.update(keys,enemies)
 
-
-    #detecting collision - TODO this should be func later 
-    if player.rect.colliderect(bush.rect):
-        print("collision detected")
+    #detecting collision
+    player.collide(nonMovingObj)
 
     pygame.display.update()

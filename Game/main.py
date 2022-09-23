@@ -9,6 +9,7 @@ from Entities.playerChar import Player
 from Entities.nonMoveObj import Obj
 from Entities.enemy import Enemy
 from gui import HealthBar
+from tiles import *
 
 import pygame
 from pygame import QUIT
@@ -22,7 +23,7 @@ NUM_TILES_X, NUM_TILES_Y = 16, 9
 
 
 # 16x9 tiles
-ASSET_SIZE = 32
+ASSET_SIZE = 16
 scale = min(floor(height / NUM_TILES_Y / ASSET_SIZE), floor(width / NUM_TILES_X / ASSET_SIZE))
 TILE_SIZE = ASSET_SIZE * scale
 print(height)
@@ -38,6 +39,8 @@ pygame.display.set_caption("Done-geon")
 
 print("Created Window")
 
+map = TileMap(os.path.join(os.path.dirname(__file__), 'assets/tiles', 'Test Room 2_Tile Layer 1.csv'), TILE_SIZE)
+map2 = TileMap(os.path.join(os.path.dirname(__file__), 'assets/tiles', 'Test Room 2_Tile Layer 2.csv'), TILE_SIZE)
 
 def scale_image(image):
     return pygame.transform.scale(image, (TILE_SIZE, TILE_SIZE))
@@ -66,9 +69,12 @@ while True:
         if event.type == QUIT:
             pygame.quit()
             sys.exit()
-    for x in range(NUM_TILES_X):
-        for y in range(NUM_TILES_Y):
-            WIN.blit(STONE_TILE, (x * TILE_SIZE, y * TILE_SIZE))
+    #for x in range(NUM_TILES_X):
+    #    for y in range(NUM_TILES_Y):
+    #        WIN.blit(STONE_TILE, (x * TILE_SIZE, y * TILE_SIZE))
+
+    map.draw_map(WIN)
+    map2.draw_map(WIN)
 
     # printing bushes 
     for i in nonMovingObj:
@@ -87,5 +93,6 @@ while True:
 
     #detecting collision
     player.collide(nonMovingObj)
+    #player.collide(map2.get_tiles())  ?
 
     pygame.display.update()

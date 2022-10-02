@@ -91,7 +91,7 @@ class Player(Entity):
         else:
             self.current_health = self.max_health
 
-    def update(self, keys, group, projectiles):
+    def update(self, keys, group):
         self.current_sprite += 0.05
         if self.current_sprite >= len(self.idleSprites):
             self.current_sprite = 0

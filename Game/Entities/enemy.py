@@ -1,4 +1,3 @@
-from random import randint
 import pygame
 from Entities.entity import Entity
 from Entities.projectile import Projectile
@@ -10,29 +9,13 @@ class Enemy(Entity):
     def __init__(self, startPosition, player):
         super(Enemy, self).__init__()
 
-        # Sprite Animation
+        # Sprite Info
         self.sprites = []
-        self.sprites.append(pygame.transform.scale(pygame.image.load(
-            join(dirname(dirname(__file__)), 'assets/Wizard/Idle', 'wizzard_m_idle_anim_f0.png')), (32, 56)))
-        self.sprites.append(pygame.transform.scale(pygame.image.load(
-            join(dirname(dirname(__file__)), 'assets/Wizard/Idle', 'wizzard_m_idle_anim_f1.png')), (32, 56)))
-        self.sprites.append(pygame.transform.scale(pygame.image.load(
-            join(dirname(dirname(__file__)), 'assets/Wizard/Idle', 'wizzard_m_idle_anim_f2.png')), (32, 56)))
-        self.sprites.append(pygame.transform.scale(pygame.image.load(
-            join(dirname(dirname(__file__)), 'assets/Wizard/Idle', 'wizzard_m_idle_anim_f3.png')), (32, 56)))
         self.current_sprite = 0
-        self.image = self.sprites[self.current_sprite]
-        self.rect = self.image.get_rect()
-        self.rect.left, self.rect.top = startPosition
-
         self.canMove = 0
         self.speed = 3
+        self.health = 4
         self.player = player
-
-    def attack(self, projectiles):
-        enemy = self.rect.center
-        pCoords = self.player.rect.center
-        projectiles.add(Projectile(enemy, pCoords, False, 'Pink Ball'))
 
     def update(self, projectiles):
         self.current_sprite += 0.05
@@ -55,9 +38,4 @@ class Enemy(Entity):
             self.canMove = pygame.time.get_ticks() + 10
             self.rect.move_ip(move)
             self.collideDir = 0
-
-        # Scuffed random attack pattern generator
-        randAttack = randint(1, 500)
-        if randAttack == 1:
-            self.attack(projectiles)
     

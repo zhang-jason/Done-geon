@@ -7,7 +7,8 @@ from math import floor
 import components
 from Entities.playerChar import Player
 from Entities.nonMoveObj import Obj
-from Entities.enemy import Enemy
+from Entities.wizard import Wizard
+from Entities.knight import Knight
 from gui import HealthBar
 from tiles import *
 
@@ -59,8 +60,9 @@ enemies = pygame.sprite.Group()
 projectiles = pygame.sprite.Group()
 player = Player((width/2,height/2))
 health = HealthBar(WIN, player, (20, 20))
-for i in range(5):
-    enemies.add(Enemy((randint(0,width),randint(0,height)),player))
+for i in range(3):
+    enemies.add(Wizard((randint(0,width),randint(0,height)),player))
+    enemies.add(Knight((randint(0,width),randint(0,height)),player))
 
 #non movable object group
 nonMovingObj = pygame.sprite.Group()
@@ -99,7 +101,7 @@ while True:
         WIN.blit(p.image, p.rect)
         p.update()
     keys = pygame.key.get_pressed()
-    player.update(keys, enemies, projectiles)
+    player.update(keys, enemies)
     health.update(WIN, player)
 
     #detecting collision

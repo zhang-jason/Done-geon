@@ -35,7 +35,7 @@ class Projectile(Entity):
         
     #Override
     def update(self):
-        # Update Animation
+        # Update Sprite Animation
         self.current_sprite += 0.05
         if self.current_sprite >= len(self.sprites):
             self.current_sprite = 0

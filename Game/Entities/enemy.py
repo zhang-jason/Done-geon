@@ -18,6 +18,7 @@ class Enemy(Entity):
         self.player = player
 
     def update(self, projectiles):
+        # Update Sprite Animation
         self.current_sprite += 0.05
         if self.current_sprite >= len(self.sprites):
             self.current_sprite = 0

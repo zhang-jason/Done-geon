@@ -92,10 +92,12 @@ class Player(Entity):
             self.current_health = self.max_health
 
     def update(self, keys, group):
-        self.current_sprite += 0.05
+        #Update Sprite Animation
+        self.current_sprite += 0.05 # Controls how fast the animations cycle
         if self.current_sprite >= len(self.idleSprites):
             self.current_sprite = 0
         self.image = self.idleSprites[int(self.current_sprite)]
+
         self.move(keys)
         self.checkCollide(group)
 

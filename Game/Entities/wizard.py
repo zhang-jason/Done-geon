@@ -21,6 +21,7 @@ class Wizard(Enemy):
         self.rect = self.image.get_rect()
         self.rect.left, self.rect.top = startPosition
 
+    # Ranged enemy has special attack
     def attack(self, projectiles):
         enemy = self.rect.center
         pCoords = self.player.rect.center
@@ -29,7 +30,7 @@ class Wizard(Enemy):
     def update(self, projectiles):
         super(Wizard, self).update(projectiles)
 
-                # Scuffed random attack pattern generator
+        # Scuffed random attack pattern generator
         randAttack = randint(1, 250)
         if randAttack == 1:
             self.attack(projectiles)

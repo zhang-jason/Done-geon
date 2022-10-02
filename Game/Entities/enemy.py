@@ -1,5 +1,7 @@
+from random import randint
 import pygame
 from Entities.entity import Entity
+from Entities.projectile import Projectile
 from os.path import join
 from os.path import dirname
 
@@ -11,13 +13,13 @@ class Enemy(Entity):
         # Sprite Animation
         self.sprites = []
         self.sprites.append(pygame.transform.scale(pygame.image.load(
-            join(dirname(dirname(__file__)), 'assets/Wizard', 'wizzard_m_idle_anim_f0.png')), (32, 56)))
+            join(dirname(dirname(__file__)), 'assets/Wizard/Idle', 'wizzard_m_idle_anim_f0.png')), (32, 56)))
         self.sprites.append(pygame.transform.scale(pygame.image.load(
-            join(dirname(dirname(__file__)), 'assets/Wizard', 'wizzard_m_idle_anim_f1.png')), (32, 56)))
+            join(dirname(dirname(__file__)), 'assets/Wizard/Idle', 'wizzard_m_idle_anim_f1.png')), (32, 56)))
         self.sprites.append(pygame.transform.scale(pygame.image.load(
-            join(dirname(dirname(__file__)), 'assets/Wizard', 'wizzard_m_idle_anim_f2.png')), (32, 56)))
+            join(dirname(dirname(__file__)), 'assets/Wizard/Idle', 'wizzard_m_idle_anim_f2.png')), (32, 56)))
         self.sprites.append(pygame.transform.scale(pygame.image.load(
-            join(dirname(dirname(__file__)), 'assets/Wizard', 'wizzard_m_idle_anim_f3.png')), (32, 56)))
+            join(dirname(dirname(__file__)), 'assets/Wizard/Idle', 'wizzard_m_idle_anim_f3.png')), (32, 56)))
         self.current_sprite = 0
         self.image = self.sprites[self.current_sprite]
         self.rect = self.image.get_rect()
@@ -27,7 +29,12 @@ class Enemy(Entity):
         self.speed = 3
         self.player = player
 
-    def update(self):
+    def attack(self, projectiles):
+        enemy = self.rect.center
+        pCoords = self.player.rect.center
+        projectiles.add(Projectile(enemy, pCoords, False, 'Pink Ball'))
+
+    def update(self, projectiles):
         self.current_sprite += 0.05
         if self.current_sprite >= len(self.sprites):
             self.current_sprite = 0
@@ -48,5 +55,9 @@ class Enemy(Entity):
             self.canMove = pygame.time.get_ticks() + 10
             self.rect.move_ip(move)
             self.collideDir = 0
-    
+
+        # Scuffed random attack pattern generator
+        randAttack = randint(1, 500)
+        if randAttack == 1:
+            self.attack(projectiles)
     

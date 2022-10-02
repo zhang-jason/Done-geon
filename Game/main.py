@@ -20,7 +20,7 @@ display_info = pygame.display.Info()
 width = display_info.current_w
 height = display_info.current_h - 70  # 70 for window headers
 NUM_TILES_X, NUM_TILES_Y = 16, 9
-
+FPS_CLOCK = pygame.time.Clock()
 
 # 16x9 tiles
 ASSET_SIZE = 16
@@ -93,7 +93,7 @@ while True:
     # Update Functions
     for e in enemies:
         WIN.blit(e.image,e.rect)
-        e.update()
+        e.update(projectiles)
         e.collide(nonMovingObj)
     for p in projectiles:
         WIN.blit(p.image, p.rect)
@@ -110,3 +110,4 @@ while True:
     WIN.blit(cursor_img, cursor_img_rect)
 
     pygame.display.update()
+    FPS_CLOCK.tick(120)

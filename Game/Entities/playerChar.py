@@ -14,17 +14,18 @@ class Player(Entity):
         self.idleSprites = []
         # self.is_animating == False
         self.idleSprites.append(pygame.transform.scale(pygame.image.load(
-            join(dirname(dirname(__file__)), 'assets/Necromancer', 'necromancer_idle_anim_f0.png')), (32, 56)))
+            join(dirname(dirname(__file__)), 'assets/Necromancer/Idle', 'necromancer_idle_anim_f0.png')), (80, 100)))
         self.idleSprites.append(pygame.transform.scale(pygame.image.load(
-            join(dirname(dirname(__file__)), 'assets/Necromancer', 'necromancer_idle_anim_f1.png')), (32, 56)))
+            join(dirname(dirname(__file__)), 'assets/Necromancer/Idle', 'necromancer_idle_anim_f1.png')), (80, 100)))
         self.idleSprites.append(pygame.transform.scale(pygame.image.load(
-            join(dirname(dirname(__file__)), 'assets/Necromancer', 'necromancer_idle_anim_f2.png')), (32, 56)))
+            join(dirname(dirname(__file__)), 'assets/Necromancer/Idle', 'necromancer_idle_anim_f2.png')), (80, 100)))
         self.idleSprites.append(pygame.transform.scale(pygame.image.load(
-            join(dirname(dirname(__file__)), 'assets/Necromancer', 'necromancer_idle_anim_f3.png')), (32, 56)))
+            join(dirname(dirname(__file__)), 'assets/Necromancer/Idle', 'necromancer_idle_anim_f3.png')), (80, 100)))
         self.current_sprite = 0
         self.image = self.idleSprites[self.current_sprite]
         self.rect = self.image.get_rect()
         self.rect.left, self.rect.top = startPosition
+        self.flippedImage = False
         
         # how often the character can move (every five ticks)
         self.canMove = pygame.time.get_ticks() + 5
@@ -42,11 +43,18 @@ class Player(Entity):
             if keys[c.K_s] and self.collideDir != 1:
                 move.y += self.speed
             if keys[c.K_a] and self.collideDir != 3:
+                self.flippedImage = True
                 move.x -= self.speed
             if keys[c.K_d] and self.collideDir != 4:
+                self.flippedImage = False
                 move.x += self.speed
             if (move.x != 0 or move.y != 0):
                 move.scale_to_length(self.speed)
+            if self.flippedImage == True:
+                self.image = pygame.transform.flip(self.idleSprites[int(self.current_sprite)], True, False)
+            else:
+                self.image = pygame.transform.flip(self.idleSprites[int(self.current_sprite)], False, False)
+
             self.canMove = pygame.time.get_ticks() + 5
             self.collideDir = 0
         self.rect.move_ip(move)
@@ -54,7 +62,7 @@ class Player(Entity):
     def attack(self, projectiles):
         player = self.rect.center
         cursor = pygame.mouse.get_pos()
-        projectiles.add(Projectile(player, cursor, True, 'Fireball'))
+        projectiles.add(Projectile(player, cursor, True, 'Magic Ball'))
 
     def checkCollide(self, group):
         health = self.current_health

@@ -8,12 +8,11 @@ import components
 from Entities.playerChar import Player
 from Entities.nonMoveObj import Obj
 from Entities.enemy import Enemy
-from Entities.projectile import Projectile
 from gui import HealthBar
 from tiles import *
 
 import pygame
-from pygame import QUIT
+from pygame import MOUSEBUTTONDOWN, QUIT
 
 pygame.init()
 
@@ -73,6 +72,8 @@ while True:
         if event.type == QUIT:
             pygame.quit()
             sys.exit()
+        if event.type == MOUSEBUTTONDOWN:
+            player.attack(projectiles)
     #for x in range(NUM_TILES_X):
     #    for y in range(NUM_TILES_Y):
     #        WIN.blit(STONE_TILE, (x * TILE_SIZE, y * TILE_SIZE))

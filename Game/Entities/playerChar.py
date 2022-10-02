@@ -52,11 +52,9 @@ class Player(Entity):
         self.rect.move_ip(move)
 
     def attack(self, projectiles):
-        for event in pygame.event.get():
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                player = self.rect.center
-                cursor = pygame.mouse.get_pos()
-                projectiles.add(Projectile(player, cursor))
+        player = self.rect.center
+        cursor = pygame.mouse.get_pos()
+        projectiles.add(Projectile(player, cursor, True, 'Fireball'))
 
     def checkCollide(self, group):
         health = self.current_health
@@ -91,7 +89,6 @@ class Player(Entity):
             self.current_sprite = 0
         self.image = self.idleSprites[int(self.current_sprite)]
         self.move(keys)
-        self.attack(projectiles)
         self.checkCollide(group)
 
     # Reset char after dying; doesn't work quite yet

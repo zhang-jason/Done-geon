@@ -5,7 +5,8 @@ from os.path import join
 from os.path import dirname
 
 class Projectile(Entity):
-    def __init__(self, startPosition, endPosition):
+    # Team is whether Player or Enemy used projectile, Ability is type of projectile (e.g. fireball, arrow, etc.)
+    def __init__(self, startPosition, endPosition, friendly, ability):
         super(Projectile, self).__init__()
 
         # Math Stuff
@@ -18,12 +19,13 @@ class Projectile(Entity):
         self.dy = math.sin(angle) * self.speed
         self.x = startPosition[0]
         self.y = startPosition[1]
+        self.type = friendly # True for Friendly Projectile, false for Enemy; useful for hit detection
 
         # Image and Animations
         self.sprites = []
         for i in range(1, 30, 1):
             image = pygame.transform.scale(pygame.image.load(
-                join(dirname(dirname(__file__)), 'assets/projectiles/fireball', f'{i}.png')), (64, 64))
+                join(dirname(dirname(__file__)), f'assets/projectiles/{ability}', f'{i}.png')), (64, 64))
             image = pygame.transform.rotate(image, math.degrees(-angle))
             self.sprites.append(image)
         self.current_sprite = 0

@@ -51,6 +51,13 @@ class Player(Entity):
             self.collideDir = 0
         self.rect.move_ip(move)
 
+    def attack(self, projectiles):
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                player = self.rect.center
+                cursor = pygame.mouse.get_pos()
+                projectiles.add(Projectile(player, cursor))
+
     def checkCollide(self, group):
         health = self.current_health
         if (pygame.time.get_ticks() >= self.iframes):
@@ -78,12 +85,13 @@ class Player(Entity):
         else:
             self.current_health = self.max_health
 
-    def update(self, keys, group):
+    def update(self, keys, group, projectiles):
         self.current_sprite += 0.05
         if self.current_sprite >= len(self.idleSprites):
             self.current_sprite = 0
         self.image = self.idleSprites[int(self.current_sprite)]
         self.move(keys)
+        self.attack(projectiles)
         self.checkCollide(group)
 
     # Reset char after dying; doesn't work quite yet

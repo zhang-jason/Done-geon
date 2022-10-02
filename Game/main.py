@@ -35,7 +35,6 @@ print(WIDTH)
 print(HEIGHT)  # Just double-checking my math here
 
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
-#GUI = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Done-geon")
 pygame.mouse.set_visible(False)
 cursor_img = pygame.transform.scale(pygame.image.load(
@@ -50,7 +49,6 @@ map2 = TileMap(os.path.join(os.path.dirname(__file__), 'assets/tiles', 'Test Roo
 def scale_image(image):
     return pygame.transform.scale(image, (TILE_SIZE, TILE_SIZE))
 
-
 # temporary, to be modularized later:
 STONE_TILE = scale_image(pygame.image.load(os.path.join(os.path.dirname(__file__), 'assets', 'TileAsset32x32.png'))
                          .convert())
@@ -59,6 +57,7 @@ STONE_TILE = scale_image(pygame.image.load(os.path.join(os.path.dirname(__file__
 print("Created STONE_TILE")
 
 enemies = pygame.sprite.Group()
+projectiles = pygame.sprite.Group()
 player = Player((width/2,height/2))
 health = HealthBar(WIN, player, (20, 20))
 for i in range(5):
@@ -86,6 +85,8 @@ while True:
         WIN.blit(i.image, i.rect)
         i.update()
 
+    #hitbox = (player.rect.topleft[0], player.rect.topleft[1], player.rect.width, player.rect.height) # NEW
+    #pygame.draw.rect(WIN, (255,0,0), hitbox,2)
     WIN.blit(player.image, player.rect)
 
     # Update Functions
@@ -93,8 +94,11 @@ while True:
         WIN.blit(e.image,e.rect)
         e.update()
         e.collide(nonMovingObj)
+    for p in projectiles:
+        WIN.blit(p.image, p.rect)
+        p.update()
     keys = pygame.key.get_pressed()
-    player.update(keys, enemies)
+    player.update(keys, enemies, projectiles)
     health.update(WIN, player)
 
     #detecting collision

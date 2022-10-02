@@ -7,15 +7,32 @@ from os.path import dirname
 class Enemy(Entity):
     def __init__(self, startPosition, player):
         super(Enemy, self).__init__()
-        self.image = pygame.transform.scale(pygame.image.load(
-            join(dirname(dirname(__file__)), 'assets', 'candleA_01.png')), (32, 32))
+
+        # Sprite Animation
+        self.sprites = []
+        self.sprites.append(pygame.transform.scale(pygame.image.load(
+            join(dirname(dirname(__file__)), 'assets/Wizard', 'wizzard_m_idle_anim_f0.png')), (32, 56)))
+        self.sprites.append(pygame.transform.scale(pygame.image.load(
+            join(dirname(dirname(__file__)), 'assets/Wizard', 'wizzard_m_idle_anim_f1.png')), (32, 56)))
+        self.sprites.append(pygame.transform.scale(pygame.image.load(
+            join(dirname(dirname(__file__)), 'assets/Wizard', 'wizzard_m_idle_anim_f2.png')), (32, 56)))
+        self.sprites.append(pygame.transform.scale(pygame.image.load(
+            join(dirname(dirname(__file__)), 'assets/Wizard', 'wizzard_m_idle_anim_f3.png')), (32, 56)))
+        self.current_sprite = 0
+        self.image = self.sprites[self.current_sprite]
         self.rect = self.image.get_rect()
         self.rect.left, self.rect.top = startPosition
+
         self.canMove = 0
         self.speed = 3
         self.player = player
 
     def update(self):
+        self.current_sprite += 0.05
+        if self.current_sprite >= len(self.sprites):
+            self.current_sprite = 0
+        self.image = self.sprites[int(self.current_sprite)]
+
         pCoords = self.player.rect.center
         coords = self.rect.center
         move = pygame.math.Vector2(pCoords[0]-coords[0], pCoords[1]-coords[1])

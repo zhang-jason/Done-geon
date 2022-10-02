@@ -8,6 +8,7 @@ import components
 from Entities.playerChar import Player
 from Entities.nonMoveObj import Obj
 from Entities.enemy import Enemy
+from Entities.projectile import Projectile
 from gui import HealthBar
 from tiles import *
 
@@ -36,6 +37,10 @@ print(HEIGHT)  # Just double-checking my math here
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 #GUI = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Done-geon")
+pygame.mouse.set_visible(False)
+cursor_img = pygame.transform.scale(pygame.image.load(
+            os.path.join(os.path.dirname(os.path.dirname(__file__)), 'Game/Assets', 'Crosshair02.png')), (28, 28))
+cursor_img_rect = cursor_img.get_rect()
 
 print("Created Window")
 
@@ -89,11 +94,14 @@ while True:
         e.update()
         e.collide(nonMovingObj)
     keys = pygame.key.get_pressed()
-    player.update(keys,enemies)
+    player.update(keys, enemies)
     health.update(WIN, player)
 
     #detecting collision
     player.collide(nonMovingObj)
     #player.collide(map2.get_tiles())  ?
+
+    cursor_img_rect.center = pygame.mouse.get_pos()
+    WIN.blit(cursor_img, cursor_img_rect)
 
     pygame.display.update()

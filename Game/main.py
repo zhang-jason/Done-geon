@@ -43,8 +43,9 @@ cursor_img_rect = cursor_img.get_rect()
 
 print("Created Window")
 
-map = TileMap(os.path.join(os.path.dirname(__file__), 'assets/tiles', 'Test Room 2_Tile Layer 1.csv'), TILE_SIZE)
-map2 = TileMap(os.path.join(os.path.dirname(__file__), 'assets/tiles', 'Test Room 2_Tile Layer 2.csv'), TILE_SIZE)
+map = TileMap(os.path.join(os.path.dirname(__file__), 'assets/tiles', 'Test Room 3_Tile Layer 1.csv'), TILE_SIZE)
+map2 = TileMap(os.path.join(os.path.dirname(__file__), 'assets/tiles', 'Test Room 3_Tile Layer 2.csv'), TILE_SIZE)
+map3 = TileMap(os.path.join(os.path.dirname(__file__), 'assets/tiles', 'Test Room 3_Tile Layer 3.csv'), TILE_SIZE)
 
 def scale_image(image):
     return pygame.transform.scale(image, (TILE_SIZE, TILE_SIZE))
@@ -69,6 +70,8 @@ nonMovingObj = pygame.sprite.Group()
 for i in range(10):
     nonMovingObj.add(Obj((randint(0,width),randint(0,height))))
 
+#nonMovingObj.add(map2.get_tiles())
+
 while True:
     for event in pygame.event.get():
         if event.type == QUIT:
@@ -82,12 +85,14 @@ while True:
 
     map.draw_map(WIN)
     map2.draw_map(WIN)
+    map3.draw_map(WIN)
 
     # printing bushes 
-    for i in nonMovingObj:
-        WIN.blit(i.image, i.rect)
-        i.update()
+    #for i in nonMovingObj:
+        #WIN.blit(i.image, i.rect)
+        #i.update()
 
+    #nonMovingObj.add(map2.get_tiles())
     #hitbox = (player.rect.topleft[0], player.rect.topleft[1], player.rect.width, player.rect.height) # NEW
     #pygame.draw.rect(WIN, (255,0,0), hitbox,2)
     WIN.blit(player.image, player.rect)
@@ -101,12 +106,13 @@ while True:
         WIN.blit(p.image, p.rect)
         p.update()
     keys = pygame.key.get_pressed()
-    player.update(keys, enemies)
+    player.update(keys, enemies, map2.tiles)
     health.update(WIN, player)
 
     #detecting collision
-    player.collide(nonMovingObj)
-    #player.collide(map2.get_tiles())  ?
+    #player.collide1(nonMovingObj)
+    #player.check_collisionsx(map2.tiles)
+    #player.collide(map2.tiles)
 
     cursor_img_rect.center = pygame.mouse.get_pos()
     WIN.blit(cursor_img, cursor_img_rect)

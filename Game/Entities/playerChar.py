@@ -1,3 +1,4 @@
+from math import sqrt
 from os.path import join
 from os.path import dirname
 from Entities.entity import Entity
@@ -127,8 +128,8 @@ class Player(Entity):
     def check_collisionsy(self, tiles):
         collisions = self.get_collisions(tiles)
         #self.rect.bottom += 1
-        verticalMove = False
         for t in collisions:
+            verticalMove = False
             if self.velocity.y != 0:
                 verticalMove = True
             if self.velocity.x > 0:
@@ -137,20 +138,23 @@ class Player(Entity):
                     self.collideDir = 4
                     self.velocity.x = 0
                 else:
-                    horizontal = abs(self.rect.x - t.rect.left + self.rect.w)
-                    vertical = abs(self.rect.bottom - t.rect.top)
-                    vertical2 = abs(self.rect.bottom - t.rect.bottom + self.rect.h)
+                    horizontal = sqrt(pow(t.rect.left - self.rect.centerx, 2) + pow(t.rect.centery - self.rect.centery, 2))
+                    vertical = sqrt(pow(t.rect.centerx - self.rect.centerx, 2) + pow(t.rect.top - self.rect.centery, 2))
+                    vertical2 = sqrt(pow(t.rect.centerx - self.rect.centerx, 2) + pow(t.rect.bottom - self.rect.centery, 2))
                     min1 = min(horizontal, vertical, vertical2)
                     if min1 == horizontal:
                         self.rect.x = t.rect.left - self.rect.w
                         self.collideDir = 4
                         self.velocity.x = 0
+                        self.velocity.y = 0
                     elif min1 == vertical:
                         self.velocity.y = 0
+                        self.velocity.x = 0
                         self.rect.bottom = t.rect.top
                         self.collideDir = 1
                     elif min1 == vertical2:
                         self.velocity.y = 0
+                        self.velocity.x = 0
                         self.rect.bottom = t.rect.bottom + self.rect.h
                         self.collideDir = 2
             if self.velocity.x < 0:
@@ -159,20 +163,23 @@ class Player(Entity):
                     self.collideDir = 3
                     self.velocity.x = 0
                 else:
-                    horizontal = abs(self.rect.x - t.rect.right)
-                    vertical = abs(self.rect.bottom - t.rect.top)
-                    vertical2 = abs(self.rect.bottom - t.rect.bottom + self.rect.h)
+                    horizontal = sqrt(pow(t.rect.right - self.rect.centerx, 2) + pow(t.rect.centery - self.rect.centery, 2))
+                    vertical = sqrt(pow(t.rect.centerx - self.rect.centerx, 2) + pow(t.rect.top - self.rect.centery, 2))
+                    vertical2 = sqrt(pow(t.rect.centerx - self.rect.centerx, 2) + pow(t.rect.bottom - self.rect.centery, 2))
                     min1 = min(horizontal, vertical, vertical2)
                     if min1 == horizontal:
                         self.rect.x = t.rect.left - self.rect.w
                         self.collideDir = 4
+                        self.velocity.y = 0
                         self.velocity.x = 0
                     elif min1 == vertical:
                         self.velocity.y = 0
+                        self.velocity.x = 0
                         self.rect.bottom = t.rect.top
                         self.collideDir = 1
                     elif min1 == vertical2:
                         self.velocity.y = 0
+                        self.velocity.x = 0
                         self.rect.bottom = t.rect.bottom + self.rect.h
                         self.collideDir = 2
             if self.velocity.y > 0:

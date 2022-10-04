@@ -168,8 +168,8 @@ class Player(Entity):
                     vertical2 = sqrt(pow(t.rect.centerx - self.rect.centerx, 2) + pow(t.rect.bottom - self.rect.centery, 2))
                     min1 = min(horizontal, vertical, vertical2)
                     if min1 == horizontal:
-                        self.rect.x = t.rect.left - self.rect.w
-                        self.collideDir = 4
+                        self.rect.x = t.rect.right
+                        self.collideDir = 3
                         self.velocity.y = 0
                         self.velocity.x = 0
                     elif min1 == vertical:

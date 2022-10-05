@@ -138,21 +138,21 @@ class Player(Entity):
                     self.collideDir = 4
                     self.velocity.x = 0
                 else:
-                    horizontal = sqrt(pow(t.rect.left - self.rect.centerx, 2) + pow(t.rect.centery - self.rect.centery, 2))
-                    vertical = sqrt(pow(t.rect.centerx - self.rect.centerx, 2) + pow(t.rect.top - self.rect.centery, 2))
-                    vertical2 = sqrt(pow(t.rect.centerx - self.rect.centerx, 2) + pow(t.rect.bottom - self.rect.centery, 2))
-                    min1 = min(horizontal, vertical, vertical2)
-                    if min1 == horizontal:
+                    left = sqrt(pow(t.rect.left - self.rect.centerx, 2) + pow(t.rect.centery - self.rect.centery, 2))
+                    up = sqrt(pow(t.rect.centerx - self.rect.centerx, 2) + pow(t.rect.top - self.rect.centery, 2))
+                    down = sqrt(pow(t.rect.centerx - self.rect.centerx, 2) + pow(t.rect.bottom - self.rect.centery, 2))
+                    min1 = min(left, up, down)
+                    if min1 == left:
                         self.rect.x = t.rect.left - self.rect.w
                         self.collideDir = 4
                         self.velocity.x = 0
                         self.velocity.y = 0
-                    elif min1 == vertical:
+                    elif min1 == up:
                         self.velocity.y = 0
                         self.velocity.x = 0
                         self.rect.bottom = t.rect.top
                         self.collideDir = 1
-                    elif min1 == vertical2:
+                    elif min1 == down:
                         self.velocity.y = 0
                         self.velocity.x = 0
                         self.rect.bottom = t.rect.bottom + self.rect.h
@@ -163,30 +163,30 @@ class Player(Entity):
                     self.collideDir = 3
                     self.velocity.x = 0
                 else:
-                    horizontal = sqrt(pow(t.rect.right - self.rect.centerx, 2) + pow(t.rect.centery - self.rect.centery, 2))
-                    vertical = sqrt(pow(t.rect.centerx - self.rect.centerx, 2) + pow(t.rect.top - self.rect.centery, 2))
-                    vertical2 = sqrt(pow(t.rect.centerx - self.rect.centerx, 2) + pow(t.rect.bottom - self.rect.centery, 2))
-                    min1 = min(horizontal, vertical, vertical2)
-                    if min1 == horizontal:
+                    right = sqrt(pow(t.rect.right - self.rect.centerx, 2) + pow(t.rect.centery - self.rect.centery, 2))
+                    up = sqrt(pow(t.rect.centerx - self.rect.centerx, 2) + pow(t.rect.top - self.rect.centery, 2))
+                    down = sqrt(pow(t.rect.centerx - self.rect.centerx, 2) + pow(t.rect.bottom - self.rect.centery, 2))
+                    min1 = min(right, up, down)
+                    if min1 == right:
                         self.rect.x = t.rect.right
                         self.collideDir = 3
                         self.velocity.y = 0
                         self.velocity.x = 0
-                    elif min1 == vertical:
+                    elif min1 == up:
                         self.velocity.y = 0
                         self.velocity.x = 0
                         self.rect.bottom = t.rect.top
                         self.collideDir = 1
-                    elif min1 == vertical2:
+                    elif min1 == down:
                         self.velocity.y = 0
                         self.velocity.x = 0
                         self.rect.bottom = t.rect.bottom + self.rect.h
                         self.collideDir = 2
-            if self.velocity.y > 0:
+            elif self.velocity.y > 0:
                 self.velocity.y = 0
                 self.rect.bottom = t.rect.top
                 self.collideDir = 1
-            if self.velocity.y < 0:
+            elif self.velocity.y < 0:
                 self.velocity.y = 0
                 self.rect.bottom = t.rect.bottom + self.rect.h
                 self.collideDir = 2

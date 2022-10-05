@@ -59,7 +59,7 @@ print("Created STONE_TILE")
 
 enemies = pygame.sprite.Group()
 projectiles = pygame.sprite.Group()
-player = Player((width/2,height/2))
+player = Player((width/3,height/2))
 health = HealthBar(WIN, player, (20, 20))
 for i in range(3):
     enemies.add(Wizard((randint(0,width),randint(0,height)),player))
@@ -78,7 +78,8 @@ while True:
             pygame.quit()
             sys.exit()
         if event.type == MOUSEBUTTONDOWN:
-            player.attack(projectiles)
+            if event.button == 1:
+                player.attack(projectiles)
     #for x in range(NUM_TILES_X):
     #    for y in range(NUM_TILES_Y):
     #        WIN.blit(STONE_TILE, (x * TILE_SIZE, y * TILE_SIZE))

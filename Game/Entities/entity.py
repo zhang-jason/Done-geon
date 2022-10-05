@@ -15,10 +15,7 @@ class Entity(pygame.sprite.Sprite):
                     elif abs(j.rect.bottom - self.rect.top) < collideTol:
                         self.collideDir = 2 #cant move up
                     elif abs(j.rect.right - self.rect.left) < collideTol:
-                        if(self.collideDir == 1):
-                            self.collideDir = 5
-                        else:
-                            self.collideDir = 3 #cant move left
+                        self.collideDir = 3 #cant move left
                     elif abs(j.rect.left - self.rect.right) < collideTol:
                         self.collideDir = 4 #cant move right
                         

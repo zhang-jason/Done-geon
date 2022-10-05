@@ -11,9 +11,10 @@ from Entities.wizard import Wizard
 from Entities.knight import Knight
 from gui import HealthBar
 from tiles import *
+from server import Server
 
 import pygame
-from pygame import MOUSEBUTTONDOWN, QUIT
+from pygame import MOUSEBUTTONDOWN, QUIT, K_w
 
 pygame.init()
 
@@ -69,6 +70,11 @@ nonMovingObj = pygame.sprite.Group()
 for i in range(10):
     nonMovingObj.add(Obj((randint(0,width),randint(0,height))))
 
+server = Server()
+#server test variables
+data = ""
+time = 0
+
 while True:
     for event in pygame.event.get():
         if event.type == QUIT:
@@ -110,6 +116,21 @@ while True:
 
     cursor_img_rect.center = pygame.mouse.get_pos()
     WIN.blit(cursor_img, cursor_img_rect)
+
+    server.checkIn()
+    
+
+    #test server receiver
+    if(data != server.getCurrData()):
+        data = server.getCurrData()
+        print(data)
+    
+    #test server sender
+    if keys[K_w] and time < pygame.time.get_ticks():
+        server.writeMsg(str(pygame.time.get_ticks()))
+        time = pygame.time.get_ticks() + 1000
+        
+    
 
     pygame.display.update()
     FPS_CLOCK.tick(120)

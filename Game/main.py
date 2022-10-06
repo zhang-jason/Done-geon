@@ -79,6 +79,7 @@ while True:
     for event in pygame.event.get():
         if event.type == QUIT:
             pygame.quit()
+            server.endServer()
             sys.exit()
         if event.type == MOUSEBUTTONDOWN:
             player.attack(projectiles)
@@ -116,8 +117,6 @@ while True:
 
     cursor_img_rect.center = pygame.mouse.get_pos()
     WIN.blit(cursor_img, cursor_img_rect)
-
-    server.checkIn()
     
 
     #test server receiver

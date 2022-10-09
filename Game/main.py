@@ -11,6 +11,7 @@ from Entities.wizard import Wizard
 from Entities.knight import Knight
 from gui import HealthBar
 from tiles import *
+from roomGen import RoomGen
 from server import Server
 
 import pygame
@@ -44,8 +45,15 @@ cursor_img_rect = cursor_img.get_rect()
 
 print("Created Window")
 
+# Creating a random number of generated rooms
+"""
 roomList = []
-#roomList.append(TileMap)
+for index, iter in enumerate(range(randint(3,6))):
+    room = RoomGen('dungeon', index, NUM_TILES_X, NUM_TILES_Y)
+    map = TileMap(os.path.join(os.path.dirname(__file__), 'assets/tiles/temprooms/', f'room{index}.csv'), TILE_SIZE)
+    roomList.append(map)
+"""
+
 map = TileMap(os.path.join(os.path.dirname(__file__), 'assets/tiles', 'Test Room 2_Tile Layer 1.csv'), TILE_SIZE)
 map2 = TileMap(os.path.join(os.path.dirname(__file__), 'assets/tiles', 'Test Room 2_Tile Layer 2.csv'), TILE_SIZE)
 
@@ -76,21 +84,35 @@ server = Server()
 #server test variables
 data = ""
 time = 0
+roomIndex = 0
+
+def clearTempContents():
+    dir = os.path.join(os.path.dirname(__file__), 'assets/tiles/temprooms/')
+    for file in os.listdir(dir):
+        #fileName = os.path.join(dir, file)
+        os.remove(os.path.join(dir, file))
+        #print(fileName)
 
 while True:
     for event in pygame.event.get():
         if event.type == QUIT:
             pygame.quit()
             server.endServer()
+            clearTempContents()
             sys.exit()
         if event.type == MOUSEBUTTONDOWN:
             player.attack(projectiles)
-    #for x in range(NUM_TILES_X):
-    #    for y in range(NUM_TILES_Y):
-    #        WIN.blit(STONE_TILE, (x * TILE_SIZE, y * TILE_SIZE))
+            """
+            Testing Random Room Hopping
+            roomIndex += 1
+            if roomIndex >= len(roomList):
+                roomIndex = 0
+            else:
+                map = roomList[roomIndex]
+            """
     
     # Remove old sprites to not hog resources; trust me, this got ugly on my old PC
-    WIN.fill([0, 0, 0])
+    WIN.fill([0, 0, 0]) 
     map.draw_map(WIN)
     map2.draw_map(WIN)
 

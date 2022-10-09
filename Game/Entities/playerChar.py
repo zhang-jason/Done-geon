@@ -29,6 +29,7 @@ class Player(Entity):
         
         # how often the character can move (every five ticks)
         self.canMove = pygame.time.get_ticks() + 5
+        self.canAttack = pygame.time.get_ticks() + 240
         self.speed = 5  # how far it moves
         self.current_health = 4
         self.max_health = 4
@@ -60,9 +61,11 @@ class Player(Entity):
         self.rect.move_ip(move)
 
     def attack(self, projectiles):
-        player = self.rect.center
-        cursor = pygame.mouse.get_pos()
-        projectiles.add(Projectile(player, cursor, True, 'Magic Ball'))
+        if pygame.time.get_ticks() >= self.canAttack:
+            player = self.rect.center
+            cursor = pygame.mouse.get_pos()
+            self.canAttack = pygame.time.get_ticks() + 240
+            projectiles.add(Projectile(player, cursor, True, 'Magic Ball'))
 
     def checkCollide(self, group):
         health = self.current_health

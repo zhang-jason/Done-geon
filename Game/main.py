@@ -39,11 +39,13 @@ WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Done-geon")
 pygame.mouse.set_visible(False)
 cursor_img = pygame.transform.scale(pygame.image.load(
-            os.path.join(os.path.dirname(os.path.dirname(__file__)), 'Game/Assets', 'Crosshair02.png')), (28, 28))
+            os.path.join(os.path.dirname(os.path.dirname(__file__)), 'game/assets', 'Crosshair02.png')), (28, 28))
 cursor_img_rect = cursor_img.get_rect()
 
 print("Created Window")
 
+roomList = []
+#roomList.append(TileMap)
 map = TileMap(os.path.join(os.path.dirname(__file__), 'assets/tiles', 'Test Room 2_Tile Layer 1.csv'), TILE_SIZE)
 map2 = TileMap(os.path.join(os.path.dirname(__file__), 'assets/tiles', 'Test Room 2_Tile Layer 2.csv'), TILE_SIZE)
 
@@ -86,7 +88,9 @@ while True:
     #for x in range(NUM_TILES_X):
     #    for y in range(NUM_TILES_Y):
     #        WIN.blit(STONE_TILE, (x * TILE_SIZE, y * TILE_SIZE))
-
+    
+    # Remove old sprites to not hog resources; trust me, this got ugly on my old PC
+    WIN.fill([0, 0, 0])
     map.draw_map(WIN)
     map2.draw_map(WIN)
 
@@ -117,7 +121,6 @@ while True:
 
     cursor_img_rect.center = pygame.mouse.get_pos()
     WIN.blit(cursor_img, cursor_img_rect)
-    
 
     #test server receiver
     if(data != server.getCurrData()):
@@ -128,8 +131,6 @@ while True:
     if keys[K_w] and time < pygame.time.get_ticks():
         server.writeMsg(str(pygame.time.get_ticks()))
         time = pygame.time.get_ticks() + 1000
-        
-    
 
     pygame.display.update()
     FPS_CLOCK.tick(120)

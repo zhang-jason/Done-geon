@@ -3,6 +3,7 @@ from os.path import join
 from os.path import dirname
 import pygame.locals as c
 
+
 class Obj(pygame.sprite.Sprite):
     def __init__(self, origin):
         super(Obj, self).__init__()

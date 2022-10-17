@@ -1,8 +1,11 @@
 import pygame
-from Entities.enemy import Enemy
-from Entities.projectile import Projectile
+
+from Game.Entities.enemy import Enemy
+from Game.Entities.entity import Entity
+from Game.Entities.projectile import Projectile
 from os.path import join
 from os.path import dirname
+
 
 class Knight(Enemy):
     def __init__(self, startPosition, player):

@@ -1,7 +1,7 @@
-from os.path import join
-from os.path import dirname
-from Entities.entity import Entity
-from Entities.projectile import Projectile
+import os
+from os.path import join, dirname
+from Game.Entities.entity import Entity
+from Game.Entities.projectile import Projectile
 import pygame
 import pygame.locals as c
 
@@ -9,7 +9,7 @@ import pygame.locals as c
 class Player(Entity):
     def __init__(self, startPosition):
         super(Player, self).__init__()
-        
+
         # Sprite Animation
         self.idleSprites = []
         # self.is_animating == False
@@ -22,12 +22,19 @@ class Player(Entity):
             join(dirname(dirname(__file__)), 'assets/Necromancer/Idle', 'necromancer_idle_anim_f2.png')), (80, 100)))
         self.idleSprites.append(pygame.transform.scale(pygame.image.load(
             join(dirname(dirname(__file__)), 'assets/Necromancer/Idle', 'necromancer_idle_anim_f3.png')), (80, 100)))
+
+        trans_image = pygame.image.load(
+            join(dirname(dirname(__file__)), 'assets/Necromancer/Idle', 'necromancer_idle_anim_f0.png'))
+        trans_color = trans_image.get_at((0, 0))
+        for x in self.idleSprites:
+            x.set_colorkey(trans_color)
+
         self.current_sprite = 0
         self.image = self.idleSprites[self.current_sprite]
         self.rect = self.image.get_rect()
         self.rect.left, self.rect.top = startPosition
         self.flippedImage = False
-        
+
         # how often the character can move (every five ticks)
         self.canMove = pygame.time.get_ticks() + 5
         self.canAttack = pygame.time.get_ticks() + 240
@@ -50,7 +57,7 @@ class Player(Entity):
             if keys[c.K_d] and self.collideDir != 4:
                 self.flippedImage = False
                 move.x += self.speed
-            if (move.x != 0 or move.y != 0):
+            if move.x != 0 or move.y != 0:
                 move.scale_to_length(self.speed)
             if self.flippedImage == True:
                 self.image = pygame.transform.flip(self.idleSprites[int(self.current_sprite)], True, False)
@@ -96,8 +103,8 @@ class Player(Entity):
             self.current_health = self.max_health
 
     def update(self, keys, group):
-        #Update Sprite Animation
-        self.current_sprite += 0.05 # Controls how fast the animations cycle
+        # Update Sprite Animation
+        self.current_sprite += 0.05  # Controls how fast the animations cycle
         if self.current_sprite >= len(self.idleSprites):
             self.current_sprite = 0
         self.image = self.idleSprites[int(self.current_sprite)]

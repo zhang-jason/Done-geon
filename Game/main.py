@@ -119,7 +119,7 @@ while True:
             """
 
     # Remove old sprites to not hog resources; trust me, this got ugly on my old PC
-    WIN.fill([0, 0, 0])
+    WIN.fill(0)
     map.draw_map(WIN)
     map2.draw_map(WIN)
 

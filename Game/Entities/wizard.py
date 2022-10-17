@@ -1,7 +1,7 @@
 import pygame
 
-from Game.Entities.enemy import Enemy
-from Game.Entities.projectile import Projectile
+from Entities.enemy import Enemy
+from Entities.projectile import Projectile
 from os.path import join
 from os.path import dirname
 from random import randint

@@ -2,8 +2,8 @@ from os.path import join
 from os.path import dirname
 import pygame
 import pygame.locals as c
-from Game.Entities.entity import Entity
-from Game.Entities.playerChar import Player
+from Entities.entity import Entity
+from Entities.playerChar import Player
 
 class HealthBar():
 

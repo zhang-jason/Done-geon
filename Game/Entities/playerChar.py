@@ -1,7 +1,7 @@
 import os
 from os.path import join, dirname
-from Game.Entities.entity import Entity
-from Game.Entities.projectile import Projectile
+from Entities.entity import Entity
+from Entities.projectile import Projectile
 import pygame
 import pygame.locals as c
 

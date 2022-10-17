@@ -23,6 +23,10 @@ class HealthBar():
 
         # Actual Health Image 
         self.image = pygame.transform.scale(pygame.image.load(join(dirname(dirname(__file__)), 'game/assets', 'health_ui.png')),(400,80))
+        trans_image = pygame.image.load(
+            join(dirname(dirname(__file__)), 'game/assets', 'health_ui.png'))
+        trans_color = trans_image.get_at((0, 0))
+        self.image.set_colorkey(trans_color)
         self.rect = self.image.get_rect()
 
         # Pos

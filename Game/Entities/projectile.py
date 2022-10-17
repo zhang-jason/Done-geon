@@ -25,9 +25,16 @@ class Projectile(Entity):
         self.sprites = []
         for i in range(1, 30, 1):
             image = pygame.transform.scale(pygame.image.load(
-                join(dirname(dirname(__file__)), f'assets/projectiles/{ability}', f'{i}.png')).convert_alpha(), (64, 64))
+                join(dirname(dirname(__file__)), f'assets/projectiles/{ability}', f'{i}.png')), (64, 64))
             image = pygame.transform.rotate(image, math.degrees(-angle))
             self.sprites.append(image)
+
+        trans_image = pygame.image.load(
+            join(dirname(dirname(__file__)), 'assets/projectiles/Fireball', '1.png'))
+        trans_color = trans_image.get_at((0, 0))
+        for x in self.sprites:
+            x.set_colorkey(trans_color)
+
         self.current_sprite = 0
         self.image = self.sprites[self.current_sprite]
         self.rect = self.image.get_rect()

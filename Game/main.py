@@ -54,8 +54,8 @@ for index, iter in enumerate(range(randint(3,6))):
     roomList.append(map)
 """
 
-map = TileMap(os.path.join(os.path.dirname(__file__), 'assets/tiles', 'Test Room 2_Tile Layer 1.csv'), TILE_SIZE)
-map2 = TileMap(os.path.join(os.path.dirname(__file__), 'assets/tiles', 'Test Room 2_Tile Layer 2.csv'), TILE_SIZE)
+map = TileMap(os.path.join(os.path.dirname(__file__), 'Assets/Tiles', 'Test Room 2_Tile Layer 1.csv'), TILE_SIZE)
+map2 = TileMap(os.path.join(os.path.dirname(__file__), 'Assets/Tiles', 'Test Room 2_Tile Layer 2.csv'), TILE_SIZE)
 
 def scale_image(image):
     return pygame.transform.scale(image, (TILE_SIZE, TILE_SIZE))

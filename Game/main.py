@@ -98,6 +98,7 @@ def clearTempContents():
 
 
 updateCount = 0
+screen = "Game"  # can be "Start", "Game", "Pause", maybe lose/win?
 
 while True:
     # User interaction:
@@ -120,36 +121,49 @@ while True:
 
     # Remove old sprites to not hog resources; trust me, this got ugly on my old PC
     WIN.fill(0)
-    map.draw_map(WIN)
-    map2.draw_map(WIN)
-
-    # printing bushes 
-    for i in nonMovingObj:
-        WIN.blit(i.image, i.rect)
-        i.update()
-
-    # hitbox = (player.rect.topleft[0], player.rect.topleft[1], player.rect.width, player.rect.height) # NEW
-    # pygame.draw.rect(WIN, (255,0,0), hitbox,2)
-    WIN.blit(player.image, player.rect)
-
-    # Update Functions
-    for e in enemies:
-        WIN.blit(e.image, e.rect)
-        e.update(projectiles)  # Why are projectiles being passed in here?
-        e.collide(nonMovingObj)
-    for p in projectiles:
-        WIN.blit(p.image, p.rect)
-        p.update()
     keys = pygame.key.get_pressed()
-    player.update(keys, enemies)
-    health.update(WIN, player)
 
-    # detecting collision
-    player.collide(nonMovingObj)
-    # player.collide(map2.get_tiles())  ?
+    match screen:
+        case "Game":
+            map.draw_map(WIN)
+            map2.draw_map(WIN)
 
-    cursor_img_rect.center = pygame.mouse.get_pos()
-    WIN.blit(cursor_img, cursor_img_rect)
+            # printing bushes
+            for i in nonMovingObj:
+                WIN.blit(i.image, i.rect)
+                i.update()
+
+            # hitbox = (player.rect.topleft[0], player.rect.topleft[1], player.rect.width, player.rect.height) # NEW
+            # pygame.draw.rect(WIN, (255,0,0), hitbox,2)
+            WIN.blit(player.image, player.rect)
+
+            # Update Functions
+            for e in enemies:
+                WIN.blit(e.image, e.rect)
+                e.update(projectiles)  # Why are projectiles being passed in here?
+                e.collide(nonMovingObj)
+            for p in projectiles:
+                WIN.blit(p.image, p.rect)
+                p.update()
+
+            player.update(keys, enemies)
+            health.update(WIN, player)
+
+            # detecting collision
+            player.collide(nonMovingObj)
+            # player.collide(map2.get_tiles())  ?
+
+            cursor_img_rect.center = pygame.mouse.get_pos()
+            WIN.blit(cursor_img, cursor_img_rect)
+
+        case "Start":
+            print("Start screen!")
+            screen = "Start"
+
+        case other:
+            print("Invalid state, return to start screen!")
+            screen = "Start"
+        # End match case
 
     # test server receiver
     if data != server.getCurrData():
@@ -167,3 +181,5 @@ while True:
         print("FPS:", int(FPS_CLOCK.get_fps()))
         updateCount = 1
     FPS_CLOCK.tick(120)
+    # end while loop
+

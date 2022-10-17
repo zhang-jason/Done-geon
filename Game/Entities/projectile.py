@@ -4,6 +4,7 @@ from Entities.entity import Entity
 from os.path import join
 from os.path import dirname
 
+
 class Projectile(Entity):
     # Team is whether Player or Enemy used projectile, Ability is type of projectile (e.g. fireball, arrow, etc.)
     def __init__(self, startPosition, endPosition, friendly, ability):
@@ -19,7 +20,7 @@ class Projectile(Entity):
         self.dy = math.sin(angle) * self.speed
         self.x = startPosition[0]
         self.y = startPosition[1]
-        self.type = friendly # True for Friendly Projectile, false for Enemy; useful for hit detection
+        self.type = friendly  # True for Friendly Projectile, false for Enemy; useful for hit detection
 
         # Image and Animations
         self.sprites = []
@@ -39,8 +40,8 @@ class Projectile(Entity):
         self.image = self.sprites[self.current_sprite]
         self.rect = self.image.get_rect()
         self.rect.center = startPosition
-        
-    #Override
+
+    # Override
     def update(self):
         # Update Sprite Animation
         self.current_sprite += 0.05

@@ -22,7 +22,8 @@ class HealthBar():
         print("Health Length: " + str(self.health_bar_length))
 
         # Actual Health Image 
-        self.image = pygame.transform.scale(pygame.image.load(join(dirname(dirname(__file__)), 'game/assets', 'health_ui.png')),(400,80))
+        self.image = pygame.transform.scale(pygame.image.load(join(dirname(dirname(__file__)), 'game/assets',
+                                                                   'health_ui.png')), (400, 80))
         trans_image = pygame.image.load(
             join(dirname(dirname(__file__)), 'game/assets', 'health_ui.png'))
         trans_color = trans_image.get_at((0, 0))

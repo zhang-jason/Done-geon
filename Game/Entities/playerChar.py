@@ -77,7 +77,7 @@ class Player(Entity):
 
     def checkCollide(self, group):
         health = self.current_health
-        if (pygame.time.get_ticks() >= self.iframes):
+        if pygame.time.get_ticks() >= self.iframes:
             for e in group:
                 if self.rect.colliderect(e.rect):
                     self.iframes = pygame.time.get_ticks() + 1000

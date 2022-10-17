@@ -25,7 +25,7 @@ class TileMap():
 
     def getTileList(self):
         # This may need to have the os.path.join(os.path.dirname(__file__), treatment
-        with open('Assets/Tiles/tileID.csv', mode='r', encoding='utf-8-sig') as data:
+        with open(os.path.join(os.path.dirname(__file__),'Assets/Tiles/tileID.csv'), mode='r', encoding='utf-8-sig') as data:
             self.tileList = []
             reader = csv.reader(data)
             for row in reader:

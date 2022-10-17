@@ -13,6 +13,7 @@ class Player(Entity):
         # Sprite Animation
         self.idleSprites = []
         # self.is_animating == False
+        # Can we swap the 80/100 with a scalable number?  1/2 tile size * constant?
         self.idleSprites.append(pygame.transform.scale(pygame.image.load(
             join(dirname(dirname(__file__)), 'assets/Necromancer/Idle', 'necromancer_idle_anim_f0.png')), (80, 100)))
         self.idleSprites.append(pygame.transform.scale(pygame.image.load(

@@ -25,7 +25,7 @@ class Projectile(Entity):
         self.sprites = []
         for i in range(1, 30, 1):
             image = pygame.transform.scale(pygame.image.load(
-                join(dirname(dirname(__file__)), f'assets/projectiles/{ability}', f'{i}.png')), (64, 64))
+                join(dirname(dirname(__file__)), f'assets/projectiles/{ability}', f'{i}.png')).convert_alpha(), (64, 64))
             image = pygame.transform.rotate(image, math.degrees(-angle))
             self.sprites.append(image)
         self.current_sprite = 0

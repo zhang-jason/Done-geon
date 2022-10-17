@@ -40,7 +40,7 @@ WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Done-geon")
 pygame.mouse.set_visible(False)
 cursor_img = pygame.transform.scale(pygame.image.load(
-            os.path.join(os.path.dirname(os.path.dirname(__file__)), 'game/assets', 'Crosshair02.png')), (28, 28))
+    os.path.join(os.path.dirname(os.path.dirname(__file__)), 'game/assets', 'Crosshair02.png')), (28, 28))
 cursor_img_rect = cursor_img.get_rect()
 
 print("Created Window")
@@ -57,8 +57,10 @@ for index, iter in enumerate(range(randint(3,6))):
 map = TileMap(os.path.join(os.path.dirname(__file__), 'Assets/Tiles', 'Test Room 2_Tile Layer 1.csv'), TILE_SIZE)
 map2 = TileMap(os.path.join(os.path.dirname(__file__), 'Assets/Tiles', 'Test Room 2_Tile Layer 2.csv'), TILE_SIZE)
 
+
 def scale_image(image):
     return pygame.transform.scale(image, (TILE_SIZE, TILE_SIZE))
+
 
 # temporary, to be modularized later:
 STONE_TILE = scale_image(pygame.image.load(os.path.join(os.path.dirname(__file__), 'assets', 'TileAsset32x32.png'))
@@ -69,38 +71,43 @@ print("Created STONE_TILE")
 
 enemies = pygame.sprite.Group()
 projectiles = pygame.sprite.Group()
-player = Player((width/2,height/2))
+player = Player((width / 2, height / 2))
 health = HealthBar(WIN, player, (20, 20))
 for i in range(3):
-    enemies.add(Wizard((randint(0,width),randint(0,height)),player))
-    enemies.add(Knight((randint(0,width),randint(0,height)),player))
+    enemies.add(Wizard((randint(0, width), randint(0, height)), player))
+    enemies.add(Knight((randint(0, width), randint(0, height)), player))
 
-#non movable object group
+# non movable object group
 nonMovingObj = pygame.sprite.Group()
 for i in range(10):
-    nonMovingObj.add(Obj((randint(0,width),randint(0,height))))
+    nonMovingObj.add(Obj((randint(0, width), randint(0, height))))
 
 server = Server()
-#server test variables
+# server test variables
 data = ""
 time = 0
 roomIndex = 0
 
+
 def clearTempContents():
     dir = os.path.join(os.path.dirname(__file__), 'assets/tiles/temprooms/')
     for file in os.listdir(dir):
-        #fileName = os.path.join(dir, file)
+        # fileName = os.path.join(dir, file)
         os.remove(os.path.join(dir, file))
-        #print(fileName)
+        # print(fileName)
+
+
+updateCount = 0
 
 while True:
+    # User interaction:
     for event in pygame.event.get():
-        if event.type == QUIT:
+        if event.type == QUIT:  # User Quits, end server and clear cache
             pygame.quit()
             server.endServer()
             clearTempContents()
             sys.exit()
-        if event.type == MOUSEBUTTONDOWN:
+        if event.type == MOUSEBUTTONDOWN:  # User clicks, attempt attack
             player.attack(projectiles)
             """
             Testing Random Room Hopping
@@ -110,9 +117,9 @@ while True:
             else:
                 map = roomList[roomIndex]
             """
-    
+
     # Remove old sprites to not hog resources; trust me, this got ugly on my old PC
-    WIN.fill([0, 0, 0]) 
+    WIN.fill([0, 0, 0])
     map.draw_map(WIN)
     map2.draw_map(WIN)
 
@@ -121,14 +128,14 @@ while True:
         WIN.blit(i.image, i.rect)
         i.update()
 
-    #hitbox = (player.rect.topleft[0], player.rect.topleft[1], player.rect.width, player.rect.height) # NEW
-    #pygame.draw.rect(WIN, (255,0,0), hitbox,2)
+    # hitbox = (player.rect.topleft[0], player.rect.topleft[1], player.rect.width, player.rect.height) # NEW
+    # pygame.draw.rect(WIN, (255,0,0), hitbox,2)
     WIN.blit(player.image, player.rect)
 
     # Update Functions
     for e in enemies:
-        WIN.blit(e.image,e.rect)
-        e.update(projectiles)
+        WIN.blit(e.image, e.rect)
+        e.update(projectiles)  # Why are projectiles being passed in here?
         e.collide(nonMovingObj)
     for p in projectiles:
         WIN.blit(p.image, p.rect)
@@ -137,22 +144,26 @@ while True:
     player.update(keys, enemies)
     health.update(WIN, player)
 
-    #detecting collision
+    # detecting collision
     player.collide(nonMovingObj)
-    #player.collide(map2.get_tiles())  ?
+    # player.collide(map2.get_tiles())  ?
 
     cursor_img_rect.center = pygame.mouse.get_pos()
     WIN.blit(cursor_img, cursor_img_rect)
 
-    #test server receiver
-    if(data != server.getCurrData()):
+    # test server receiver
+    if data != server.getCurrData():
         data = server.getCurrData()
         print(data)
-    
-    #test server sender
+
+    # test server sender
     if keys[K_w] and time < pygame.time.get_ticks():
         server.writeMsg(str(pygame.time.get_ticks()))
         time = pygame.time.get_ticks() + 1000
 
     pygame.display.update()
+    updateCount += 1
+    if updateCount % 600 == 0:
+        print("FPS:", int(FPS_CLOCK.get_fps()))
+        updateCount = 1
     FPS_CLOCK.tick(120)

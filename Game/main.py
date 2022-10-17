@@ -11,7 +11,7 @@ from Entities.wizard import Wizard
 from Entities.knight import Knight
 from gui import HealthBar
 from tiles import *
-from roomGen import RoomGen
+from RandomGen.roomGen import Room
 from server import Server
 
 import pygame
@@ -46,21 +46,18 @@ cursor_img_rect = cursor_img.get_rect()
 print("Created Window")
 
 # Creating a random number of generated rooms
-"""
+
 roomList = []
 for index, iter in enumerate(range(randint(3,6))):
-    room = RoomGen('dungeon', index, NUM_TILES_X, NUM_TILES_Y)
-    map = TileMap(os.path.join(os.path.dirname(__file__), 'assets/tiles/temprooms/', f'room{index}.csv'), TILE_SIZE)
-    roomList.append(map)
-"""
+    room = Room(index, NUM_TILES_X, NUM_TILES_Y, TILE_SIZE)
+    roomList.append(room)
 
-map = TileMap(os.path.join(os.path.dirname(__file__), 'Assets/Tiles', 'Test Room 2_Tile Layer 1.csv'), TILE_SIZE)
-map2 = TileMap(os.path.join(os.path.dirname(__file__), 'Assets/Tiles', 'Test Room 2_Tile Layer 2.csv'), TILE_SIZE)
 
+#map = TileMap(os.path.join(os.path.dirname(__file__), 'assets/tiles', 'Test Room 2_Tile Layer 1.csv'), TILE_SIZE)
+#map2 = TileMap(os.path.join(os.path.dirname(__file__), 'assets/tiles', 'Test Room 2_Tile Layer 2.csv'), TILE_SIZE)
 
 def scale_image(image):
     return pygame.transform.scale(image, (TILE_SIZE, TILE_SIZE))
-
 
 # temporary, to be modularized later:
 STONE_TILE = scale_image(pygame.image.load(os.path.join(os.path.dirname(__file__), 'assets', 'TileAsset32x32.png'))
@@ -107,21 +104,21 @@ while True:
             server.endServer()
             clearTempContents()
             sys.exit()
-        if event.type == MOUSEBUTTONDOWN:  # User clicks, attempt attack
-            player.attack(projectiles)
-            """
-            Testing Random Room Hopping
-            roomIndex += 1
-            if roomIndex >= len(roomList):
-                roomIndex = 0
-            else:
-                map = roomList[roomIndex]
-            """
+        if event.type == MOUSEBUTTONDOWN:
+            if event.button == 1:
+                player.attack(projectiles)
+                
+                #Testing Random Room Hopping
+                roomIndex += 1
+                if roomIndex >= len(roomList):
+                    roomIndex = 0
+
+                room = roomList[roomIndex]
+                
 
     # Remove old sprites to not hog resources; trust me, this got ugly on my old PC
     WIN.fill(0)
-    map.draw_map(WIN)
-    map2.draw_map(WIN)
+    room.drawRoom(WIN)
 
     # printing bushes 
     for i in nonMovingObj:

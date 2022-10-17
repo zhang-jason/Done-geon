@@ -47,14 +47,15 @@ print("Created Window")
 
 # Creating a random number of generated rooms
 
-roomList = []
-for index, iter in enumerate(range(randint(3,6))):
-    room = Room(index, NUM_TILES_X, NUM_TILES_Y, TILE_SIZE)
-    roomList.append(room)
+#roomList = []
+#for index, iter in enumerate(range(randint(3,6))):
+#    room = Room(index, NUM_TILES_X, NUM_TILES_Y, TILE_SIZE)
+#    roomList.append(room)
 
 
-#map = TileMap(os.path.join(os.path.dirname(__file__), 'assets/tiles', 'Test Room 2_Tile Layer 1.csv'), TILE_SIZE)
-#map2 = TileMap(os.path.join(os.path.dirname(__file__), 'assets/tiles', 'Test Room 2_Tile Layer 2.csv'), TILE_SIZE)
+map = TileMap(os.path.join(os.path.dirname(__file__), 'assets/tiles', 'Test Room 3_Tile Layer 1.csv'), TILE_SIZE)
+map2 = TileMap(os.path.join(os.path.dirname(__file__), 'assets/tiles', 'Test Room 3_Tile Layer 2.csv'), TILE_SIZE)
+map3 = TileMap(os.path.join(os.path.dirname(__file__), 'assets/tiles', 'Test Room 3_Tile Layer 3.csv'), TILE_SIZE)
 
 def scale_image(image):
     return pygame.transform.scale(image, (TILE_SIZE, TILE_SIZE))
@@ -68,7 +69,7 @@ print("Created STONE_TILE")
 
 enemies = pygame.sprite.Group()
 projectiles = pygame.sprite.Group()
-player = Player((width / 2, height / 2))
+player = Player((width / 3, height / 2))
 health = HealthBar(WIN, player, (20, 20))
 for i in range(3):
     enemies.add(Wizard((randint(0, width), randint(0, height)), player))
@@ -108,13 +109,13 @@ while True:
         if event.type == MOUSEBUTTONDOWN:
             if event.button == 1:
                 player.attack(projectiles)
-
+                '''
                 #Testing Random Room Hopping
                 roomIndex += 1
                 if roomIndex >= len(roomList):
                     roomIndex = 0
-
                 room = roomList[roomIndex]
+                '''
 
 
     # Remove old sprites to not hog resources; trust me, this got ugly on my old PC
@@ -123,7 +124,10 @@ while True:
 
     match screen:
         case "Game":
-            room.drawRoom(WIN)
+            #room.drawRoom(WIN)
+            map.draw_map(WIN)
+            map2.draw_map(WIN)
+            map3.draw_map(WIN)
             # printing bushes
             for i in nonMovingObj:
                 WIN.blit(i.image, i.rect)
@@ -142,7 +146,7 @@ while True:
                 WIN.blit(p.image, p.rect)
                 p.update()
 
-            player.update(keys, enemies)
+            player.update(keys, enemies, map2.tiles)
             health.update(WIN, player)
 
             # detecting collision

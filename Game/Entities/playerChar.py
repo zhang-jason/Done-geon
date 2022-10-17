@@ -2,6 +2,7 @@ import os
 from os.path import join, dirname
 from Entities.entity import Entity
 from Entities.projectile import Projectile
+from math import sqrt
 import pygame
 import pygame.locals as c
 
@@ -43,22 +44,30 @@ class Player(Entity):
         self.max_health = 4
         self.iframes = 0
         self.alive = True
+        self.velocity = pygame.math.Vector2()
 
     def move(self, keys):
-        move = pygame.math.Vector2()
+        #move = pygame.math.Vector2()
+        self.velocity = pygame.math.Vector2()
         if pygame.time.get_ticks() >= self.canMove:
             if keys[c.K_w] and self.collideDir != 2:
-                move.y -= self.speed
+                #move.y -= self.speed
+                self.velocity.y -= self.speed
             if keys[c.K_s] and self.collideDir != 1:
-                move.y += self.speed
+                #move.y += self.speed
+                self.velocity.y += self.speed
             if keys[c.K_a] and self.collideDir != 3:
                 self.flippedImage = True
-                move.x -= self.speed
+                #move.x -= self.speed
+                self.velocity.x -= self.speed
             if keys[c.K_d] and self.collideDir != 4:
                 self.flippedImage = False
-                move.x += self.speed
-            if move.x != 0 or move.y != 0:
-                move.scale_to_length(self.speed)
+                #move.x += self.speed
+                self.velocity.x += self.speed
+            #if move.x != 0 or move.y != 0:
+                #move.scale_to_length(self.speed)
+            if self.velocity.x != 0 or self.velocity.y != 0:
+                self.velocity.scale_to_length(self.speed)
             if self.flippedImage == True:
                 self.image = pygame.transform.flip(self.idleSprites[int(self.current_sprite)], True, False)
             else:
@@ -66,7 +75,7 @@ class Player(Entity):
 
             self.canMove = pygame.time.get_ticks() + 5
             self.collideDir = 0
-        self.rect.move_ip(move)
+        self.rect.move_ip(self.velocity)
 
     def attack(self, projectiles):
         if pygame.time.get_ticks() >= self.canAttack:
@@ -102,7 +111,80 @@ class Player(Entity):
         else:
             self.current_health = self.max_health
 
-    def update(self, keys, group):
+    def get_collisions(self, tiles):
+        collisions = []
+        for t in tiles:
+            if self.rect.colliderect(t):
+                collisions.append(t)
+        return collisions
+
+    def check_wall_collisions(self, tiles):
+        collisions = self.get_collisions(tiles)
+        #self.rect.bottom += 1
+        for t in collisions:
+            verticalMove = False
+            if self.velocity.y != 0:
+                verticalMove = True
+            if self.velocity.x > 0:
+                if verticalMove == False:
+                    self.rect.x = t.rect.left - self.rect.w
+                    self.collideDir = 4
+                    self.velocity.x = 0
+                else:
+                    left = sqrt(pow(t.rect.left - self.rect.centerx, 2) + pow(t.rect.centery - self.rect.centery, 2))
+                    up = sqrt(pow(t.rect.centerx - self.rect.centerx, 2) + pow(t.rect.top - self.rect.centery, 2))
+                    down = sqrt(pow(t.rect.centerx - self.rect.centerx, 2) + pow(t.rect.bottom - self.rect.centery, 2))
+                    min1 = min(left, up, down)
+                    if min1 == left:
+                        self.rect.x = t.rect.left - self.rect.w
+                        self.collideDir = 4
+                        self.velocity.x = 0
+                        self.velocity.y = 0
+                    elif min1 == up:
+                        self.velocity.y = 0
+                        self.velocity.x = 0
+                        self.rect.bottom = t.rect.top
+                        self.collideDir = 1
+                    elif min1 == down:
+                        self.velocity.y = 0
+                        self.velocity.x = 0
+                        self.rect.bottom = t.rect.bottom + self.rect.h
+                        self.collideDir = 2
+            if self.velocity.x < 0:
+                if verticalMove == False:
+                    self.rect.x = t.rect.right
+                    self.collideDir = 3
+                    self.velocity.x = 0
+                else:
+                    right = sqrt(pow(t.rect.right - self.rect.centerx, 2) + pow(t.rect.centery - self.rect.centery, 2))
+                    up = sqrt(pow(t.rect.centerx - self.rect.centerx, 2) + pow(t.rect.top - self.rect.centery, 2))
+                    down = sqrt(pow(t.rect.centerx - self.rect.centerx, 2) + pow(t.rect.bottom - self.rect.centery, 2))
+                    min1 = min(right, up, down)
+                    if min1 == right:
+                        self.rect.x = t.rect.right
+                        self.collideDir = 3
+                        self.velocity.y = 0
+                        self.velocity.x = 0
+                    elif min1 == up:
+                        self.velocity.y = 0
+                        self.velocity.x = 0
+                        self.rect.bottom = t.rect.top
+                        self.collideDir = 1
+                    elif min1 == down:
+                        self.velocity.y = 0
+                        self.velocity.x = 0
+                        self.rect.bottom = t.rect.bottom + self.rect.h
+                        self.collideDir = 2
+            elif self.velocity.y > 0:
+                self.velocity.y = 0
+                self.rect.bottom = t.rect.top
+                self.collideDir = 1
+            elif self.velocity.y < 0:
+                self.velocity.y = 0
+                self.rect.bottom = t.rect.bottom + self.rect.h
+                self.collideDir = 2
+    
+    def update(self, keys, group, tiles):
         # Update Sprite Animation
         self.current_sprite += 0.05  # Controls how fast the animations cycle
         if self.current_sprite >= len(self.idleSprites):
@@ -111,6 +193,7 @@ class Player(Entity):
 
         self.move(keys)
         self.checkCollide(group)
+        self.check_wall_collisions(tiles)
 
     # Reset char after dying; doesn't work quite yet
     def reset(self):

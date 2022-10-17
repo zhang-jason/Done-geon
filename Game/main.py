@@ -47,8 +47,8 @@ print("Created Window")
 
 # Creating a random number of generated rooms
 
-#roomList = []
-#for index, iter in enumerate(range(randint(3,6))):
+# roomList = []
+# for index, iter in enumerate(range(randint(3,6))):
 #    room = Room(index, NUM_TILES_X, NUM_TILES_Y, TILE_SIZE)
 #    roomList.append(room)
 
@@ -57,8 +57,10 @@ map = TileMap(os.path.join(os.path.dirname(__file__), 'assets/tiles', 'Test Room
 map2 = TileMap(os.path.join(os.path.dirname(__file__), 'assets/tiles', 'Test Room 3_Tile Layer 2.csv'), TILE_SIZE)
 map3 = TileMap(os.path.join(os.path.dirname(__file__), 'assets/tiles', 'Test Room 3_Tile Layer 3.csv'), TILE_SIZE)
 
+
 def scale_image(image):
     return pygame.transform.scale(image, (TILE_SIZE, TILE_SIZE))
+
 
 # temporary, to be modularized later:
 STONE_TILE = scale_image(pygame.image.load(os.path.join(os.path.dirname(__file__), 'assets', 'TileAsset32x32.png'))
@@ -69,16 +71,16 @@ print("Created STONE_TILE")
 
 enemies = pygame.sprite.Group()
 projectiles = pygame.sprite.Group()
-player = Player((width / 3, height / 2))
-health = HealthBar(WIN, player, (20, 20))
+player = Player((width / 3, height / 2), TILE_SIZE)
+health = HealthBar(WIN, player, (20, 20), TILE_SIZE)
 for i in range(3):
-    enemies.add(Wizard((randint(0, width), randint(0, height)), player))
-    enemies.add(Knight((randint(0, width), randint(0, height)), player))
+    enemies.add(Wizard((randint(0, width), randint(0, height)), player, TILE_SIZE))
+    enemies.add(Knight((randint(0, width), randint(0, height)), player, TILE_SIZE))
 
 # non movable object group
 nonMovingObj = pygame.sprite.Group()
-for i in range(10):
-    nonMovingObj.add(Obj((randint(0, width), randint(0, height))))
+for i in range(5):
+    nonMovingObj.add(Obj((randint(0, width), randint(0, height)), TILE_SIZE))
 
 server = Server()
 # server test variables
@@ -117,14 +119,13 @@ while True:
                 room = roomList[roomIndex]
                 '''
 
-
     # Remove old sprites to not hog resources; trust me, this got ugly on my old PC
     WIN.fill(0)
     keys = pygame.key.get_pressed()
 
     match screen:
         case "Game":
-            #room.drawRoom(WIN)
+            # room.drawRoom(WIN)
             map.draw_map(WIN)
             map2.draw_map(WIN)
             map3.draw_map(WIN)
@@ -140,7 +141,7 @@ while True:
             # Update Functions
             for e in enemies:
                 WIN.blit(e.image, e.rect)
-                e.update(projectiles)  # Why are projectiles being passed in here?
+                e.update(projectiles)
                 e.collide(nonMovingObj)
             for p in projectiles:
                 WIN.blit(p.image, p.rect)
@@ -182,4 +183,3 @@ while True:
         updateCount = 1
     FPS_CLOCK.tick(120)
     # end while loop
-

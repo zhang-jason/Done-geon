@@ -8,21 +8,21 @@ import pygame.locals as c
 
 
 class Player(Entity):
-    def __init__(self, startPosition):
+    def __init__(self, startPosition, TILE_SIZE):
         super(Player, self).__init__()
-
+        self.TILE_SIZE = TILE_SIZE
         # Sprite Animation
         self.idleSprites = []
         # self.is_animating == False
-        # Can we swap the 80/100 with a scalable number?  1/2 tile size * constant?
+        size = (TILE_SIZE*2//3, TILE_SIZE*5//6)
         self.idleSprites.append(pygame.transform.scale(pygame.image.load(
-            join(dirname(dirname(__file__)), 'assets/Necromancer/Idle', 'necromancer_idle_anim_f0.png')), (80, 100)))
+            join(dirname(dirname(__file__)), 'assets/Necromancer/Idle', 'necromancer_idle_anim_f0.png')), size))
         self.idleSprites.append(pygame.transform.scale(pygame.image.load(
-            join(dirname(dirname(__file__)), 'assets/Necromancer/Idle', 'necromancer_idle_anim_f1.png')), (80, 100)))
+            join(dirname(dirname(__file__)), 'assets/Necromancer/Idle', 'necromancer_idle_anim_f1.png')), size))
         self.idleSprites.append(pygame.transform.scale(pygame.image.load(
-            join(dirname(dirname(__file__)), 'assets/Necromancer/Idle', 'necromancer_idle_anim_f2.png')), (80, 100)))
+            join(dirname(dirname(__file__)), 'assets/Necromancer/Idle', 'necromancer_idle_anim_f2.png')), size))
         self.idleSprites.append(pygame.transform.scale(pygame.image.load(
-            join(dirname(dirname(__file__)), 'assets/Necromancer/Idle', 'necromancer_idle_anim_f3.png')), (80, 100)))
+            join(dirname(dirname(__file__)), 'assets/Necromancer/Idle', 'necromancer_idle_anim_f3.png')), size))
 
         trans_image = pygame.image.load(
             join(dirname(dirname(__file__)), 'assets/Necromancer/Idle', 'necromancer_idle_anim_f0.png'))
@@ -47,25 +47,25 @@ class Player(Entity):
         self.velocity = pygame.math.Vector2()
 
     def move(self, keys):
-        #move = pygame.math.Vector2()
+        # move = pygame.math.Vector2()
         self.velocity = pygame.math.Vector2()
         if pygame.time.get_ticks() >= self.canMove:
             if keys[c.K_w] and self.collideDir != 2:
-                #move.y -= self.speed
+                # move.y -= self.speed
                 self.velocity.y -= self.speed
             if keys[c.K_s] and self.collideDir != 1:
-                #move.y += self.speed
+                # move.y += self.speed
                 self.velocity.y += self.speed
             if keys[c.K_a] and self.collideDir != 3:
                 self.flippedImage = True
-                #move.x -= self.speed
+                # move.x -= self.speed
                 self.velocity.x -= self.speed
             if keys[c.K_d] and self.collideDir != 4:
                 self.flippedImage = False
-                #move.x += self.speed
+                # move.x += self.speed
                 self.velocity.x += self.speed
-            #if move.x != 0 or move.y != 0:
-                #move.scale_to_length(self.speed)
+            # if move.x != 0 or move.y != 0:
+            # move.scale_to_length(self.speed)
             if self.velocity.x != 0 or self.velocity.y != 0:
                 self.velocity.scale_to_length(self.speed)
             if self.flippedImage == True:
@@ -82,7 +82,7 @@ class Player(Entity):
             player = self.rect.center
             cursor = pygame.mouse.get_pos()
             self.canAttack = pygame.time.get_ticks() + 240
-            projectiles.add(Projectile(player, cursor, True, 'Magic Ball'))
+            projectiles.add(Projectile(player, cursor, True, 'Magic Ball', self.TILE_SIZE))
 
     def checkCollide(self, group):
         health = self.current_health
@@ -120,7 +120,7 @@ class Player(Entity):
 
     def check_wall_collisions(self, tiles):
         collisions = self.get_collisions(tiles)
-        #self.rect.bottom += 1
+        # self.rect.bottom += 1
         for t in collisions:
             verticalMove = False
             if self.velocity.y != 0:
@@ -183,7 +183,7 @@ class Player(Entity):
                 self.velocity.y = 0
                 self.rect.bottom = t.rect.bottom + self.rect.h
                 self.collideDir = 2
-    
+
     def update(self, keys, group, tiles):
         # Update Sprite Animation
         self.current_sprite += 0.05  # Controls how fast the animations cycle

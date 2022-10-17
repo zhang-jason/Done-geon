@@ -7,7 +7,7 @@ from os.path import dirname
 
 class Projectile(Entity):
     # Team is whether Player or Enemy used projectile, Ability is type of projectile (e.g. fireball, arrow, etc.)
-    def __init__(self, startPosition, endPosition, friendly, ability):
+    def __init__(self, startPosition, endPosition, friendly, ability, TILE_SIZE):
         super(Projectile, self).__init__()
 
         # Math Stuff
@@ -26,7 +26,7 @@ class Projectile(Entity):
         self.sprites = []
         for i in range(1, 30, 1):
             image = pygame.transform.scale(pygame.image.load(
-                join(dirname(dirname(__file__)), f'assets/projectiles/{ability}', f'{i}.png')), (64, 64))
+                join(dirname(dirname(__file__)), f'assets/projectiles/{ability}', f'{i}.png')), (TILE_SIZE*3//4, TILE_SIZE*3//4))
             image = pygame.transform.rotate(image, math.degrees(-angle))
             self.sprites.append(image)
 

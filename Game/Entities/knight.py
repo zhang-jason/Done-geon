@@ -8,17 +8,17 @@ from os.path import dirname
 
 
 class Knight(Enemy):
-    def __init__(self, startPosition, player):
+    def __init__(self, startPosition, player, TILE_SIZE):
         super(Knight, self).__init__(startPosition, player)
-
+        size = (TILE_SIZE//2, TILE_SIZE * 3 // 4)
         self.sprites.append(pygame.transform.scale(pygame.image.load(
-            join(dirname(dirname(__file__)), 'assets/Knight/Idle', 'knight_f_idle_anim_f0.png')), (48, 84)))
+            join(dirname(dirname(__file__)), 'assets/Knight/Idle', 'knight_f_idle_anim_f0.png')), size))
         self.sprites.append(pygame.transform.scale(pygame.image.load(
-            join(dirname(dirname(__file__)), 'assets/Knight/Idle', 'knight_f_idle_anim_f1.png')), (48, 84)))
+            join(dirname(dirname(__file__)), 'assets/Knight/Idle', 'knight_f_idle_anim_f1.png')), size))
         self.sprites.append(pygame.transform.scale(pygame.image.load(
-            join(dirname(dirname(__file__)), 'assets/Knight/Idle', 'knight_f_idle_anim_f2.png')), (48, 84)))
+            join(dirname(dirname(__file__)), 'assets/Knight/Idle', 'knight_f_idle_anim_f2.png')), size))
         self.sprites.append(pygame.transform.scale(pygame.image.load(
-            join(dirname(dirname(__file__)), 'assets/Knight/Idle', 'knight_f_idle_anim_f3.png')), (48, 84)))
+            join(dirname(dirname(__file__)), 'assets/Knight/Idle', 'knight_f_idle_anim_f3.png')), size))
 
         trans_image = pygame.image.load(
             join(dirname(dirname(__file__)), 'assets/Knight/Idle', 'knight_f_idle_anim_f0.png'))

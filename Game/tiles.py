@@ -24,7 +24,7 @@ class TileMap():
         self.load_map()
 
     def getTileList(self):
-        with open('game/assets/tiles/tileID.csv', mode='r', encoding='utf-8-sig') as data:
+        with open('Assets/Tiles/tileID.csv', mode='r', encoding='utf-8-sig') as data:
             self.tileList = []
             reader = csv.reader(data)
             for row in reader:

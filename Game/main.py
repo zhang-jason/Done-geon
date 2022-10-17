@@ -119,14 +119,11 @@ while True:
 
     # Remove old sprites to not hog resources; trust me, this got ugly on my old PC
     WIN.fill(0)
-    room.drawRoom(WIN)
     keys = pygame.key.get_pressed()
 
     match screen:
         case "Game":
-            map.draw_map(WIN)
-            map2.draw_map(WIN)
-
+            room.drawRoom(WIN)
             # printing bushes
             for i in nonMovingObj:
                 WIN.blit(i.image, i.rect)

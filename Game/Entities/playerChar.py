@@ -64,6 +64,7 @@ class Player(Entity):
             else:
                 self.image = pygame.transform.flip(self.idleSprites[int(self.current_sprite)], False, False)
 
+
             self.canMove = pygame.time.get_ticks() + 5
             self.collideDir = 0
         self.rect.move_ip(self.velocity)

@@ -36,14 +36,6 @@ class FloorGen():
                 if self.countIslands(map) == 1:
                     satisfied = True
 
-        # Generate edge tile images
-        for i in range(1, len(map) - 1):
-                for j in range(len(map[i]) - 1):
-                    if (map[i][j] == -1) and (map[i][j-1] == 1):
-                        map[i][j] = 4
-
-        map = zip(*map)
-
         with open(os.path.join(os.path.dirname(__file__), '..', 'assets/tiles/temprooms', f'room{roomIndex}_1.csv'), 'w', newline='') as file:
             writer = csv.writer(file)
             writer.writerows(map)
@@ -51,7 +43,7 @@ class FloorGen():
             file.close()
 
     def initMap(self, width, height):
-        map = [[-1 for x in range(height)] for y in range(width)]
+        map = [[-1 for x in range(width)] for y in range(height)]
         return map
 
     def randomizeMap(self, map):

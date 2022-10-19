@@ -3,6 +3,7 @@ import csv
 
 from RandomGen.floorGen import FloorGen
 from RandomGen.wallGen import WallGen
+from RandomGen.collideGen import CollideGen
 from tiles import TileMap
 
 class Room():
@@ -11,7 +12,7 @@ class Room():
         self.height = height
         self.tileSize = tileSize
         self.roomIndex = roomIndex
-        self.room = self.initMap()
+        self.room = self.genMap()
 
     def getMap(self, roomIndex, layerIndex):
         map = []
@@ -25,14 +26,20 @@ class Room():
         for i in self.room:
             i.draw_map(WIN)
 
-    def initMap(self):
+    def genMap(self):
         room = []
 
         FloorGen(self.roomIndex, self.width, self.height)
         room.append(self.__getTileMap__(1))
 
-        WallGen(self.getMap(self.roomIndex, 1), self.roomIndex)
+        floorMap = self.getMap(self.roomIndex, 1)
+        WallGen(floorMap, self.roomIndex)
         room.append(self.__getTileMap__(2))
+
+        floorMap = self.getMap(self.roomIndex, 1)
+        wallMap = self.getMap(self.roomIndex, 2)
+        CollideGen(floorMap, wallMap, self.roomIndex)
+        room.append(self.__getTileMap__(3))
 
         return room
 

@@ -1,4 +1,11 @@
-﻿floor_default,noncollide
+﻿floor_1,noncollide
+floor_2,noncollide
+floor_3,noncollide
+floor_4,noncollide
+floor_5,noncollide
+floor_6,noncollide
+floor_7,noncollide
+floor_8,noncollide
 floor_ladder,collide
 floor_hole,collide
 floor_edge,collide

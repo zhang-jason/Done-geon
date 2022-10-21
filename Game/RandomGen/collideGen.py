@@ -1,7 +1,12 @@
 import csv
 from math import floor
 import os
-from random import randint
+from random import randint, choice
+
+COLUMN = [[-1],[-1],[27]]
+CHEST = [12]
+POWERUP = [25]
+CLUSTER_LIST = [COLUMN, CHEST, POWERUP]
 
 class CollideGen():
     def __init__(self, floorMap, wallMap, roomIndex):

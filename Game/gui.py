@@ -17,9 +17,9 @@ class HealthBar():
         self.health_ratio = self.max_health / self.health_bar_length
 
         # Debugging Stuff
-        print("Player Health: " + str(player.max_health))
-        print("Health Ratio: " + str(self.health_ratio))
-        print("Health Length: " + str(self.health_bar_length))
+        # print("Player Health: " + str(player.max_health))
+        # print("Health Ratio: " + str(self.health_ratio))
+        # print("Health Length: " + str(self.health_bar_length))
 
         # Actual Health Image 
         self.image = pygame.transform.scale(pygame.image.load(join(dirname(dirname(__file__)), 'game/assets',

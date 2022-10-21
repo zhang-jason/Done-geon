@@ -10,9 +10,9 @@ class FloorGen():
         self.minCount = 5       # Greater the number, less risk of islands (unless it's two large ones)
         self.minTiles = 60      # Minimum number of playable tiles allowed
 
-        self.genDungeon(roomIndex, width, height)
+        self.genMap(roomIndex, width, height)
     
-    def genDungeon(self, roomIndex, width, height):
+    def genMap(self, roomIndex, width, height):
         satisfied = False
 
         while not satisfied:
@@ -31,7 +31,7 @@ class FloorGen():
             
             # Make sure the playable area is a certain number of tiles
             if sum(row.count(1) for row in map) > self.minTiles:
-                print(sum(row.count(1) for row in map))
+                print('Num Tiles: ' + str(sum(row.count(1) for row in map)))
                 # Make sure there's not stray islands that the player can't get to
                 if self.countIslands(map) == 1:
                     satisfied = True
@@ -50,7 +50,7 @@ class FloorGen():
         for i in range(len(map)):
             for j in range(len(map[0])):
                 if randint(0,100) <= self.chance:
-                    map[i][j] = 1
+                    map[i][j] = self.__genRandomFloorID__()
         return map
 
     def cellularAutomata(self, map):
@@ -65,7 +65,7 @@ class FloorGen():
                 if count >= self.minCount or count == 0:
                     map[i][j] = -1
                 else:
-                    map[i][j] = 1
+                    map[i][j] = self.__genRandomFloorID__()
         return map
 
     def countIslands(self, map):
@@ -93,3 +93,9 @@ class FloorGen():
         self.__checkAdjacent__(visited, i, j + 1)
         self.__checkAdjacent__(visited, i - 1, j)
         self.__checkAdjacent__(visited, i, j - 1)
+
+    def __genRandomFloorID__(self):
+        if randint(0,100) <= 90:
+            return 1
+        else:
+            return randint(2,8)

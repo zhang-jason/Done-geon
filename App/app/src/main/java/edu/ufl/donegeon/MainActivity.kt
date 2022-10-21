@@ -25,7 +25,7 @@ class MainActivity : Activity() {
         setContentView(binding.root)
 
         txtVw = findViewById(R.id.nfc_contents)
-        server = Peer(applicationContext,txtVw)
+        server = Peer(applicationContext,txtVw,this)
         server.start()
 
         nfcAdapter = NfcAdapter.getDefaultAdapter(this)
@@ -34,7 +34,7 @@ class MainActivity : Activity() {
         }
 
         pendingIntent = PendingIntent.getActivity(this, 0,
-            Intent(this, javaClass).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0)
+            Intent(this, javaClass).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), PendingIntent.FLAG_MUTABLE)
     }
 
     fun readTag(intent: Intent) {
@@ -57,12 +57,12 @@ class MainActivity : Activity() {
     }
 
     fun assembleTagMsg(msgs: Array<NdefMessage>) {
-        if (msgs == null || msgs.isEmpty()|| server.checkConnection()) return
+        if (msgs == null || msgs.isEmpty() || server.checkConn()) return
         val payload = msgs[0].records[0].payload
         try {
             var text = String(payload, 3, payload.size - 4)
             txtVw.text = "Message on tag:\n $text"
-            server.setSendMsg(text)
+            server.sendMsg(text)
         } catch (e: Exception) {
         }
     }

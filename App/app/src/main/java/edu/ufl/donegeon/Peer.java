@@ -1,124 +1,133 @@
 package edu.ufl.donegeon;
 
+import android.app.Activity;
 import android.content.Context;
 import android.net.wifi.WifiManager;
-import android.text.format.Formatter;
 import android.util.Log;
 import android.widget.TextView;
 
-import java.io.*;
+import java.math.BigInteger;
 import java.net.*;
 
 public class Peer extends Thread {
-    public Sender sender;
-    public Receiver receiver;
+    boolean alive = true, shouldScan = true, canSend = false;
+    InetAddress thisAddr, sendTo;
+    int sendPort = 65432;
+    String sendMsg;
+    DatagramSocket s;
     Context context;
     TextView txt;
+    Activity act;
+    InterfaceAddress[] interfaces;
 
-    public Peer(Context context, TextView txt) {
+    public Peer(Context context, TextView txt, Activity act) {
         this.context = context;
         this.txt = txt;
+        this.act = act;
+    }
+
+    void scan(){
+        shouldScan = false;
+        byte[] buf = "init".getBytes();
+        while(sendTo == null){
+            try{
+                for (InterfaceAddress address : interfaces) {
+                    if(address.getBroadcast() != null){
+                        s.send(new DatagramPacket(buf, buf.length, address.getBroadcast(),sendPort));
+                    }
+                }
+                if(sendTo != null)
+                    break;
+                sleep(500);
+            }catch(Exception e){}
+        }
+        String sendToString = sendTo.getHostName();
+        act.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                txt.setText("Connected to: " + sendToString + "\nScan NFC Tag");
+            }
+        });
     }
 
     public void run() {
-        WifiManager wm = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-        String ip = Formatter.formatIpAddress(wm.getConnectionInfo().getIpAddress());
-        new Receiver(this).start();
-        while (ip.charAt(ip.length() - 1) != '.') {
-            ip = ip.substring(0, ip.length() - 1);
-        }
-        for (int i = 0; i < 256; i++) {
-            new Sender(ip, i, this).start();
-        }
+        try{
+            s = new DatagramSocket();
+            WifiManager wm = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+            int ipNum = Integer.reverseBytes(wm.getConnectionInfo().getIpAddress());
+            thisAddr = InetAddress.getByAddress(BigInteger.valueOf(ipNum).toByteArray());
+
+            NetworkInterface networkInterface = NetworkInterface.getByInetAddress(thisAddr);
+            InetAddress broadcast = null;
+            interfaces = networkInterface.getInterfaceAddresses().toArray(new InterfaceAddress[0]);
+            new Receiver(this,thisAddr).start();
+
+            this.scan();
+
+            byte[] buf;
+            while(alive){
+                if(shouldScan){
+                    this.scan();
+                }
+                if(canSend){
+                    canSend = false;
+                    buf = sendMsg.getBytes();
+                    s.send(new DatagramPacket(buf, buf.length, sendTo,sendPort));
+                }
+            }
+            s.close();
+        }catch(Exception e){}
     }
 
-    public boolean checkConnection() {
-        return sender == null;
+    public void sendMsg(String msg) {
+        sendMsg = msg;
+        canSend = true;
     }
 
-    public void setSendMsg(String msg) {
-        sender.msg = msg;
-        sender.msgCheck = true;
+    public boolean checkConn(){
+        return sendTo == null;
     }
 
     public void kill() {
-        try {
-            sender.s.close();
-            sender.out.close();
-            receiver.s.close();
-            receiver.ss.close();
-            receiver.in.close();
-            Log.e("", "" + sender.s.isClosed());
-        } catch (IOException e) {
-            Log.e("", e.toString());
-        }
-    }
-}
-
-class Sender extends Thread {
-    String msg = "";
-    boolean msgCheck = false;
-    Socket s;
-    int ipNum;
-    String ip;
-    ObjectOutputStream out;
-    Peer p;
-
-    public Sender(String ip, int num, Peer p) {
-        this.ip = ip + String.valueOf(num);
-        ipNum = num;
-        this.p = p;
-    }
-
-    public void run() {
-        while (p.checkConnection()) {
-            try {
-                s = new Socket(this.ip, 65432);
-                out = new ObjectOutputStream(s.getOutputStream());
-                p.sender = this;
-                p.txt.setText("Connected to: " + this.ip + "\nScan NFC tag");
-                Log.e("", "connected" + this.ip);
-                while (true) {
-                    if (msgCheck) {
-                        out.writeObject(msg);
-                        out.flush();
-                        msgCheck = false;
-                    }
-                }
-            } catch (Exception e) {
-            }
-        }
+        alive = false;
     }
 }
 
 class Receiver extends Thread {
+    InetAddress thisAddr;
     int port = 65433;
-    ServerSocket ss;
-    Socket s;
-    DataInputStream in;
     Peer p;
 
-    public Receiver(Peer p) {
+    public Receiver(Peer p,InetAddress thisAddr) {
         this.p = p;
+        this.thisAddr = thisAddr;
     }
 
     public void run() {
         try {
-            while (ss == null) {
-                ss = new ServerSocket(port);
-                Log.e("", "Listening on port: " + port);
-                s = ss.accept();
-                p.receiver = this;
-                Log.e("", "Connection received");
-            }
-
-            in = new DataInputStream(s.getInputStream());
-
-            while (true) {
-                String msg = in.readUTF();
-                Log.e("", msg);
+            DatagramSocket s = new DatagramSocket(port,thisAddr);
+            while(p.alive){
+                byte[] buf = new byte[1024];
+                DatagramPacket msg = new DatagramPacket(buf, buf.length);
+                try {
+                    s.receive(msg);
+                    p.sendTo = msg.getAddress();
+                    String msgRecvd = new String(msg.getData(),0, msg.getLength());
+                    if(msgRecvd.equals("closedGame")){
+                        p.sendTo = null;
+                        p.act.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                p.txt.setText("Game disconnected.\n Waiting for new connection...");
+                            }
+                        });
+                        p.shouldScan = true;
+                    }
+                    Log.e("",msgRecvd);
+                } catch (Exception e) {}
             }
         } catch (Exception e) {
+            this.run();
         }
     }
 }

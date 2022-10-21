@@ -84,7 +84,6 @@ for i in range(5):
 
 server = Server()
 # server test variables
-data = ""
 time = 0
 roomIndex = 0
 
@@ -166,14 +165,9 @@ while True:
             screen = "Start"
         # End match case
 
-    # test server receiver
-    if data != server.getCurrData():
-        data = server.getCurrData()
-        print(data)
-
     # test server sender
     if keys[K_w] and time < pygame.time.get_ticks():
-        server.writeMsg(str(pygame.time.get_ticks()))
+        server.sendMsg(str(pygame.time.get_ticks()))
         time = pygame.time.get_ticks() + 1000
 
     pygame.display.update()

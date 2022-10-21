@@ -4,50 +4,32 @@ import threading
 
 class Server():
     def __init__(self):
-        self.host = socket.gethostname()
-        self.listenPort = 65432
-        self.sendPort = 65433
-        self.read = True
-        self.currData = ""
-        self.listenerThread = threading.Thread(target=self.connect)
-        self.listenerThread.start()
+        self.alive = True
+        self.receiver = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+        self.receiver.bind((socket.gethostname(),65432))
+        self.sender = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+        self.serverThread = threading.Thread(target=self.readMsg)
+        self.serverThread.start()
 
-    def connect(self):
-        self.receiver = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.receiver.bind((self.host, self.listenPort))
-        self.receiver.listen()
-        self.recvConn, self.addr = self.receiver.accept()
-        self.recvConn.recv(1024)
-
-        if self.recvConn.getpeername()[0] != self.recvConn.getsockname()[0]:
-            print("Connected to: " + self.addr[0])
-            self.sender = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.sender.connect((self.addr[0], self.sendPort))
-            self.recvConn.setblocking(False)
-            self.readThread = threading.Thread(target=self.getMsg)
-            self.readThread.start()
-
-    def getMsg(self):
-        while (self.read):
+    def readMsg(self):
+        while(self.alive):
             try:
-                data = self.recvConn.recv(1024)
-                data = data[3:].decode('utf-8')
-                self.currData = data
+                bytesAddressPair = self.receiver.recvfrom(1024)
+                self.msg = bytesAddressPair[0].decode('utf-8')
+                self.sendTo = bytesAddressPair[1]
+                print(self.msg)
+                if self.msg == "init":
+                    self.sendMsg("confirm")
             except:
                 pass
 
-    def getCurrData(self):
-        return self.currData
-
-    def writeMsg(self, msg):
+    def sendMsg(self,msg):
         try:
-            self.sender.send(len(msg).to_bytes(2, 'big') + msg.encode('utf-8'))
-        except:
-            return
-
+            self.sender.sendto(msg.encode(),(self.sendTo[0], 65433))
+        except Exception as e:
+            print(e)
+    
     def endServer(self):
-        self.read = False
-        if self.listenerThread.is_alive():
-            socket.socket(socket.AF_INET,
-                          socket.SOCK_STREAM).connect((self.host, self.listenPort))
-            self.receiver.close()
+        self.sendMsg("closedGame")
+        self.alive = False
+        self.sender.sendto("server killed".encode(),(socket.gethostname(), 65432))

@@ -60,7 +60,7 @@ class MainActivity : Activity() {
         if (msgs == null || msgs.isEmpty() || server.checkConn()) return
         val payload = msgs[0].records[0].payload
         try {
-            var text = String(payload, 3, payload.size - 4)
+            var text = String(payload, 3, payload.size - 3)
             txtVw.text = "Message on tag:\n $text"
             server.sendMsg(text)
         } catch (e: Exception) {

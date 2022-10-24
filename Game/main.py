@@ -183,7 +183,7 @@ while True:
     for event in pygame.event.get():
         if event.type == QUIT:  # User Quits, end server and clear cache
             pygame.quit()
-            # server.endServer()
+            server.endServer()
             clearTempContents()
             sys.exit()
         if event.type == MOUSEBUTTONDOWN:

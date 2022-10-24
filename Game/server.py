@@ -26,8 +26,8 @@ class Server():
     def sendMsg(self,msg):
         try:
             self.sender.sendto(msg.encode(),(self.sendTo[0], 65433))
-        except Exception as e:
-            print(e)
+        except:
+            pass
     
     def endServer(self):
         self.sendMsg("closedGame")

@@ -230,6 +230,8 @@ def detect_melee(e):
         player.get_hit(e.damage)
 
 
+font = pygame.font.SysFont('Arial', round(TILE_SIZE))
+
 while True:
     # User interaction:
     for event in pygame.event.get():
@@ -279,7 +281,7 @@ while True:
 
             # Update Functions
             if len(enemies) < 1:
-                for i in range(player.bones + 1):
+                for i in range(round(player.bones/2 + 1)):
                     enemies.add(
                         Wizard((randint(TILE_SIZE * 2, width - TILE_SIZE * 2),
                                 randint(TILE_SIZE * 2, height - TILE_SIZE * 2)), player,

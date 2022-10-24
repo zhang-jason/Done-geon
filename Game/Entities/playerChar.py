@@ -93,6 +93,7 @@ class Player(Entity):
         if self.sprint_cooldown <= 0:
             self.speed = 20
             self.sprint_cooldown = 90
+            self.iframes = 15
 
     # def checkCollide(self, group):
     #     health = self.current_health

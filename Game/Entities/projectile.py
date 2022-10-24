@@ -22,6 +22,8 @@ class Projectile(Entity):
         self.y = startPosition[1]
         self.type = friendly  # True for Friendly Projectile, false for Enemy; useful for hit detection
 
+        self.collidable = False
+
         # Image and Animations
         self.sprites = []
         for i in range(1, 30, 1):
@@ -50,6 +52,3 @@ class Projectile(Entity):
         self.image = self.sprites[int(self.current_sprite)]
 
         # Update Math
-        self.x += self.dx
-        self.y += self.dy
-        self.rect.center = (int(self.x), int(self.y))

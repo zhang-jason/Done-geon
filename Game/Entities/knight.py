@@ -2,7 +2,6 @@ import pygame
 
 from Entities.enemy import Enemy
 from Entities.entity import Entity
-from Entities.projectile import Projectile
 from os.path import join
 from os.path import dirname
 

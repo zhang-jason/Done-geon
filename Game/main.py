@@ -74,9 +74,9 @@ enemies = pygame.sprite.Group()
 projectiles = pygame.sprite.Group()
 player = Player((width / 3, height / 2), TILE_SIZE)
 health = HealthBar(WIN, player, (20, 20), TILE_SIZE)
-# for i in range(3):
-    # enemies.add(Wizard((randint(0, width), randint(0, height)), player, TILE_SIZE))
-    # enemies.add(Knight((randint(0, width), randint(0, height)), player, TILE_SIZE))
+for i in range(3):
+    enemies.add(Wizard((randint(0, width), randint(0, height)), player, TILE_SIZE))
+    enemies.add(Knight((randint(0, width), randint(0, height)), player, TILE_SIZE))
 
 # non movable object group
 nonMovingObj = pygame.sprite.Group()
@@ -116,15 +116,15 @@ def get_player_move(player_ent, keys_main):  # sets target relative to player ce
         player_ent.dx = player_ent.speed
 
 
-def move_calc(ent, speed):
+def move_calc_player(ent):
     dx = ent.dx
     dy = ent.dy
-    if speed == 0:
+    if ent.speed == 0:
         ent.dx = 0
         ent.dy = 0
-    elif abs(dx) == speed and abs(dy) == speed:
-        ent.dx = (dx / abs(dx)) * speed / sqrt(2)  # todo: calculate this fraction based on target for enemies
-        ent.dy = (dy / abs(dy)) * speed / sqrt(2)
+    elif abs(dx) == ent.speed and abs(dy) == ent.speed:
+        ent.dx = (dx / abs(dx)) * ent.speed / sqrt(2)
+        ent.dy = (dy / abs(dy)) * ent.speed / sqrt(2)
 
 
 #   TODO: get collision map
@@ -153,35 +153,61 @@ def get_tile_at(x, y):
     y = y - TILE_SIZE / 2
     tile_x = round(x / TILE_SIZE)
     tile_y = round(y / TILE_SIZE)
-    # TODO: add some checks for out of bounds in array
     if tile_x < 0 or tile_x > 15:
         return 1
     return collision_map[tile_y][tile_x]
 
 
 def detect_collision(ent):
-    if ent.dx > 0:  # check if tile ent would end up in is collidable, if so reduce d to 0
-        if get_tile_at(player.rect.right + player.dx, player.rect.centery):
+    if ent.collidable:
+        if ent.dx > 0:  # check if tile ent would end up in is collidable, if so reduce d to 0
+            if get_tile_at(ent.rect.right + ent.dx, ent.rect.centery):
+                ent.dx = 0
+        elif ent.dx < 0:
+            if get_tile_at(ent.rect.left + ent.dx, ent.rect.centery):
+                ent.dx = 0
+        if ent.dy < 0:  # Down and up are backwards bc window is drawn top to bottom...
+            if get_tile_at(ent.rect.centerx, ent.rect.top + ent.dy):
+                ent.dy = 0
+        elif ent.dy > 0:
+            if get_tile_at(ent.rect.centerx, ent.rect.bottom + ent.dy):
+                ent.dy = 0
+    else:
+        print("ent is non-collidable! This is probably an error!")
+
+
+def move_calc_enemy(ent):
+    player_x = ent.player.rect.centerx
+    player_y = ent.player.rect.centery
+    if ent.speed == 0:
+        ent.dx = 0
+        ent.dy = 0
+    else:
+        diff_x = player_x - ent.rect.centerx
+        diff_y = player_y - ent.rect.centery
+        if diff_x == 0 and diff_y == 0:
             ent.dx = 0
-    elif ent.dx < 0:
-        if get_tile_at(player.rect.left + player.dx, player.rect.centery):
-            ent.dx = 0
-    if ent.dy < 0:  # Down and up are backwards bc window is drawn top to bottom...
-        if get_tile_at(player.rect.centerx, player.rect.top + player.dy):
             ent.dy = 0
-    elif ent.dy > 0:
-        if get_tile_at(player.rect.centerx, player.rect.bottom + player.dy):
-            ent.dy = 0
+        else:
+            move_vector = pygame.math.Vector2(player_x - ent.rect.centerx, player_y - ent.rect.centery)
+            move_vector.scale_to_length(ent.speed)
+            ent.dx = move_vector.x
+            ent.dy = move_vector.y
 
 
 def move_entities():
-    move_calc(player, player.speed)
+    move_calc_player(player)
     detect_collision(player)
     player.rect.center = (player.rect.centerx + player.dx, player.rect.centery + player.dy)
+    for e in enemies:
+        move_calc_enemy(e)
+        detect_collision(e)
+        e.rect.center = (e.rect.centerx + e.dx, e.rect.centery + e.dy)
     for p in projectiles:
         p.x += p.dx
         p.y += p.dy
         p.rect.center = (int(p.x), int(p.y))
+        # TODO: remove projectiles upon OOB or tile collision?
 
 
 while True:
@@ -222,10 +248,10 @@ while True:
             # pygame.draw.rect(WIN, (255,0,0), hitbox,2)
 
             # Update Functions
-            for e in enemies:  # TODO: refactor for updated movement
+            for e in enemies:
                 WIN.blit(e.image, e.rect)
                 e.update(projectiles)
-                e.collide(nonMovingObj)
+                # e.collide(nonMovingObj)
             for p in projectiles:
                 WIN.blit(p.image, p.rect)
                 p.update()
@@ -234,9 +260,17 @@ while True:
             # player_tile_y = round((player.rect.centery - TILE_SIZE / 2) / TILE_SIZE)
             # print("Tile:", player_tile_x, player_tile_y)  # for debugging
             # WIN.blit(STONE_TILE, (player_tile_x * TILE_SIZE, player_tile_y * TILE_SIZE))
+            # i = 0
+            # for e in enemies:
+            #     if i == 0:
+            #         enemy0_tile_x = round((e.rect.centerx - TILE_SIZE / 2) / TILE_SIZE)
+            #         enemy0_tile_y = round((e.rect.centery - TILE_SIZE / 2) / TILE_SIZE)
+            #         print("Tile:", enemy0_tile_x, enemy0_tile_y)  # for debugging
+            #         WIN.blit(STONE_TILE, (enemy0_tile_x * TILE_SIZE, enemy0_tile_y * TILE_SIZE))
+            #     i += 1
 
             get_player_move(player, keys)
-            move_entities()  # TODO: Add enemies to this
+            move_entities()
             player.update()
             WIN.blit(player.image, player.rect)
             health.update(WIN, player)

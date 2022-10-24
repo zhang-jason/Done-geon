@@ -10,6 +10,7 @@ import pygame.locals as c
 class Player(Entity):
     def __init__(self, startPosition, TILE_SIZE):
         super(Player, self).__init__()
+        self.sprint_cooldown = 0
         self.TILE_SIZE = TILE_SIZE
         # Sprite Animation
         self.idleSprites = []
@@ -87,6 +88,11 @@ class Player(Entity):
             cursor = pygame.mouse.get_pos()
             self.canAttack = pygame.time.get_ticks() + 240
             projectiles.add(Projectile(player, cursor, True, 'Magic Ball', self.TILE_SIZE))
+
+    def sprint(self):
+        if self.sprint_cooldown <= 0:
+            self.speed = 20
+            self.sprint_cooldown = 90
 
     # def checkCollide(self, group):
     #     health = self.current_health
@@ -203,6 +209,10 @@ class Player(Entity):
             self.image = pygame.transform.flip(self.idleSprites[int(self.current_sprite)], False, False)
         if self.iframes:
             self.iframes -= 1
+        if self.sprint_cooldown:
+            self.sprint_cooldown -= 1
+            if self.speed > 5:
+                self.speed -= 1
 
         # self.move(keys)
         # self.checkCollide(group)

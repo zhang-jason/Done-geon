@@ -75,6 +75,7 @@ enemies = pygame.sprite.Group()
 projectiles = pygame.sprite.Group()
 player = Player((width / 3, height / 2), TILE_SIZE)
 mouse_pressed = 0
+mouse_right_pressed = 0
 health = HealthBar(WIN, player, TILE_SIZE)
 bone_bar = BoneCounter(WIN, player, TILE_SIZE)
 
@@ -238,7 +239,10 @@ while True:
             clearTempContents()
             sys.exit()
         if event.type == MOUSEBUTTONDOWN:
-            mouse_pressed = 1
+            if event.button == 1:
+                mouse_pressed = 1
+            elif event.button == 3:
+                mouse_right_pressed = 1
             # if event.button == 1:
             #     player.attack(projectiles)
             '''
@@ -249,7 +253,10 @@ while True:
             room = roomList[roomIndex]
             '''
         if event.type == MOUSEBUTTONUP:
-            mouse_pressed = 0
+            if event.button == 1:
+                mouse_pressed = 0
+            elif event.button == 3:
+                mouse_right_pressed = 0
 
     # Remove old sprites to not hog resources; trust me, this got ugly on my old PC
     WIN.fill(0)
@@ -297,6 +304,8 @@ while True:
             player.update()
             if mouse_pressed:
                 player.attack(projectiles)
+            if mouse_right_pressed:
+                player.sprint()
             WIN.blit(player.image, player.rect)
             health.update(WIN, player)
             bone_bar.update(WIN, player)

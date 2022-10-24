@@ -46,6 +46,8 @@ class Player(Entity):
         self.max_health = 4
         self.iframes = 0
         self.alive = True
+
+        self.bones = 0
         # self.velocity = pygame.math.Vector2()
 
     # def move(self, keys):
@@ -101,11 +103,13 @@ class Player(Entity):
         return self.current_health
 
     def get_hit(self, hitDmg):
-        if (self.current_health - hitDmg) > 0:
-            self.current_health -= hitDmg
-        else:
-            self.current_health = 0
-            self.alive = False
+        if not self.iframes:
+            if (self.current_health - hitDmg) > 0:
+                self.current_health -= hitDmg
+                self.iframes = 60
+            else:
+                self.current_health = 0
+                self.alive = False
 
     def get_regen(self, regenAmt):
         if (regenAmt + self.current_health) < self.max_health:
@@ -197,6 +201,8 @@ class Player(Entity):
             self.image = pygame.transform.flip(self.idleSprites[int(self.current_sprite)], True, False)
         else:
             self.image = pygame.transform.flip(self.idleSprites[int(self.current_sprite)], False, False)
+        if self.iframes:
+            self.iframes -= 1
 
         # self.move(keys)
         # self.checkCollide(group)

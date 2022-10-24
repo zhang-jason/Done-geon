@@ -74,14 +74,11 @@ enemies = pygame.sprite.Group()
 projectiles = pygame.sprite.Group()
 player = Player((width / 3, height / 2), TILE_SIZE)
 health = HealthBar(WIN, player, (20, 20), TILE_SIZE)
-for i in range(3):
-    enemies.add(Wizard((randint(0, width), randint(0, height)), player, TILE_SIZE))
-    enemies.add(Knight((randint(0, width), randint(0, height)), player, TILE_SIZE))
 
 # non movable object group
-nonMovingObj = pygame.sprite.Group()
-for i in range(5):
-    nonMovingObj.add(Obj((randint(0, width), randint(0, height)), TILE_SIZE))
+# nonMovingObj = pygame.sprite.Group()
+# for i in range(5):
+#     nonMovingObj.add(Obj((randint(0, width), randint(0, height)), TILE_SIZE))
 
 server = Server()
 # server test variables
@@ -210,6 +207,24 @@ def move_entities():
         # TODO: remove projectiles upon OOB or tile collision?
 
 
+def detect_projectile(p):
+    if p.type == True:  # true for friendly
+        for e in enemies:
+            if e.rect.collidepoint(p.rect.center):
+                p.kill()
+                e.kill()
+                player.bones += 1
+    else:
+        if player.rect.collidepoint(p.rect.center):
+            p.kill()
+            player.get_hit(p.damage)
+
+
+def detect_melee(e):
+    if player.rect.collidepoint(e.rect.center):
+        player.get_hit(e.damage)
+
+
 while True:
     # User interaction:
     for event in pygame.event.get():
@@ -239,22 +254,42 @@ while True:
             map.draw_map(WIN)
             map2.draw_map(WIN)
             map3.draw_map(WIN)
+
             # printing bushes
-            for i in nonMovingObj:
-                WIN.blit(i.image, i.rect)
-                i.update()
+            # for i in nonMovingObj:
+            #     WIN.blit(i.image, i.rect)
+            #     i.update()
 
             # hitbox = (player.rect.topleft[0], player.rect.topleft[1], player.rect.width, player.rect.height) # NEW
             # pygame.draw.rect(WIN, (255,0,0), hitbox,2)
 
             # Update Functions
+            if len(enemies) < 1:
+                for i in range(player.bones+1):
+                    enemies.add(
+                        Wizard((randint(TILE_SIZE * 2, width - TILE_SIZE * 2),
+                                randint(TILE_SIZE * 2, height - TILE_SIZE * 2)), player,
+                               TILE_SIZE))
+                    enemies.add(
+                        Knight((randint(TILE_SIZE * 2, width - TILE_SIZE * 2),
+                                randint(TILE_SIZE * 2, height - TILE_SIZE * 2)), player,
+                               TILE_SIZE))
             for e in enemies:
                 WIN.blit(e.image, e.rect)
                 e.update(projectiles)
-                # e.collide(nonMovingObj)
             for p in projectiles:
                 WIN.blit(p.image, p.rect)
                 p.update()
+            get_player_move(player, keys)
+            move_entities()
+            for p in projectiles:
+                detect_projectile(p)
+            for e in enemies:
+                if e.__class__ == Knight:  # TODO: change to be in the melee function, shouldn't be exclusive to knights
+                    detect_melee(e)
+            player.update()
+            WIN.blit(player.image, player.rect)
+            health.update(WIN, player)
 
             # player_tile_x = round((player.rect.centerx - TILE_SIZE / 2) / TILE_SIZE)
             # player_tile_y = round((player.rect.centery - TILE_SIZE / 2) / TILE_SIZE)
@@ -269,11 +304,6 @@ while True:
             #         WIN.blit(STONE_TILE, (enemy0_tile_x * TILE_SIZE, enemy0_tile_y * TILE_SIZE))
             #     i += 1
 
-            get_player_move(player, keys)
-            move_entities()
-            player.update()
-            WIN.blit(player.image, player.rect)
-            health.update(WIN, player)
             # To be deleted:
             #   detecting collision
             #   player.collide(nonMovingObj)

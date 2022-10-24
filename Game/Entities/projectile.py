@@ -22,7 +22,8 @@ class Projectile(Entity):
         self.y = startPosition[1]
         self.type = friendly  # True for Friendly Projectile, false for Enemy; useful for hit detection
 
-        self.collidable = False
+        self.collidable = False # with tiles
+        self.damage = 1
 
         # Image and Animations
         self.sprites = []

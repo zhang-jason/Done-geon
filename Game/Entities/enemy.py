@@ -17,6 +17,7 @@ class Enemy(Entity):
         self.health = 4
         self.player = player
         self.collidable = 1
+        self.damage = 1
         # self.collideDir = 0
 
     def update(self, projectiles):

@@ -17,7 +17,7 @@ from RandomGen.roomGen import Room
 from server import Server
 
 import pygame
-from pygame import MOUSEBUTTONDOWN, QUIT, K_w
+from pygame import MOUSEBUTTONDOWN, MOUSEBUTTONUP, QUIT, K_w
 
 pygame.init()
 
@@ -73,6 +73,7 @@ STONE_TILE = scale_image(pygame.image.load(os.path.join(os.path.dirname(__file__
 enemies = pygame.sprite.Group()
 projectiles = pygame.sprite.Group()
 player = Player((width / 3, height / 2), TILE_SIZE)
+mouse_pressed = 0
 health = HealthBar(WIN, player, TILE_SIZE)
 bone_bar = BoneCounter(WIN, player, TILE_SIZE)
 
@@ -235,15 +236,18 @@ while True:
             clearTempContents()
             sys.exit()
         if event.type == MOUSEBUTTONDOWN:
-            if event.button == 1:
-                player.attack(projectiles)
-                '''
-                #Testing Random Room Hopping
-                roomIndex += 1
-                if roomIndex >= len(roomList):
-                    roomIndex = 0
-                room = roomList[roomIndex]
-                '''
+            mouse_pressed = 1
+            # if event.button == 1:
+            #     player.attack(projectiles)
+            '''
+            #Testing Random Room Hopping
+            roomIndex += 1
+            if roomIndex >= len(roomList):
+                roomIndex = 0
+            room = roomList[roomIndex]
+            '''
+        if event.type == MOUSEBUTTONUP:
+            mouse_pressed = 0
 
     # Remove old sprites to not hog resources; trust me, this got ugly on my old PC
     WIN.fill(0)
@@ -289,6 +293,8 @@ while True:
                 if e.__class__ == Knight:  # TODO: change to be in the melee function, shouldn't be exclusive to knights
                     detect_melee(e)
             player.update()
+            if mouse_pressed:
+                player.attack(projectiles)
             WIN.blit(player.image, player.rect)
             health.update(WIN, player)
             bone_bar.update(WIN, player)

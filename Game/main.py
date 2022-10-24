@@ -101,19 +101,19 @@ updateCount = 0
 screen = "Game"  # can be "Start", "Game", "Pause", maybe lose/win?
 
 
-def get_player_move(player, keys):  # sets target relative to player center
-    player.dx = 0
-    player.dy = 0
-    if keys[c.K_w]:
-        player.dy = -player.speed
-    if keys[c.K_s]:
-        player.dy = player.speed
-    if keys[c.K_a]:
-        player.flippedImage = True
-        player.dx = -player.speed
-    if keys[c.K_d]:
-        player.flippedImage = False
-        player.dx = player.speed
+def get_player_move(player_ent, keys_main):  # sets target relative to player center
+    player_ent.dx = 0
+    player_ent.dy = 0
+    if keys_main[c.K_w]:
+        player_ent.dy = -player_ent.speed
+    if keys_main[c.K_s]:
+        player_ent.dy = player_ent.speed
+    if keys_main[c.K_a]:
+        player_ent.flippedImage = True
+        player_ent.dx = -player_ent.speed
+    if keys_main[c.K_d]:
+        player_ent.flippedImage = False
+        player_ent.dx = player_ent.speed
 
 
 def move_calc(ent, speed):
@@ -128,28 +128,34 @@ def move_calc(ent, speed):
 
 
 #   TODO: get collision map
-#  1234567890123456
-# 11111111111111111
-# 20000000000000000
-# 30000000000000000
-# 40000000000000000
-# 50000000100000000
-# 60000000100000000
-# 70000000100000000
-# 80000000100000000
-# 91111111111111111
+#   123456789012345678
+# 1 111111111111111111
+# 2 111111111111111111
+# 3 100000000000000001
+# 4 101000000000000101
+# 5 100011000010000001
+# 6 100011000000000001
+# 7 100011000000000001
+# 8 101000000000000001
+# 9 111111111111111111
 m1 = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-m2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-m3 = [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0]
-collision_map = [m1, m2, m2, m2, m3, m3, m3, m3, m1]  # uses y, x coords bc i'm lazy and messed it up
+m3 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+m4 = [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0]
+m5 = [0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0]
+m6 = [0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+m7 = [0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+m8 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+collision_map = [m1, m1, m3, m4, m5, m6, m7, m8, m1]  # uses y, x coords bc i'm lazy and messed it up
 
-
-# TODO: add a boundary layer so even if there's no collidable tiles, the char doesn't go offscreen
 
 def get_tile_at(x, y):
+    x = x - TILE_SIZE / 2
+    y = y - TILE_SIZE / 2
     tile_x = round(x / TILE_SIZE)
     tile_y = round(y / TILE_SIZE)
     # TODO: add some checks for out of bounds in array
+    if tile_x < 0 or tile_x > 15:
+        return 1
     return collision_map[tile_y][tile_x]
 
 
@@ -214,7 +220,6 @@ while True:
 
             # hitbox = (player.rect.topleft[0], player.rect.topleft[1], player.rect.width, player.rect.height) # NEW
             # pygame.draw.rect(WIN, (255,0,0), hitbox,2)
-            WIN.blit(player.image, player.rect)
 
             # Update Functions
             for e in enemies:  # TODO: refactor for updated movement
@@ -224,9 +229,16 @@ while True:
             for p in projectiles:
                 WIN.blit(p.image, p.rect)
                 p.update()
+
+            # player_tile_x = round((player.rect.centerx - TILE_SIZE / 2) / TILE_SIZE)
+            # player_tile_y = round((player.rect.centery - TILE_SIZE / 2) / TILE_SIZE)
+            # print("Tile:", player_tile_x, player_tile_y)  # for debugging
+            # WIN.blit(STONE_TILE, (player_tile_x * TILE_SIZE, player_tile_y * TILE_SIZE))
+
             get_player_move(player, keys)
             move_entities()  # TODO: Add enemies to this
             player.update()
+            WIN.blit(player.image, player.rect)
             health.update(WIN, player)
             # To be deleted:
             #   detecting collision

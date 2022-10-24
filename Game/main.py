@@ -91,10 +91,10 @@ roomIndex = 0
 
 def clearTempContents():
     directory = os.path.join(os.path.dirname(__file__), 'assets/tiles/temprooms/')
+    retain = ['.gitignore']
     for file in os.listdir(directory):
-        # fileName = os.path.join(dir, file)
-        os.remove(os.path.join(directory, file))
-        # print(fileName)
+        if file not in retain:
+            os.remove(os.path.join(directory, file))
 
 
 updateCount = 0

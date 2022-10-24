@@ -193,6 +193,10 @@ class Player(Entity):
         if self.current_sprite >= len(self.idleSprites):
             self.current_sprite = 0
         self.image = self.idleSprites[int(self.current_sprite)]
+        if self.flippedImage:
+            self.image = pygame.transform.flip(self.idleSprites[int(self.current_sprite)], True, False)
+        else:
+            self.image = pygame.transform.flip(self.idleSprites[int(self.current_sprite)], False, False)
 
         # self.move(keys)
         # self.checkCollide(group)

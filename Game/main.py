@@ -67,9 +67,10 @@ def scale_image(image):
 # temporary, to be modularized later:
 STONE_TILE = scale_image(pygame.image.load(os.path.join(os.path.dirname(__file__), 'assets', 'TileAsset32x32.png'))
                          .convert())
+
+
 # to explain what this does, we define the stone tile sprite from the os' current directory/assets/TileAsset...,
 # convert it to usable pygame image object, then load scale it to the biggest factor of 32x32 we can fit in the screen
-
 enemies = pygame.sprite.Group()
 projectiles = pygame.sprite.Group()
 player = Player((width / 3, height / 2), TILE_SIZE)
@@ -77,7 +78,8 @@ mouse_pressed = 0
 health = HealthBar(WIN, player, TILE_SIZE)
 bone_bar = BoneCounter(WIN, player, TILE_SIZE)
 
-# non movable object group
+
+# non-movable object group
 # nonMovingObj = pygame.sprite.Group()
 # for i in range(5):
 #     nonMovingObj.add(Obj((randint(0, width), randint(0, height)), TILE_SIZE))
@@ -319,9 +321,26 @@ while True:
 
             cursor_img_rect.center = pygame.mouse.get_pos()
             WIN.blit(cursor_img, cursor_img_rect)
+            if player.get_health() <= 0:
+                screen = "Lose"
 
         case "Start":
             print("Start screen!")
+            screen = "Game"
+            # Todo: add start screen
+
+        case "Lose":
+            print("Lose screen!")
+            screen = "Reset"
+            # Todo: add start screen
+
+        case "Reset":
+            enemies = pygame.sprite.Group()
+            projectiles = pygame.sprite.Group()
+            player = Player((width / 3, height / 2), TILE_SIZE)
+            mouse_pressed = 0
+            health = HealthBar(WIN, player, TILE_SIZE)
+            bone_bar = BoneCounter(WIN, player, TILE_SIZE)
             screen = "Start"
 
         case other:

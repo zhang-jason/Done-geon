@@ -74,9 +74,9 @@ enemies = pygame.sprite.Group()
 projectiles = pygame.sprite.Group()
 player = Player((width / 3, height / 2), TILE_SIZE)
 health = HealthBar(WIN, player, (20, 20), TILE_SIZE)
-for i in range(3):
-    enemies.add(Wizard((randint(0, width), randint(0, height)), player, TILE_SIZE))
-    enemies.add(Knight((randint(0, width), randint(0, height)), player, TILE_SIZE))
+# for i in range(3):
+    # enemies.add(Wizard((randint(0, width), randint(0, height)), player, TILE_SIZE))
+    # enemies.add(Knight((randint(0, width), randint(0, height)), player, TILE_SIZE))
 
 # non movable object group
 nonMovingObj = pygame.sprite.Group()

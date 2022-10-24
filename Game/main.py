@@ -11,7 +11,7 @@ from Entities.projectile import Projectile
 from Entities.nonMoveObj import Obj
 from Entities.wizard import Wizard
 from Entities.knight import Knight
-from gui import HealthBar
+from gui import *
 from tiles import *
 from RandomGen.roomGen import Room
 from server import Server
@@ -73,7 +73,8 @@ STONE_TILE = scale_image(pygame.image.load(os.path.join(os.path.dirname(__file__
 enemies = pygame.sprite.Group()
 projectiles = pygame.sprite.Group()
 player = Player((width / 3, height / 2), TILE_SIZE)
-health = HealthBar(WIN, player, (20, 20), TILE_SIZE)
+health = HealthBar(WIN, player, TILE_SIZE)
+bone_bar = BoneCounter(WIN, player, TILE_SIZE)
 
 # non movable object group
 # nonMovingObj = pygame.sprite.Group()
@@ -208,7 +209,7 @@ def move_entities():
 
 
 def detect_projectile(p):
-    if p.type == True:  # true for friendly
+    if p.type:  # true for friendly
         for e in enemies:
             if e.rect.collidepoint(p.rect.center):
                 p.kill()
@@ -265,7 +266,7 @@ while True:
 
             # Update Functions
             if len(enemies) < 1:
-                for i in range(player.bones+1):
+                for i in range(player.bones + 1):
                     enemies.add(
                         Wizard((randint(TILE_SIZE * 2, width - TILE_SIZE * 2),
                                 randint(TILE_SIZE * 2, height - TILE_SIZE * 2)), player,
@@ -290,6 +291,7 @@ while True:
             player.update()
             WIN.blit(player.image, player.rect)
             health.update(WIN, player)
+            bone_bar.update(WIN, player)
 
             # player_tile_x = round((player.rect.centerx - TILE_SIZE / 2) / TILE_SIZE)
             # player_tile_y = round((player.rect.centery - TILE_SIZE / 2) / TILE_SIZE)

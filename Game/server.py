@@ -3,13 +3,14 @@ import threading
 
 
 class Server():
-    def __init__(self):
-        self.alive = True
-        self.receiver = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
-        self.receiver.bind((socket.gethostname(),65432))
-        self.sender = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
-        self.serverThread = threading.Thread(target=self.readMsg)
-        self.serverThread.start()
+    def __init__(self, run=True):
+        if run:
+            self.alive = True
+            self.receiver = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+            self.receiver.bind((socket.gethostname(),65432))
+            self.sender = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+            self.serverThread = threading.Thread(target=self.readMsg)
+            self.serverThread.start()
 
     def readMsg(self):
         while(self.alive):
@@ -30,6 +31,9 @@ class Server():
             pass
     
     def endServer(self):
-        self.sendMsg("closedGame")
-        self.alive = False
-        self.sender.sendto("server killed".encode(),(socket.gethostname(), 65432))
+        try:
+            self.sendMsg("closedGame")
+            self.alive = False
+            self.sender.sendto("server killed".encode(),(socket.gethostname(), 65432))
+        except:
+            pass

@@ -14,6 +14,26 @@
         android:textSize="20dp">
     </TextView>
 
+    <EditText
+        android:id="@+id/manualIP"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="Enter game device IP"
+        android:gravity="center_vertical|center_horizontal"
+        android:visibility="gone"
+        android:textSize="20dp">
+    </EditText>
+
+    <Button
+        android:id="@+id/submitIP"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Submit"
+        android:gravity="center_vertical|center_horizontal"
+        android:visibility="gone"
+        android:textSize="20dp">
+    </Button>
+
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"

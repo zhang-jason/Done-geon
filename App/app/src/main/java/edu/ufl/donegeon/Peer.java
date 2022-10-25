@@ -4,6 +4,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.net.wifi.WifiManager;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import java.math.BigInteger;
@@ -19,7 +22,16 @@ public class Peer extends Thread {
     DatagramSocket s;
     Context context;
     TextView txt;
+    EditText editTxt;
     Activity act;
+
+
+    View.OnClickListener listener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            manualConnect(editTxt.getText().toString());
+        }
+    };
 
     public Peer(Context context, TextView txt, Activity act) {
         this.context = context;
@@ -27,10 +39,53 @@ public class Peer extends Thread {
         this.act = act;
     }
 
+    void changeText(String newText){
+        class textChanger implements Runnable {
+            String text;
+            textChanger(String s){
+                text = s;
+            }
+            @Override
+            public void run() {
+                txt.setText(text);
+            }
+        }
+        textChanger tC = new textChanger(newText);
+        act.runOnUiThread(tC);
+    }
+
+    void changeVisibility(int btnID, int txtID, int visibility){
+        class visibilityChanger implements Runnable {
+            int btnID, txtID, visibility;
+            visibilityChanger(int btnID, int txtID, int visibility){
+                this.btnID = btnID;
+                this.txtID = txtID;
+                this.visibility = visibility;
+            }
+            @Override
+            public void run() {
+                Button btn = act.findViewById(btnID);
+                btn.setVisibility(visibility);
+                btn.setOnClickListener(listener);
+                editTxt = act.findViewById(txtID);
+                editTxt.setVisibility(visibility);
+            }
+        }
+        visibilityChanger vC = new visibilityChanger(btnID,txtID,visibility);
+        act.runOnUiThread(vC);
+    }
+
     void scan(){
         shouldScan = false;
         byte[] buf = "init".getBytes();
         byte[] result = new byte[4];
+
+        new Thread(){
+            @Override
+            public void run(){
+                spawnManual();
+            }
+        }.start();
 
         while(sendTo == null){
             try{
@@ -53,13 +108,32 @@ public class Peer extends Thread {
                 sleep(500);
             }catch(Exception e){}
         }
-        String sendToString = sendTo.getHostName();
-        act.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                txt.setText("Connected to: " + sendToString + "\nScan NFC Tag");
+        changeText("Connected to: " + sendTo.getHostName() + "\n Scan NFC Tag");
+        changeVisibility(R.id.submitIP,R.id.manualIP,View.GONE);
+    }
+
+    void spawnManual(){
+        try{
+            sleep(5000);
+            if(sendTo == null){
+                changeText("Game device not found");
+                changeVisibility(R.id.submitIP,R.id.manualIP,View.VISIBLE);
             }
-        });
+        }catch (Exception e){}
+    }
+
+    void manualConnect(String ip){
+        byte[] buf = "init".getBytes();
+            new Thread(){
+                @Override
+                public void run(){
+                    try{
+                    s.send(new DatagramPacket(buf,buf.length,InetAddress.getByName(ip),sendPort));
+                    }catch(Exception e){
+                        changeText("Invalid IP");
+                    }
+                }
+            }.start();
     }
 
     public void run() {
@@ -103,7 +177,7 @@ public class Peer extends Thread {
                 }
             }
             s.close();
-        }catch(Exception e){Log.e("",e.toString());}
+        }catch(Exception e){}
     }
 
     public void sendMsg(String msg) {
@@ -142,12 +216,7 @@ class Receiver extends Thread {
                     String msgRecvd = new String(msg.getData(),0, msg.getLength());
                     if(msgRecvd.equals("closedGame")){
                         p.sendTo = null;
-                        p.act.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                p.txt.setText("Game disconnected.\n Waiting for new connection...");
-                            }
-                        });
+                        p.changeText("Game disconnected.\n Waiting for new connection...");
                         p.shouldScan = true;
                     }
                     Log.e("",msgRecvd);

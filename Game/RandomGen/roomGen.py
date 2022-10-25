@@ -36,11 +36,6 @@ class Room():
         WallGen(floorMap, self.roomIndex)
         room.append(self.__getTileMap__(2))
 
-        floorMap = self.getMap(self.roomIndex, 1)
-        wallMap = self.getMap(self.roomIndex, 2)
-        CollideGen(floorMap, wallMap, self.roomIndex)
-        room.append(self.__getTileMap__(3))
-
         return room
 
     def __getTileMap__(self, layerIndex):

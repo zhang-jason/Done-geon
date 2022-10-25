@@ -1,7 +1,7 @@
 import csv
 from math import floor
 import os
-from random import randint
+from random import randint, choice
 
 TOP = 1
 RIGHT = 2
@@ -14,50 +14,58 @@ DOWN_LEFT = 8
 
 class WallGen():
     def __init__(self, floorMap, roomIndex):
+        self.floorMap = floorMap
+        self.wallMap = []
+        self.genMap(roomIndex)
 
-        self.genWalls(floorMap, roomIndex)
+    def initMap(self):
+        self.wallMap = [[-1 for x in range(16)] for y in range(9)]
 
-    def genWalls(self, floorMap, roomIndex):
-        wallMap = [[-1 for x in range(16)] for y in range(9)]
-        '''
-        for i in range(9):
-            if floorMap[i][1] != "-1":
-                wallMap[i][0] = 17
-            if floorMap[i][14] != "-1":
-                wallMap[i][15] = 18
-        for i in range(16):
-            if floorMap[1][i] != "-1":
-                wallMap[0][i] = 13
-            if floorMap[7][i] != "-1":
-                wallMap[8][i] = 13
-        '''
-        
-        print(floorMap)
-        #for i in range(1, len(wallMap) - 1):
-        #    for j in range(1, len(wallMap[0]) - 1):
-        #        if(floorMap[i][j] == "-1"):
-        #            self.checkAdjacent(floorMap, wallMap, i, j)
-
-        for i in range(1, len(wallMap) - 1):
-            for j in range(1, len(wallMap[0]) - 1):
-                if(floorMap[i][j] != "-1"):
-                    self.checkAdjacent(floorMap, wallMap, i, j)
-        
-        
-        '''
-        for i in range(1, len(floorMap)):
-            for j in range(len(floorMap[0])):
-                if floorMap[i][j] == 1:
-                    adjacent = self.checkAdjacent(floorMap, wallMap, i, j)
-        '''
+    def genMap(self, roomIndex):
+        self.initMap()
+        self.genWalls(self)
+        self.genFloors(self)
 
         with open(os.path.join(os.path.dirname(__file__), '..', 'assets/tiles/temprooms', f'room{roomIndex}_2.csv'), 'w', newline='') as file:
             writer = csv.writer(file)
-            writer.writerows(wallMap)
+            writer.writerows(self.wallMap)
 
             file.close()
 
-    def checkAdjacent(self, floorMap, wallMap, i, j):
+    def genWalls(self):
+        '''
+        for i in range(9):
+            if self.floorMap[i][1] != "-1":
+                self.wallMap[i][0] = 17
+            if self.floorMap[i][14] != "-1":
+                self.wallMap[i][15] = 18
+        for i in range(16):
+            if self.floorMap[1][i] != "-1":
+                self.wallMap[0][i] = 13
+            if self.floorMap[7][i] != "-1":
+                self.wallMap[8][i] = 13
+        '''
+        
+        print(self.floorMap)
+        #for i in range(1, len(self.wallMap) - 1):
+        #    for j in range(1, len(self.wallMap[0]) - 1):
+        #        if(self.floorMap[i][j] == "-1"):
+        #            self.checkAdjacent(self.floorMap, self.wallMap, i, j)
+
+        for i in range(1, len(self.wallMap) - 1):
+            for j in range(1, len(self.wallMap[0]) - 1):
+                if(self.floorMap[i][j] != "-1"):
+                    self.checkAdjacent(self.floorMap, self.wallMap, i, j)
+        
+        
+        '''
+        for i in range(1, len(self.floorMap)):
+            for j in range(len(self.floorMap[0])):
+                if self.floorMap[i][j] == 1:
+                    adjacent = self.checkAdjacent(self.floorMap, self.wallMap, i, j)
+        '''
+
+    def checkAdjacent(self, i, j):
         top = False
         topright = False
         topleft = False
@@ -67,148 +75,177 @@ class WallGen():
         bottomleft = False
         bottomright = False
 
-        if(floorMap[i][j - 1] == '-1'):
+        if(self.floorMap[i][j - 1] == '-1'):
             left = True
-            print("left " + floorMap[i][j - 1])
-        if(floorMap[i][j + 1] == '-1'):
+            print("left " + self.floorMap[i][j - 1])
+        if(self.floorMap[i][j + 1] == '-1'):
             right = True
-            print("right " + floorMap[i][j + 1])
-        if(floorMap[i + 1][j] == "-1"):
+            print("right " + self.floorMap[i][j + 1])
+        if(self.floorMap[i + 1][j] == "-1"):
             bottom = True
-            print("bottom " + floorMap[i + 1][j])
-        if(floorMap[i - 1][j] == "-1"):
+            print("bottom " + self.floorMap[i + 1][j])
+        if(self.floorMap[i - 1][j] == "-1"):
             top = True
-            print("top " + floorMap[i - 1][j])
-        if(floorMap[i + 1][j - 1] == "-1"):
+            print("top " + self.floorMap[i - 1][j])
+        if(self.floorMap[i + 1][j - 1] == "-1"):
             bottomleft = True
-            print("bottomleft " + floorMap[i + 1][j - 1])
-        if(floorMap[i + 1][j + 1] == "-1"):
+            print("bottomleft " + self.floorMap[i + 1][j - 1])
+        if(self.floorMap[i + 1][j + 1] == "-1"):
             bottomright = True
-            print("bottomright " + floorMap[i + 1][j + 1])
-        if(floorMap[i - 1][j + 1] == "-1"):
+            print("bottomright " + self.floorMap[i + 1][j + 1])
+        if(self.floorMap[i - 1][j + 1] == "-1"):
             topright = True
-            print("topright " + floorMap[i - 1][j + 1])
-        if(floorMap[i - 1][j - 1] == "-1"):
+            print("topright " + self.floorMap[i - 1][j + 1])
+        if(self.floorMap[i - 1][j - 1] == "-1"):
             topleft = True
-            print("topleft " + floorMap[i - 1][j - 1])
+            print("topleft " + self.floorMap[i - 1][j - 1])
 
         
         #i is y, j is x
 
-        if(floorMap[i][j] != '-1'):
-            #if(top == False and wallMap[i - 1][j] == -1):
-                #wallMap[i - 1][j] = 13
-            #if(bottom == False and wallMap[i + 1][j] == -1):
-                #wallMap[i + 1][j] = 13
-            #if(left == False and wallMap[i][j - 1] == -1):
-                #wallMap[i][j - 1] = 17
-            #if(right == False and wallMap[i][j + 1] == -1):
-                #wallMap[i][j + 1] = 18
+        if(self.floorMap[i][j] != '-1'):
+            #if(top == False and self.wallMap[i - 1][j] == -1):
+                #self.wallMap[i - 1][j] = 13
+            #if(bottom == False and self.wallMap[i + 1][j] == -1):
+                #self.wallMap[i + 1][j] = 13
+            #if(left == False and self.wallMap[i][j - 1] == -1):
+                #self.wallMap[i][j - 1] = 17
+            #if(right == False and self.wallMap[i][j + 1] == -1):
+                #self.wallMap[i][j + 1] = 18
             '''
             if(left == False):
                 if(bottom == False):
                     if(not top):
-                        wallMap[i][j] = 11
+                        self.wallMap[i][j] = 11
                     elif(not right):
-                        wallMap[i][j] = 10
+                        self.wallMap[i][j] = 10
                     else:
-                        wallMap[i][j] = 28
+                        self.wallMap[i][j] = 28
                 elif(not top):
-                    wallMap[i][j] = 30
+                    self.wallMap[i][j] = 30
                 else:
-                    wallMap[i][j] = 18
+                    self.wallMap[i][j] = 18
             if(not right):
                 if(not bottom):
                     if(not top):
-                        wallMap[i][j] = 9
+                        self.wallMap[i][j] = 9
                     elif(not left):
-                        wallMap[i][j] = 12
+                        self.wallMap[i][j] = 12
                     else:
-                        wallMap[i][j] = 29
+                        self.wallMap[i][j] = 29
                 elif(not top):
-                    wallMap[i][j] = 31
+                    self.wallMap[i][j] = 31
                 else:
-                    wallMap[i][j] = 19
+                    self.wallMap[i][j] = 19
         #else:
             #if(bottom):
                 #if(top):
                     #if(right or left):
-                        #floorMap[i][j] = 1
+                        #self.floorMap[i][j] = 1
             '''
             if(right):
                 if(bottom):
                     if(top):
                         if(left):
-                            wallMap[i][j] = -1
+                            self.wallMap[i][j] = -1
                         else:
-                            wallMap[i][j] = 33
+                            self.wallMap[i][j] = 33
                     elif(left):
-                        wallMap[i][j] = 35
+                        self.wallMap[i][j] = 35
                     else:
-                        wallMap[i][j] = 20
+                        self.wallMap[i][j] = 20
                 elif(top):
                     if(left):
-                        wallMap[i][j] = 34
+                        self.wallMap[i][j] = 34
                     else:
-                        wallMap[i][j] = 31
+                        self.wallMap[i][j] = 31
                 elif(left):
-                    wallMap[i][j] = 36
+                    self.wallMap[i][j] = 36
                 else:
-                    wallMap[i][j] = 17
+                    self.wallMap[i][j] = 17
             elif(left):
                 if(bottom):
                     if(top):
-                        wallMap[i][j] = 32
+                        self.wallMap[i][j] = 32
                     else:
-                        wallMap[i][j] = 28
+                        self.wallMap[i][j] = 28
                 elif(top):
-                    wallMap[i][j] = 30
+                    self.wallMap[i][j] = 30
                 else:
-                    wallMap[i][j] = 18
+                    self.wallMap[i][j] = 18
             elif(top):
                 if(bottom):
-                    wallMap[i][j] = 37
+                    self.wallMap[i][j] = 37
                 else:
-                    wallMap[i][j] = 16
+                    self.wallMap[i][j] = 16
             elif(bottom):
-                wallMap[i][j] = 15
+                self.wallMap[i][j] = 15
 
         '''
-        if(floorMap[i + 1][j] != "-1" and floorMap[i - 1][j] != "-1" and floorMap[i][j + 1] != "-1" and floorMap[i][j - 1] != "-1"):
+        if(self.floorMap[i + 1][j] != "-1" and self.floorMap[i - 1][j] != "-1" and self.floorMap[i][j + 1] != "-1" and self.floorMap[i][j - 1] != "-1"):
             return
-        if(floorMap[i + 1][j] == "-1"): #right is empty
-            if(floorMap[i][j + 1] == "-1"): # bottom is empty
-                wallMap[i +1][j] = 11
-            elif(floorMap[i][j - 1] == "-1"): #top is empty
-                if(floorMap[i + 1][j - 1] == "-1"): #topright is empty
-                    wallMap[i +1][j - 1] = 11
+        if(self.floorMap[i + 1][j] == "-1"): #right is empty
+            if(self.floorMap[i][j + 1] == "-1"): # bottom is empty
+                self.wallMap[i +1][j] = 11
+            elif(self.floorMap[i][j - 1] == "-1"): #top is empty
+                if(self.floorMap[i + 1][j - 1] == "-1"): #topright is empty
+                    self.wallMap[i +1][j - 1] = 11
                 else:
-                    wallMap[i][j - 1] = 18
-                wallMap[i + 1][j] = 19
+                    self.wallMap[i][j - 1] = 18
+                self.wallMap[i + 1][j] = 19
             else: 
-                wallMap[i + 1][j] = 11
-        if(floorMap[i - 1][j] == "-1"): #left is empty
-            if(floorMap[i][j + 1] == "-1"): # bottom is empty
-                wallMap[i +1][j] = 16
-            elif(floorMap[i][j - 1] == "-1"): #top is empty
-                if(floorMap[i - 1][j - 1] == "-1"): #topleft is empty
-                    wallMap[i +1][j - 1] = 17
+                self.wallMap[i + 1][j] = 11
+        if(self.floorMap[i - 1][j] == "-1"): #left is empty
+            if(self.floorMap[i][j + 1] == "-1"): # bottom is empty
+                self.wallMap[i +1][j] = 16
+            elif(self.floorMap[i][j - 1] == "-1"): #top is empty
+                if(self.floorMap[i - 1][j - 1] == "-1"): #topleft is empty
+                    self.wallMap[i +1][j - 1] = 17
                 else:
-                    wallMap[i][j - 1] = 18
-                wallMap[i + 1][j] = 19
+                    self.wallMap[i][j - 1] = 18
+                self.wallMap[i + 1][j] = 19
             else: 
-                wallMap[i + 1][j] = 10
+                self.wallMap[i + 1][j] = 10
 
             '''
-#right floorMap[i + 1][j]
-#left  floorMap[i - 1][j]
-#top floorMap[i][j - 1]
-#bottom floorMap[i][j + 1]
 
-#topright floorMap[i + 1][j - 1]
-#topleft floorMap[i - 1][j - 1]
-#bottomright floorMap[i + 1][j + 1]
-#bottomleft floorMap[i - 1][j + 1]
+    def genFloors(self):
+        holeLimit = 2
+        holeCount = 0
+        floorIDs = [9, 10, 11]
+
+        # Generate special floor tiles
+        for i in range(1, len(self.floorMap) - 1):
+                for j in range(1, len(self.floorMap[i]) - 1):
+                    if self.__isHole__(i, j):
+                        genID = choice(floorIDs)
+
+                        if genID == 9:
+                            floorIDs.remove(9)
+                        elif genID == 10:
+                            holeCount += 1
+
+                        if holeCount == holeLimit:
+                            floorIDs.remove(10)
+                            holeCount += 1 # Can never enter this loop again
+                        
+                        self.wallMap[i][j] = genID
+
+    def __isHole__(self, i, j):
+        if (self.floorMap[i][j] == '-1'):
+            if (self.floorMap[i-1][j] != '-1') and (self.floorMap[i+1][j] != '-1') and (self.floorMap[i][j-1] != '-1') and (self.floorMap[i][j+1] != '-1'):
+                return True
+        
+        return False
+#right self.floorMap[i + 1][j]
+#left  self.floorMap[i - 1][j]
+#top self.floorMap[i][j - 1]
+#bottom self.floorMap[i][j + 1]
+
+#topright self.floorMap[i + 1][j - 1]
+#topleft self.floorMap[i - 1][j - 1]
+#bottomright self.floorMap[i + 1][j + 1]
+#bottomleft self.floorMap[i - 1][j + 1]
 
 
 

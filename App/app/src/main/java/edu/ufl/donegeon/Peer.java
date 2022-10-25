@@ -12,8 +12,9 @@ import java.util.BitSet;
 
 public class Peer extends Thread {
     boolean alive = true, shouldScan = true, canSend = false;
-    int sendPort = 65432, prefix = 24, ipBase = 0;
-    InetAddress thisAddr, sendTo;
+    int sendPort = 65432, prefix = 24;
+    InetAddress thisAddr, sendTo, broadcast;
+    byte[] ipBase, ipMax;
     String sendMsg;
     DatagramSocket s;
     Context context;
@@ -29,13 +30,25 @@ public class Peer extends Thread {
     void scan(){
         shouldScan = false;
         byte[] buf = "init".getBytes();
+        byte[] result = new byte[4];
+
         while(sendTo == null){
             try{
-                for (int i = 0; i < Math.pow(2,32-prefix);i++) {
-                    InetAddress addr = InetAddress.getByAddress(BigInteger.valueOf(Integer.reverseBytes(ipBase) + i).toByteArray());
-                    s.send(new DatagramPacket(buf,buf.length,addr,sendPort));
-                    if(sendTo != null)
-                        break;
+                for(int i = Integer.reverseBytes(ipBase[3]<<24); i <= Integer.reverseBytes(ipMax[3]<<24);i++){
+                    result[0] = (byte)i;
+                    for(int j = Integer.reverseBytes(ipBase[2]<<24); j <= Integer.reverseBytes(ipMax[2]<<24);j++){
+                        result[1] = (byte)j;
+                        for(int k = Integer.reverseBytes(ipBase[1]<<24); k <= Integer.reverseBytes(ipMax[1]<<24);k++){
+                            result[2] = (byte)k;
+                            for(int l = Integer.reverseBytes(ipBase[0]<<24); l <= Integer.reverseBytes(ipMax[0]<<24);l++){
+                                result[3] = (byte)l;
+                                InetAddress addr = InetAddress.getByAddress(result);
+                                s.send(new DatagramPacket(buf,buf.length,addr,sendPort));
+                                if(sendTo != null)
+                                    break;
+                            }
+                        }
+                    }
                 }
                 sleep(500);
             }catch(Exception e){}
@@ -64,21 +77,18 @@ public class Peer extends Thread {
             for(InterfaceAddress i : interfaces){
                 if(i.getAddress() instanceof Inet4Address){
                     prefix = i.getNetworkPrefixLength();
-                    try{
-                        buf = "init".getBytes();
-                        s.send(new DatagramPacket(buf,buf.length,i.getBroadcast(),sendPort));
-                    }catch(Exception e){}
+                    broadcast = i.getBroadcast();
                 }
             }
 
             BitSet bits = BitSet.valueOf(BigInteger.valueOf(Integer.reverseBytes(ipNum)).toByteArray());
+            BitSet maxBits = BitSet.valueOf(BigInteger.valueOf(Integer.reverseBytes(ipNum)).toByteArray());
             for(int i = 0; i < 32- prefix; i++){
                 bits.clear(i);
+                maxBits.set(i);
             }
-
-            for(byte b : bits.toByteArray()){
-                ipBase = (ipBase << 8) + (b & 0xFF);
-            }
+            ipBase = bits.toByteArray();
+            ipMax = maxBits.toByteArray();
 
             scan();
 

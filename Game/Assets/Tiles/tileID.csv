@@ -25,3 +25,13 @@ wall_fountain_basin_red_anim_f0,collide
 column_top,noncollide
 column_mid,noncollide
 column_base,collide
+wall_corner_bottom_left, noncollide
+wall_corner_bottom_right, noncollide
+wall_corner_top_left_1, noncollide
+wall_corner_top_right_1, noncollide
+three_sides_left, noncollide
+three_sides_right, noncollide
+three_sides_top, noncollide
+three_sides_bottom, noncollide
+two_sides_left_right, noncollide
+two_sides_top_bottom, noncollide

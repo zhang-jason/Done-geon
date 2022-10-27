@@ -49,10 +49,11 @@ print("Created Window")
 
 # Creating a random number of generated rooms
 
-# roomList = []
-# for index, iter in enumerate(range(randint(3,6))):
-#    room = Room(index, NUM_TILES_X, NUM_TILES_Y, TILE_SIZE)
-#    roomList.append(room)
+
+roomList = []
+for index, iter in enumerate(range(randint(3,6))):
+    room = Room(index, NUM_TILES_X, NUM_TILES_Y, TILE_SIZE)
+    roomList.append(room)
 
 
 map = TileMap(os.path.join(os.path.dirname(__file__), 'assets/tiles', 'Test Room 3_Tile Layer 1.csv'), TILE_SIZE)
@@ -247,13 +248,13 @@ while True:
                 mouse_right_pressed = 1
             # if event.button == 1:
             #     player.attack(projectiles)
-            '''
+            
             #Testing Random Room Hopping
             roomIndex += 1
             if roomIndex >= len(roomList):
                 roomIndex = 0
             room = roomList[roomIndex]
-            '''
+            
         if event.type == MOUSEBUTTONUP:
             if event.button == 1:
                 mouse_pressed = 0
@@ -266,11 +267,10 @@ while True:
 
     match screen:
         case "Game":
-            # room.drawRoom(WIN)
+            #room.drawRoom(WIN)
             map.draw_map(WIN)
             map2.draw_map(WIN)
             map3.draw_map(WIN)
-
             # printing bushes
             # for i in nonMovingObj:
             #     WIN.blit(i.image, i.rect)

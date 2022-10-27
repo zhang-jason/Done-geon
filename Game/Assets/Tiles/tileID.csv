@@ -35,3 +35,8 @@ three_sides_top, noncollide
 three_sides_bottom, noncollide
 two_sides_left_right, noncollide
 two_sides_top_bottom, noncollide
+wall_side_top_right, noncollide
+wall_side_top_left, noncollide
+top_left_corner, noncollide
+top_right_corner, noncollide
+black, collide

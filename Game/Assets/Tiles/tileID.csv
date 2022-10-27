@@ -40,3 +40,4 @@ wall_side_top_left, noncollide
 top_left_corner, noncollide
 top_right_corner, noncollide
 black, collide
+black_2, noncollide

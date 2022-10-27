@@ -87,16 +87,9 @@ class WallGen():
         if(self.floorMap[i - 1][j - 1] == "-1" and self.wallMap[i - 1][j - 1] != 14 and (self.wallMap[i - 1][j - 1] == -1 or self.wallMap[i - 1][j - 1] == 13)):
             topleft = True
 
-        
         #i is y, j is x
-
         
         if(self.floorMap[i][j] != '-1' or self.wallMap[i][j] == 14):
-            #if(bottom and self.wallMap[i + 1][j] == -1):
-                #self.wallMap[i + 1][j] = 13
-            #if(top and self.wallMap[i - 1][j] == -1):
-                #self.wallMap[i - 1][j] = 14
-    
             if(right):
                 if(bottom):
                     if(top):
@@ -167,12 +160,14 @@ class WallGen():
                             floorIDs.remove(10)
                             holeCount += 1 # Can never enter this loop again
                         
-                        self.wallMap[i][j] = genID
+                        self.thirdLayer[i][j] = genID
+                        self.floorMap[i][j] = 1
 
     def __isHole__(self, i, j):
         if (self.floorMap[i][j] == '-1'):
             if (self.floorMap[i-1][j] != '-1') and (self.floorMap[i+1][j] != '-1') and (self.floorMap[i][j-1] != '-1') and (self.floorMap[i][j+1] != '-1'):
-                return True
+                if(self.floorMap[i-1][j-1] != '-1' and self.floorMap[i-1][j+1] != '-1' and self.floorMap[i+1][j-1] != '-1' and self.floorMap[i+1][j+1] != '-1'):
+                    return True
         
         return False
 
@@ -210,7 +205,7 @@ class WallGen():
         for i in range(0, len(self.wallMap)):
             for j in range(0, len(self.wallMap[0])):
                 if(self.floorMap[i][j] == "-1" and self.wallMap[i][j] == -1):
-                    self.wallMap[i][j] = 42 #black tile
+                    self.wallMap[i][j] = 42 #black tile collidable
 
 #right self.floorMap[i + 1][j]
 #left  self.floorMap[i - 1][j]

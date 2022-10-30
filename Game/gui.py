@@ -77,3 +77,23 @@ class BoneCounter():
         WIN.blit(self.image, self.rect)
         WIN.blit(text, text_rect)
         # TODO: Change this to update in main, we're passing the whole freaking window in here
+
+class Inventory():
+    
+    def __init__(self, WIN, TILE_SIZE):
+        super(Inventory, self).__init__()
+        self.TILE_SIZE = TILE_SIZE
+
+        # Variable Stuff
+        self.maxItems = 3
+        self.currItems = 0
+        self.itemList = []
+
+    def addItem(self, item):
+        if self.currItems < self.maxItems:
+            self.itemList.append(item)
+
+    def update(self, WIN):
+        if self.currItems > 0:
+            self.rect.left = self.TILE_SIZE * (15 - self.currItems)
+

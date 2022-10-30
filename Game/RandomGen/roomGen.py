@@ -35,6 +35,7 @@ class Room():
         floorMap = self.getMap(self.roomIndex, 1)
         WallGen(floorMap, self.roomIndex)
         room.append(self.__getTileMap__(2))
+        
         room.append(self.__getTileMap__(3))
 
         return room

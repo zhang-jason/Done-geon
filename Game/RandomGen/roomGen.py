@@ -2,6 +2,8 @@ import os
 import csv
 from random import randint, choice
 
+import pygame
+
 from RandomGen.floorGen import FloorGen
 from RandomGen.wallGen import WallGen
 from RandomGen.collideGen import CollideGen
@@ -9,13 +11,14 @@ from tiles import TileMap
 from Entities.powerup import Powerup
 
 class Room():
-    def __init__(self, roomIndex, width, height, tileSize, powerups):
+    def __init__(self, roomIndex, width, height, tileSize):
         self.width = width
         self.height = height
         self.tileSize = tileSize
         self.roomIndex = roomIndex
         self.room = self.genMap()
-        self.powerups = self.genPowerups()
+        self.powerups = pygame.sprite.Group()
+        self.genPowerups()
 
     def getMap(self, roomIndex, layerIndex):
         map = []
@@ -29,8 +32,7 @@ class Room():
         for i in self.room:
             i.draw_map(WIN)
 
-        for p in self.powerups:
-            WIN.blit(p.image, p.rect)
+        self.powerups.draw(WIN)
 
     def genMap(self):
         room = []
@@ -49,8 +51,7 @@ class Room():
     def genPowerups(self):
         currPowerups = 0
         maxPowerups = 3
-        powerupType = ['heal', 'damage', 'shield']
-        powerups = []
+        powerupType = ['speed', 'heal', 'shield']
 
         map = self.getMap(self.roomIndex, 2)
 
@@ -59,10 +60,10 @@ class Room():
             y = randint(2, len(map[0])-1)
 
             if map[x][y] == '-1':
-                powerups.append(Powerup((x, y), choice(powerupType), self.tileSize))
+                x = (x * self.tileSize) + self.tileSize // 2
+                y = (y * self.tileSize) + self.tileSize // 2
+                self.powerups.add(Powerup((x, y), choice(powerupType), self.tileSize))
                 currPowerups += 1
-
-        return powerups
 
     def __getTileMap__(self, layerIndex):
         filename = os.path.join(os.path.dirname(__file__), '..', 'assets/tiles/temprooms', f'room{self.roomIndex}_{layerIndex}.csv')

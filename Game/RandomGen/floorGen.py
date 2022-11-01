@@ -8,7 +8,7 @@ class FloorGen():
         self.chance = 50        # Chance of generating a floor tile
         self.iterations = 3     # How many recursive calls
         self.minCount = 5       # Greater the number, less risk of islands (unless it's two large ones)
-        self.minTiles = 60      # Minimum number of playable tiles allowed
+        self.minTiles = 70      # Minimum number of playable tiles allowed
 
         self.genMap(roomIndex, width, height)
     

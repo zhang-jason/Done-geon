@@ -21,4 +21,4 @@ class Powerup(Entity):
         trans_color = trans_image.get_at((0, 0))
         self.image.set_colorkey(trans_color)
         self.rect = self.image.get_rect()
-        self.rect.center = position
+        self.rect.centerx, self.rect.centery = position

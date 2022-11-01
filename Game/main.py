@@ -2,6 +2,7 @@ import os
 from random import choice, randint
 import sys
 from math import floor, sqrt
+from numpy import power
 import pygame.locals as c
 
 # Modular Files
@@ -18,7 +19,7 @@ from RandomGen.roomGen import Room
 from server import Server
 
 import pygame
-from pygame import MOUSEBUTTONDOWN, MOUSEBUTTONUP, QUIT, K_w
+from pygame import MOUSEBUTTONDOWN, MOUSEBUTTONUP, QUIT, KEYDOWN, K_SPACE ,K_w, K_e
 
 pygame.init()
 
@@ -48,19 +49,11 @@ cursor_img_rect = cursor_img.get_rect()
 
 print("Created Window")
 
-# Creating a random number of generated rooms
-
-
-roomList = []
-for index, iter in enumerate(range(randint(3,6))):
-    room = Room(index, NUM_TILES_X, NUM_TILES_Y, TILE_SIZE)
-    roomList.append(room)
-
-
+'''
 map = TileMap(os.path.join(os.path.dirname(__file__), 'assets/tiles', 'Test Room 3_Tile Layer 1.csv'), TILE_SIZE)
 map2 = TileMap(os.path.join(os.path.dirname(__file__), 'assets/tiles', 'Test Room 3_Tile Layer 2.csv'), TILE_SIZE)
 map3 = TileMap(os.path.join(os.path.dirname(__file__), 'assets/tiles', 'Test Room 3_Tile Layer 3.csv'), TILE_SIZE)
-
+'''
 
 def scale_image(image):
     return pygame.transform.scale(image, (TILE_SIZE, TILE_SIZE))
@@ -75,12 +68,12 @@ STONE_TILE = scale_image(pygame.image.load(os.path.join(os.path.dirname(__file__
 # convert it to usable pygame image object, then load scale it to the biggest factor of 32x32 we can fit in the screen
 enemies = pygame.sprite.Group()
 projectiles = pygame.sprite.Group()
-powerups = pygame.sprite.Group()
 player = Player((width / 3, height / 2), TILE_SIZE)
 mouse_pressed = 0
 mouse_right_pressed = 0
 health = HealthBar(WIN, player, TILE_SIZE)
 bone_bar = BoneCounter(WIN, player, TILE_SIZE)
+inventory = Inventory(WIN, TILE_SIZE)
 
 server = Server()
 # server test variables
@@ -220,11 +213,19 @@ def detect_projectile(p):
             p.kill()
             player.get_hit(p.damage)
 
-
 def detect_melee(e):
     if player.rect.collidepoint(e.rect.center):
         player.get_hit(e.damage)
 
+def detect_item(p):
+    if player.rect.collidepoint(p.rect.center):
+        player.get_powerup(p.ability)
+        p.kill()
+
+roomList = []
+for index, iter in enumerate(range(randint(3,6))):
+    room = Room(index, NUM_TILES_X, NUM_TILES_Y, TILE_SIZE)
+    roomList.append(room)
 
 font = pygame.font.SysFont('Arial', round(TILE_SIZE))
 
@@ -244,17 +245,22 @@ while True:
             # if event.button == 1:
             #     player.attack(projectiles)
             
-            #Testing Random Room Hopping
-            roomIndex += 1
-            if roomIndex >= len(roomList):
-                roomIndex = 0
-            room = roomList[roomIndex]
-            
         if event.type == MOUSEBUTTONUP:
             if event.button == 1:
                 mouse_pressed = 0
             elif event.button == 3:
                 mouse_right_pressed = 0
+            
+        if event.type == KEYDOWN:
+            if event.key == K_e:
+                player.use_powerup()
+            if event.key == K_SPACE:
+                # Testing Random Room Hopping
+                roomIndex += 1
+                if roomIndex >= len(roomList):
+                    roomIndex = 0
+                room = roomList[roomIndex]
+
 
     # Remove old sprites to not hog resources; trust me, this got ugly on my old PC
     WIN.fill(0)
@@ -262,14 +268,10 @@ while True:
 
     match screen:
         case "Game":
-            #room.drawRoom(WIN)
-            map.draw_map(WIN)
-            map2.draw_map(WIN)
-            map3.draw_map(WIN)
-            # printing bushes
-            # for i in nonMovingObj:
-            #     WIN.blit(i.image, i.rect)
-            #     i.update()
+            room.drawRoom(WIN)
+            # map.draw_map(WIN)
+            # map2.draw_map(WIN)
+            # map3.draw_map(WIN)
 
             # hitbox = (player.rect.topleft[0], player.rect.topleft[1], player.rect.width, player.rect.height) # NEW
             # pygame.draw.rect(WIN, (255,0,0), hitbox,2)
@@ -298,6 +300,8 @@ while True:
             for e in enemies:
                 if e.__class__ == Knight:  # TODO: change to be in the melee function, shouldn't be exclusive to knights
                     detect_melee(e)
+            for p in room.powerups:
+                detect_item(p)
             player.update()
             if mouse_pressed:
                 player.attack(projectiles)
@@ -306,6 +310,7 @@ while True:
             WIN.blit(player.image, player.rect)
             health.update(WIN, player)
             bone_bar.update(WIN, player)
+            inventory.update(WIN, player)
 
             # player_tile_x = round((player.rect.centerx - TILE_SIZE / 2) / TILE_SIZE)
             # player_tile_y = round((player.rect.centery - TILE_SIZE / 2) / TILE_SIZE)

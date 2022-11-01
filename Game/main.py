@@ -1,5 +1,5 @@
 import os
-from random import randint
+from random import choice, randint
 import sys
 from math import floor, sqrt
 import pygame.locals as c
@@ -8,6 +8,7 @@ import pygame.locals as c
 import components
 from Entities.playerChar import Player
 from Entities.projectile import Projectile
+from Entities.powerup import Powerup
 from Entities.nonMoveObj import Obj
 from Entities.wizard import Wizard
 from Entities.knight import Knight
@@ -74,17 +75,12 @@ STONE_TILE = scale_image(pygame.image.load(os.path.join(os.path.dirname(__file__
 # convert it to usable pygame image object, then load scale it to the biggest factor of 32x32 we can fit in the screen
 enemies = pygame.sprite.Group()
 projectiles = pygame.sprite.Group()
+powerups = pygame.sprite.Group()
 player = Player((width / 3, height / 2), TILE_SIZE)
 mouse_pressed = 0
 mouse_right_pressed = 0
 health = HealthBar(WIN, player, TILE_SIZE)
 bone_bar = BoneCounter(WIN, player, TILE_SIZE)
-
-
-# non-movable object group
-# nonMovingObj = pygame.sprite.Group()
-# for i in range(5):
-#     nonMovingObj.add(Obj((randint(0, width), randint(0, height)), TILE_SIZE))
 
 server = Server()
 # server test variables
@@ -211,7 +207,6 @@ def move_entities():
         p.y += p.dy
         p.rect.center = (int(p.x), int(p.y))
         # TODO: remove projectiles upon OOB or tile collision?
-
 
 def detect_projectile(p):
     if p.type:  # true for friendly

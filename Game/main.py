@@ -140,6 +140,8 @@ m7 = [0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 m8 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 collision_map = [m1, m1, m3, m4, m5, m6, m7, m8, m1]  # uses y, x coords bc i'm lazy and messed it up
 
+room_collision_maps = []
+
 
 def get_tile_at(x, y):
     x = x - TILE_SIZE / 2
@@ -148,10 +150,13 @@ def get_tile_at(x, y):
     tile_y = round(y / TILE_SIZE)
     if tile_x < 0 or tile_x > 15:
         return 1
-    return collision_map[tile_y][tile_x]
+    if room_collision_maps[roomIndex][tile_y][tile_x] == "-1":
+        return False
+    else:
+        return True
 
 
-def detect_collision(ent):
+def detect_collision(ent, room):
     if ent.collidable:
         if ent.dx > 0:  # check if tile ent would end up in is collidable, if so reduce d to 0
             if get_tile_at(ent.rect.right + ent.dx, ent.rect.centery):
@@ -194,13 +199,13 @@ def move_calc_enemy(ent):
             ent.dy = diff_y_scaled
 
 
-def move_entities():
+def move_entities(room):
     move_calc_player(player)
-    detect_collision(player)
+    detect_collision(player, room)
     player.rect.center = (player.rect.centerx + player.dx, player.rect.centery + player.dy)
     for e in enemies:
         move_calc_enemy(e)
-        detect_collision(e)
+        detect_collision(e, room)
         e.x = e.rect.centerx + e.dx
         e.y = e.rect.centery + e.dy
         e.rect.center = (int(e.x), int(e.y))
@@ -239,6 +244,10 @@ roomList = []
 for index, iter in enumerate(range(randint(3, 6))):
     room = Room(index, NUM_TILES_X, NUM_TILES_Y, TILE_SIZE)
     roomList.append(room)
+    room_collision_maps.append(room.getMap(index, 2))
+if roomIndex >= len(roomList):
+    roomIndex = 0
+room = roomList[roomIndex]
 
 font = pygame.font.SysFont('Arial', round(TILE_SIZE))
 
@@ -311,7 +320,7 @@ while True:
                 WIN.blit(p.image, p.rect)
                 p.update()
             get_player_move(player, keys)
-            move_entities()
+            move_entities(room)
             for p in projectiles:
                 detect_projectile(p)
             for e in enemies:

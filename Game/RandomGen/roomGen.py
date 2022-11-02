@@ -10,6 +10,7 @@ from RandomGen.collideGen import CollideGen
 from tiles import TileMap
 from Entities.powerup import Powerup
 
+
 class Room():
     def __init__(self, roomIndex, width, height, tileSize):
         self.width = width
@@ -22,7 +23,8 @@ class Room():
 
     def getMap(self, roomIndex, layerIndex):
         map = []
-        with open(os.path.join(os.path.dirname(__file__), '..', 'assets/tiles/temprooms', f'room{roomIndex}_{layerIndex}.csv')) as data:
+        with open(os.path.join(os.path.dirname(__file__), '..', 'assets/tiles/temprooms',
+                               f'room{roomIndex}_{layerIndex}.csv')) as data:
             data = csv.reader(data, delimiter=',')
             for row in data:
                 map.append(list(row))
@@ -43,7 +45,7 @@ class Room():
         floorMap = self.getMap(self.roomIndex, 1)
         WallGen(floorMap, self.roomIndex)
         room.append(self.__getTileMap__(2))
-        
+
         room.append(self.__getTileMap__(3))
 
         return room
@@ -56,8 +58,8 @@ class Room():
         map = self.getMap(self.roomIndex, 2)
 
         while currPowerups < maxPowerups:
-            x = randint(2, len(map)-1)
-            y = randint(2, len(map[0])-1)
+            x = randint(2, len(map) - 1)
+            y = randint(2, len(map[0]) - 1)
 
             if map[x][y] == '-1':
                 x = (x * self.tileSize) + self.tileSize // 2
@@ -66,5 +68,6 @@ class Room():
                 currPowerups += 1
 
     def __getTileMap__(self, layerIndex):
-        filename = os.path.join(os.path.dirname(__file__), '..', 'assets/tiles/temprooms', f'room{self.roomIndex}_{layerIndex}.csv')
+        filename = os.path.join(os.path.dirname(__file__), '..', 'assets/tiles/temprooms',
+                                f'room{self.roomIndex}_{layerIndex}.csv')
         return TileMap(filename, self.tileSize)

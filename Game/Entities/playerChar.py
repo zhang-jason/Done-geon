@@ -48,7 +48,7 @@ class Player(Entity):
         self.iframes = 0
         self.alive = True
 
-        self.bones = 0
+        self.bones = 3
         self.powerup = 'empty'
         self.tile_x = 0
         self.tile_y = 0

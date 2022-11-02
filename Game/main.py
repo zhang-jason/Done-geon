@@ -13,6 +13,7 @@ from Entities.powerup import Powerup
 from Entities.nonMoveObj import Obj
 from Entities.wizard import Wizard
 from Entities.knight import Knight
+from Game.Entities.minion import Minion
 from gui import *
 from tiles import *
 from RandomGen.roomGen import Room
@@ -68,10 +69,12 @@ STONE_TILE = scale_image(pygame.image.load(os.path.join(os.path.dirname(__file__
 # convert it to usable pygame image object, then load scale it to the biggest factor of 32x32 we can fit in the screen
 enemies = pygame.sprite.Group()
 projectiles = pygame.sprite.Group()
+minions = pygame.sprite.Group()
 player = Player((width / 3, height / 2), TILE_SIZE)
 mouse_pressed = 0
 mouse_right_pressed = 0
 key_shift_pressed = 0
+key_e_pressed = 0
 health = HealthBar(WIN, player, TILE_SIZE)
 bone_bar = BoneCounter(WIN, player, TILE_SIZE)
 inventory = Inventory(WIN, TILE_SIZE)
@@ -123,26 +126,7 @@ def move_calc_player(ent):
         ent.dy = (dy / abs(dy)) * ent.speed / sqrt(2)
 
 
-#   TODO: get collision map
-#   123456789012345678
-# 1 111111111111111111
-# 2 111111111111111111
-# 3 100000000000000001
-# 4 101000000000000101
-# 5 100011000010000001
-# 6 100011000000000001
-# 7 100011000000000001
-# 8 101000000000000001
-# 9 111111111111111111
-m1 = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-m3 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-m4 = [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0]
-m5 = [0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0]
-m6 = [0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-m7 = [0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-m8 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-collision_map = [m1, m1, m3, m4, m5, m6, m7, m8, m1]  # uses y, x coords bc i'm lazy and messed it up
-
+# uses y, x coords
 room_collision_maps = []
 
 
@@ -191,7 +175,6 @@ def move_calc_enemy(ent):
             ent.dy = 0
         else:
             # custom scaling bc the scaling was being weird with vector math
-            #
             diff_x_scaled = diff_x / sqrt(pow(diff_x, 2) + pow(diff_y, 2))
             diff_y_scaled = diff_y / sqrt(pow(diff_x, 2) + pow(diff_y, 2))
             diff_x_scaled *= ent.speed
@@ -219,6 +202,12 @@ def move_entities():
         e.x = e.rect.centerx + e.dx
         e.y = e.rect.centery + e.dy
         e.rect.center = (e.x, e.y)
+    for m in minions:
+        move_calc_enemy(m)
+        detect_collision(m)
+        m.x = m.rect.centerx + m.dx
+        m.y = m.rect.centery + m.dy
+        m.rect.center = (m.x, m.y)
     for p in projectiles:
         p.x += p.dx
         p.y += p.dy
@@ -234,12 +223,23 @@ def detect_projectile(p):
                 e.kill()
                 player.bones += 1
     else:
+        for m in minions:
+            if m.rect.collidepoint(p.rect.center):
+                p.kill()
+                m.get_hit(p.damage)
+                if m.current_health <= 0:
+                    m.kill()
         if player.rect.collidepoint(p.rect.center):
             p.kill()
             player.get_hit(p.damage)
 
 
 def detect_melee(e):
+    for m in minions:
+        if m.rect.collidepoint(e.rect.center):
+            m.get_hit(e.damage)
+            if m.current_health <= 0:
+                m.kill()
     if player.rect.collidepoint(e.rect.center):
         player.get_hit(e.damage)
 
@@ -261,6 +261,11 @@ if roomIndex >= len(roomList):
 room = roomList[roomIndex]
 
 font = pygame.font.SysFont('Arial', round(TILE_SIZE))
+
+
+def random_spawn():
+    return randint(TILE_SIZE * 2, width - TILE_SIZE * 2), randint(TILE_SIZE * 2, height - TILE_SIZE * 2)
+
 
 while True:
     # User interaction:
@@ -285,7 +290,7 @@ while True:
                 mouse_right_pressed = 0
 
         if event.type == constants.KEYDOWN:
-            if event.key == constants.K_e:
+            if event.key == constants.K_q:
                 player.use_powerup()
             elif event.key == constants.K_SPACE:
                 # Testing Random Room Hopping
@@ -295,9 +300,13 @@ while True:
                 room = roomList[roomIndex]
             elif event.key == constants.K_RSHIFT or event.key == constants.K_LSHIFT:
                 key_shift_pressed = 1
+            elif event.key == constants.K_e:
+                key_e_pressed = 1
         if event.type == constants.KEYUP:
             if event.key == constants.K_RSHIFT or event.key == constants.K_LSHIFT:
                 key_shift_pressed = 0
+            elif event.key == constants.K_e:
+                key_e_pressed = 0
 
     # Remove old sprites to not hog resources; trust me, this got ugly on my old PC
     WIN.fill(0)
@@ -313,9 +322,6 @@ while True:
                     roomIndex = 0
                 room = roomList[roomIndex]
             room.drawRoom(WIN)
-            # map.draw_map(WIN)
-            # map2.draw_map(WIN)
-            # map3.draw_map(WIN)
 
             # hitbox = (player.rect.topleft[0], player.rect.topleft[1], player.rect.width, player.rect.height) # NEW
             # pygame.draw.rect(WIN, (255,0,0), hitbox,2)
@@ -324,13 +330,14 @@ while True:
             if len(enemies) < 1:
                 for i in range(round(player.bones / 4 + 1)):
                     enemies.add(
-                        Wizard((randint(TILE_SIZE * 2, width - TILE_SIZE * 2),
-                                randint(TILE_SIZE * 2, height - TILE_SIZE * 2)), player,
+                        Wizard(random_spawn(), player,
                                TILE_SIZE))
                     enemies.add(
-                        Knight((randint(TILE_SIZE * 2, width - TILE_SIZE * 2),
-                                randint(TILE_SIZE * 2, height - TILE_SIZE * 2)), player,
+                        Knight(random_spawn(), player,
                                TILE_SIZE))
+            for m in minions:
+                WIN.blit(m.image, m.rect)
+                m.update(projectiles, enemies)
             for e in enemies:
                 WIN.blit(e.image, e.rect)
                 e.update(projectiles)
@@ -351,30 +358,19 @@ while True:
                 player.attack(projectiles)
             if key_shift_pressed:
                 player.sprint()
+            if key_e_pressed:
+                if player.bones >= 3:  # selected_minion.cost
+                    player.bones -= 3
+                    minions.add(
+                        Minion(random_spawn(),
+                               TILE_SIZE, player)
+                    )
             if player.fall:
                 player.fall -= 1
             WIN.blit(player.image, player.rect)
             health.update(WIN, player)
             bone_bar.update(WIN, player)
             inventory.update(WIN, player)
-
-            # player_tile_x = round((player.rect.centerx - TILE_SIZE / 2) / TILE_SIZE)
-            # player_tile_y = round((player.rect.centery - TILE_SIZE / 2) / TILE_SIZE)
-            # print("Tile:", player_tile_x, player_tile_y)  # for debugging
-            # WIN.blit(STONE_TILE, (player_tile_x * TILE_SIZE, player_tile_y * TILE_SIZE))
-            # i = 0
-            # for e in enemies:
-            #     if i == 0:
-            #         enemy0_tile_x = round((e.rect.centerx - TILE_SIZE / 2) / TILE_SIZE)
-            #         enemy0_tile_y = round((e.rect.centery - TILE_SIZE / 2) / TILE_SIZE)
-            #         print("Tile:", enemy0_tile_x, enemy0_tile_y)  # for debugging
-            #         WIN.blit(STONE_TILE, (enemy0_tile_x * TILE_SIZE, enemy0_tile_y * TILE_SIZE))
-            #     i += 1
-
-            # To be deleted:
-            #   detecting collision
-            #   player.collide(nonMovingObj)
-            #   player.collide(map2.get_tiles())  ?
 
             cursor_img_rect.center = pygame.mouse.get_pos()
             WIN.blit(cursor_img, cursor_img_rect)
@@ -394,6 +390,7 @@ while True:
         case "Reset":
             enemies = pygame.sprite.Group()
             projectiles = pygame.sprite.Group()
+            minions = pygame.sprite.Group()
             player = Player((width / 3, height / 2), TILE_SIZE)
             mouse_pressed = 0
             health = HealthBar(WIN, player, TILE_SIZE)

@@ -50,6 +50,11 @@ class Player(Entity):
 
         self.bones = 0
         self.powerup = 'empty'
+        self.tile_x = 0
+        self.tile_y = 0
+        self.tile = "-1"
+        self.fall = 0
+
         # self.velocity = pygame.math.Vector2()
 
     # def move(self, keys):

@@ -107,6 +107,9 @@ def get_player_move(player_ent, keys_main):  # sets target relative to player ce
     if keys_main[c.K_d]:
         player_ent.flippedImage = False
         player_ent.dx = player_ent.speed
+    if player_ent.fall:
+        player_ent.dx = 0
+        player_ent.dy = player_ent.speed
 
 
 def move_calc_player(ent):
@@ -149,14 +152,14 @@ def get_tile_at(x, y):
     tile_x = round(x / TILE_SIZE)
     tile_y = round(y / TILE_SIZE)
     if tile_x < 0 or tile_x > 15:
-        return 1
+        return True
     if room_collision_maps[roomIndex][tile_y][tile_x] == "-1":
         return False
     else:
         return True
 
 
-def detect_collision(ent, room):
+def detect_collision(ent):
     if ent.collidable:
         if ent.dx > 0:  # check if tile ent would end up in is collidable, if so reduce d to 0
             if get_tile_at(ent.rect.right + ent.dx, ent.rect.centery):
@@ -175,8 +178,6 @@ def detect_collision(ent, room):
 
 
 def move_calc_enemy(ent):
-    if ent.speed != 3:
-        print(ent.speed)
     player_x = ent.player.rect.centerx
     player_y = ent.player.rect.centery
     if ent.speed == 0:
@@ -199,16 +200,25 @@ def move_calc_enemy(ent):
             ent.dy = diff_y_scaled
 
 
-def move_entities(room):
+room_fall_maps = []
+
+
+def move_entities():
     move_calc_player(player)
-    detect_collision(player, room)
+    detect_collision(player)
     player.rect.center = (player.rect.centerx + player.dx, player.rect.centery + player.dy)
+    player.tile_x = round((player.rect.centerx - TILE_SIZE / 2) / TILE_SIZE)
+    player.tile_y = round((player.rect.bottom - TILE_SIZE / 2) / TILE_SIZE)
+    player.tile = room_fall_maps[roomIndex][player.tile_y][player.tile_x]
+    if player.tile == "-1" and player.fall == 0 and player.speed <= 5:
+        player.fall = 10
+        player.iframes = 10
     for e in enemies:
         move_calc_enemy(e)
-        detect_collision(e, room)
+        detect_collision(e)
         e.x = e.rect.centerx + e.dx
         e.y = e.rect.centery + e.dy
-        e.rect.center = (int(e.x), int(e.y))
+        e.rect.center = (e.x, e.y)
     for p in projectiles:
         p.x += p.dx
         p.y += p.dy
@@ -245,6 +255,7 @@ for index, iter in enumerate(range(randint(3, 6))):
     room = Room(index, NUM_TILES_X, NUM_TILES_Y, TILE_SIZE)
     roomList.append(room)
     room_collision_maps.append(room.getMap(index, 2))
+    room_fall_maps.append(room.getMap(index, 1))
 if roomIndex >= len(roomList):
     roomIndex = 0
 room = roomList[roomIndex]
@@ -294,6 +305,13 @@ while True:
 
     match screen:
         case "Game":
+            if player.fall == 1:
+                enemies = pygame.sprite.Group()
+                projectiles = pygame.sprite.Group()
+                roomIndex += 1
+                if roomIndex >= len(roomList):
+                    roomIndex = 0
+                room = roomList[roomIndex]
             room.drawRoom(WIN)
             # map.draw_map(WIN)
             # map2.draw_map(WIN)
@@ -320,7 +338,7 @@ while True:
                 WIN.blit(p.image, p.rect)
                 p.update()
             get_player_move(player, keys)
-            move_entities(room)
+            move_entities()
             for p in projectiles:
                 detect_projectile(p)
             for e in enemies:
@@ -333,6 +351,8 @@ while True:
                 player.attack(projectiles)
             if key_shift_pressed:
                 player.sprint()
+            if player.fall:
+                player.fall -= 1
             WIN.blit(player.image, player.rect)
             health.update(WIN, player)
             bone_bar.update(WIN, player)

@@ -19,7 +19,7 @@ from RandomGen.roomGen import Room
 from server import Server
 
 import pygame
-from pygame import MOUSEBUTTONDOWN, MOUSEBUTTONUP, QUIT, KEYDOWN, K_SPACE ,K_w, K_e
+from pygame import constants
 
 pygame.init()
 
@@ -55,6 +55,7 @@ map2 = TileMap(os.path.join(os.path.dirname(__file__), 'assets/tiles', 'Test Roo
 map3 = TileMap(os.path.join(os.path.dirname(__file__), 'assets/tiles', 'Test Room 3_Tile Layer 3.csv'), TILE_SIZE)
 '''
 
+
 def scale_image(image):
     return pygame.transform.scale(image, (TILE_SIZE, TILE_SIZE))
 
@@ -63,7 +64,6 @@ def scale_image(image):
 STONE_TILE = scale_image(pygame.image.load(os.path.join(os.path.dirname(__file__), 'assets', 'TileAsset32x32.png'))
                          .convert())
 
-
 # to explain what this does, we define the stone tile sprite from the os' current directory/assets/TileAsset...,
 # convert it to usable pygame image object, then load scale it to the biggest factor of 32x32 we can fit in the screen
 enemies = pygame.sprite.Group()
@@ -71,6 +71,7 @@ projectiles = pygame.sprite.Group()
 player = Player((width / 3, height / 2), TILE_SIZE)
 mouse_pressed = 0
 mouse_right_pressed = 0
+key_shift_pressed = 0
 health = HealthBar(WIN, player, TILE_SIZE)
 bone_bar = BoneCounter(WIN, player, TILE_SIZE)
 inventory = Inventory(WIN, TILE_SIZE)
@@ -169,6 +170,8 @@ def detect_collision(ent):
 
 
 def move_calc_enemy(ent):
+    if ent.speed != 3:
+        print(ent.speed)
     player_x = ent.player.rect.centerx
     player_y = ent.player.rect.centery
     if ent.speed == 0:
@@ -181,10 +184,14 @@ def move_calc_enemy(ent):
             ent.dx = 0
             ent.dy = 0
         else:
-            move_vector = pygame.math.Vector2(player_x - ent.rect.centerx, player_y - ent.rect.centery)
-            move_vector.scale_to_length(ent.speed)
-            ent.dx = move_vector.x
-            ent.dy = move_vector.y
+            # custom scaling bc the scaling was being weird with vector math
+            #
+            diff_x_scaled = diff_x / sqrt(pow(diff_x, 2) + pow(diff_y, 2))
+            diff_y_scaled = diff_y / sqrt(pow(diff_x, 2) + pow(diff_y, 2))
+            diff_x_scaled *= ent.speed
+            diff_y_scaled *= ent.speed
+            ent.dx = diff_x_scaled
+            ent.dy = diff_y_scaled
 
 
 def move_entities():
@@ -194,12 +201,15 @@ def move_entities():
     for e in enemies:
         move_calc_enemy(e)
         detect_collision(e)
-        e.rect.center = (e.rect.centerx + e.dx, e.rect.centery + e.dy)
+        e.x = e.rect.centerx + e.dx
+        e.y = e.rect.centery + e.dy
+        e.rect.center = (int(e.x), int(e.y))
     for p in projectiles:
         p.x += p.dx
         p.y += p.dy
         p.rect.center = (int(p.x), int(p.y))
         # TODO: remove projectiles upon OOB or tile collision?
+
 
 def detect_projectile(p):
     if p.type:  # true for friendly
@@ -213,17 +223,20 @@ def detect_projectile(p):
             p.kill()
             player.get_hit(p.damage)
 
+
 def detect_melee(e):
     if player.rect.collidepoint(e.rect.center):
         player.get_hit(e.damage)
+
 
 def detect_item(p):
     if player.rect.collidepoint(p.rect.center):
         player.get_powerup(p.ability)
         p.kill()
 
+
 roomList = []
-for index, iter in enumerate(range(randint(3,6))):
+for index, iter in enumerate(range(randint(3, 6))):
     room = Room(index, NUM_TILES_X, NUM_TILES_Y, TILE_SIZE)
     roomList.append(room)
 
@@ -232,35 +245,39 @@ font = pygame.font.SysFont('Arial', round(TILE_SIZE))
 while True:
     # User interaction:
     for event in pygame.event.get():
-        if event.type == QUIT:  # User Quits, end server and clear cache
+        if event.type == constants.QUIT:  # User Quits, end server and clear cache
             pygame.quit()
             server.endServer()
             clearTempContents()
             sys.exit()
-        if event.type == MOUSEBUTTONDOWN:
+        if event.type == constants.MOUSEBUTTONDOWN:
             if event.button == 1:
                 mouse_pressed = 1
             elif event.button == 3:
                 mouse_right_pressed = 1
             # if event.button == 1:
             #     player.attack(projectiles)
-            
-        if event.type == MOUSEBUTTONUP:
+
+        if event.type == constants.MOUSEBUTTONUP:
             if event.button == 1:
                 mouse_pressed = 0
             elif event.button == 3:
                 mouse_right_pressed = 0
-            
-        if event.type == KEYDOWN:
-            if event.key == K_e:
+
+        if event.type == constants.KEYDOWN:
+            if event.key == constants.K_e:
                 player.use_powerup()
-            if event.key == K_SPACE:
+            elif event.key == constants.K_SPACE:
                 # Testing Random Room Hopping
                 roomIndex += 1
                 if roomIndex >= len(roomList):
                     roomIndex = 0
                 room = roomList[roomIndex]
-
+            elif event.key == constants.K_RSHIFT or event.key == constants.K_LSHIFT:
+                key_shift_pressed = 1
+        if event.type == constants.KEYUP:
+            if event.key == constants.K_RSHIFT or event.key == constants.K_LSHIFT:
+                key_shift_pressed = 0
 
     # Remove old sprites to not hog resources; trust me, this got ugly on my old PC
     WIN.fill(0)
@@ -278,7 +295,7 @@ while True:
 
             # Update Functions
             if len(enemies) < 1:
-                for i in range(round(player.bones/2 + 1)):
+                for i in range(round(player.bones / 4 + 1)):
                     enemies.add(
                         Wizard((randint(TILE_SIZE * 2, width - TILE_SIZE * 2),
                                 randint(TILE_SIZE * 2, height - TILE_SIZE * 2)), player,
@@ -305,7 +322,7 @@ while True:
             player.update()
             if mouse_pressed:
                 player.attack(projectiles)
-            if mouse_right_pressed:
+            if key_shift_pressed:
                 player.sprint()
             WIN.blit(player.image, player.rect)
             health.update(WIN, player)
@@ -360,7 +377,7 @@ while True:
         # End match case
 
     # test server sender
-    if keys[K_w] and time < pygame.time.get_ticks():
+    if keys[constants.K_w] and time < pygame.time.get_ticks():
         server.sendMsg(str(pygame.time.get_ticks()))
         time = pygame.time.get_ticks() + 1000
 

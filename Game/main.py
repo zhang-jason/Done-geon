@@ -13,7 +13,7 @@ from Entities.powerup import Powerup
 from Entities.nonMoveObj import Obj
 from Entities.wizard import Wizard
 from Entities.knight import Knight
-from Game.Entities.minion import Minion
+from Entities.minion import Minion
 from gui import *
 from tiles import *
 from RandomGen.roomGen import Room

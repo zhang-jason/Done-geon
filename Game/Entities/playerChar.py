@@ -133,8 +133,10 @@ class Player(Entity):
     def get_powerup(self, powerup):
         self.powerup = powerup
 
-    def use_powerup(self):
-        match self.powerup:
+    def use_powerup(self,powerup= None):
+        if powerup is None:
+            powerup = self.powerup
+        match powerup:
             case 'speed':
                 self.speed += 2
             case 'heal':
@@ -142,7 +144,7 @@ class Player(Entity):
             case 'shield':
                 print('shielded!')
 
-        print(f'used {self.powerup}')
+        print(f'used {powerup}')
         self.powerup = 'empty'
     # def get_collisions(self, tiles):
     #     collisions = []

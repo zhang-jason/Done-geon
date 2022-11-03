@@ -13,7 +13,7 @@ from Entities.powerup import Powerup
 from Entities.nonMoveObj import Obj
 from Entities.wizard import Wizard
 from Entities.knight import Knight
-from Game.Entities.minion import Minion
+from Entities.minion import Minion
 from gui import *
 from tiles import *
 from RandomGen.roomGen import Room
@@ -79,7 +79,7 @@ health = HealthBar(WIN, player, TILE_SIZE)
 bone_bar = BoneCounter(WIN, player, TILE_SIZE)
 inventory = Inventory(WIN, TILE_SIZE)
 
-server = Server()
+server = Server(player)
 # server test variables
 time = 0
 roomIndex = 0
@@ -247,6 +247,7 @@ def detect_melee(e):
 def detect_item(p):
     if player.rect.collidepoint(p.rect.center):
         player.get_powerup(p.ability)
+        server.sendMsg("p " + p.ability)
         p.kill()
 
 
@@ -291,6 +292,7 @@ while True:
 
         if event.type == constants.KEYDOWN:
             if event.key == constants.K_q:
+                server.sendMsg("u " + player.powerup)
                 player.use_powerup()
             elif event.key == constants.K_SPACE:
                 # Testing Random Room Hopping
@@ -375,6 +377,7 @@ while True:
             cursor_img_rect.center = pygame.mouse.get_pos()
             WIN.blit(cursor_img, cursor_img_rect)
             if player.get_health() <= 0:
+                server.sendMsg("lose")
                 screen = "Lose"
 
         case "Start":
@@ -403,8 +406,9 @@ while True:
         # End match case
 
     # test server sender
-    if keys[constants.K_w] and time < pygame.time.get_ticks():
-        server.sendMsg(str(pygame.time.get_ticks()))
+    if time < pygame.time.get_ticks():
+        server.sendMsg("h " + str(player.get_health()))
+        server.sendMsg("b " + str(player.bones))
         time = pygame.time.get_ticks() + 1000
 
     pygame.display.update()

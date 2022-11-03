@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:gravity="center"
+    android:id="@+id/layout"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical" >
@@ -12,6 +13,24 @@
         android:text="Waiting for connection..."
         android:gravity="center_vertical|center_horizontal"
         android:textSize="20dp">
+    </TextView>
+
+    <TextView
+        android:id="@+id/hpTxt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical|center_horizontal"
+        android:textSize="20dp">
+        android:visibility="gone"
+    </TextView>
+
+    <TextView
+        android:id="@+id/boneTxt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical|center_horizontal"
+        android:textSize="20dp">
+        android:visibility="gone"
     </TextView>
 
     <EditText

@@ -25,7 +25,7 @@ class MainActivity : Activity() {
         setContentView(binding.root)
 
         txtVw = findViewById(R.id.nfc_contents)
-        server = Peer(applicationContext,txtVw,this)
+        server = Peer(this)
         server.start()
 
         nfcAdapter = NfcAdapter.getDefaultAdapter(this)

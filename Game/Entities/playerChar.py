@@ -48,7 +48,13 @@ class Player(Entity):
         self.iframes = 0
         self.alive = True
 
-        self.bones = 0
+        self.bones = 3
+        self.powerup = 'empty'
+        self.tile_x = 0
+        self.tile_y = 0
+        self.tile = "-1"
+        self.fall = 0
+
         # self.velocity = pygame.math.Vector2()
 
     # def move(self, keys):
@@ -124,6 +130,22 @@ class Player(Entity):
         else:
             self.current_health = self.max_health
 
+    def get_powerup(self, powerup):
+        self.powerup = powerup
+
+    def use_powerup(self,powerup= None):
+        if powerup is None:
+            powerup = self.powerup
+        match powerup:
+            case 'speed':
+                self.speed += 2
+            case 'heal':
+                self.get_regen(1)
+            case 'shield':
+                print('shielded!')
+
+        print(f'used {powerup}')
+        self.powerup = 'empty'
     # def get_collisions(self, tiles):
     #     collisions = []
     #     for t in tiles:

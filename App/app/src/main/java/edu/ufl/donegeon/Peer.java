@@ -9,12 +9,16 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.GridLayout;
 
+
 import java.math.BigInteger;
 import java.net.*;
+import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.HashMap;
 
 public class Peer extends Thread {
     boolean alive = true, shouldScan = true, canSend = false;
@@ -23,7 +27,6 @@ public class Peer extends Thread {
     byte[] ipBase, ipMax;
     String sendMsg;
     DatagramSocket s;
-    Context context;
     TextView txt;
     TextView lifeTxt;
     TextView bneTxt;
@@ -39,46 +42,27 @@ public class Peer extends Thread {
         }
     };
 
-    public Peer(Context context, TextView txt, Activity act) {
-        this.context = context;
-        this.txt = txt;
+    public Peer(Activity act) {
+        txt = act.findViewById(R.id.nfc_contents);
         this.act = act;
     }
 
     void changeText(String newText){
-        class textChanger implements Runnable {
-            String text;
-            textChanger(String s){
-                text = s;
-            }
+        act.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                txt.setText(text);
+                txt.setText(newText);
             }
-        }
-        textChanger tC = new textChanger(newText);
-        act.runOnUiThread(tC);
+        });
     }
 
-    void changeVisibility(int btnID, int txtID, int visibility){
-        class visibilityChanger implements Runnable {
-            int btnID, txtID, visibility;
-            visibilityChanger(int btnID, int txtID, int visibility){
-                this.btnID = btnID;
-                this.txtID = txtID;
-                this.visibility = visibility;
-            }
+    void changeVisibility(int id, int visibility){
+        act.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Button btn = act.findViewById(btnID);
-                btn.setVisibility(visibility);
-                btn.setOnClickListener(listener);
-                editTxt = act.findViewById(txtID);
-                editTxt.setVisibility(visibility);
+                act.findViewById(id).setVisibility(visibility);
             }
-        }
-        visibilityChanger vC = new visibilityChanger(btnID,txtID, visibility);
-        act.runOnUiThread(vC);
+        });
     }
 
     void changeVisibilityGrid(int gridID, int lifeTxtID, int bneCntID, int bneTxtID, int visibility){
@@ -142,7 +126,8 @@ public class Peer extends Thread {
         }
         changeVisibilityGrid(R.id.lifeGrid, R.id.healthBar, R.id.boneCntPic, R.id.boneCntTxt, View.VISIBLE);
         changeText("Connected to: " + sendTo.getHostName() + "\n Scan NFC Tag");
-        changeVisibility(R.id.submitIP,R.id.manualIP, View.GONE);
+        changeVisibility(R.id.submitIP, View.GONE);
+        changeVisibility(R.id.manualIP,View.GONE);
     }
 
     void spawnManual(){
@@ -150,8 +135,11 @@ public class Peer extends Thread {
             sleep(5000);
             if(sendTo == null){
                 changeText("Game device not found");
-                changeVisibility(R.id.submitIP,R.id.manualIP, View.VISIBLE);
                 changeVisibilityGrid(R.id.lifeGrid, R.id.healthBar, R.id.boneCntPic, R.id.boneCntTxt, View.GONE);
+                editTxt = act.findViewById(R.id.manualIP);
+                act.findViewById(R.id.submitIP).setOnClickListener(listener);
+                changeVisibility(R.id.submitIP, View.VISIBLE);
+                changeVisibility(R.id.manualIP,View.VISIBLE);
             }
         }catch (Exception e){}
     }
@@ -174,7 +162,7 @@ public class Peer extends Thread {
         try{
             byte[] buf;
             s = new DatagramSocket();
-            WifiManager wm = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+            WifiManager wm = (WifiManager) act.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
             int ipNum = Integer.reverseBytes(wm.getConnectionInfo().getIpAddress());
             thisAddr = InetAddress.getByAddress(BigInteger.valueOf(ipNum).toByteArray());
             new Receiver(this,thisAddr).start();
@@ -224,18 +212,117 @@ public class Peer extends Thread {
     }
 
     public void kill() {
+        sendMsg("appClosed");
         alive = false;
     }
 }
 
 class Receiver extends Thread {
+    TextView hpTxt, boneTxt;
+    HashMap<String,Integer> powerups = new HashMap<>();
+    int bones = 0, health = 0;
     InetAddress thisAddr;
     int port = 65433;
     Peer p;
+    ArrayList<Button> btns = new ArrayList<>();
+    LinearLayout ll;
 
     public Receiver(Peer p,InetAddress thisAddr) {
         this.p = p;
         this.thisAddr = thisAddr;
+        hpTxt = p.act.findViewById(R.id.hpTxt);
+        boneTxt = p.act.findViewById(R.id.boneTxt);
+        ll = p.act.findViewById(R.id.layout);
+    }
+
+    void clearButtons(){
+        powerups = new HashMap<>();
+        for(Button b : btns){
+            p.act.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    ll.removeView(b);
+                }
+            });
+        }
+        btns = new ArrayList<>();
+    }
+
+
+
+    void parse(String msg){
+        if(msg.equals("closedGame")){
+            p.sendTo = null;
+            p.changeText("Game disconnected.\n Waiting for new connection...");
+            p.changeVisibility(R.id.boneTxt, View.GONE);
+            p.changeVisibility(R.id.hpTxt, View.GONE);
+            clearButtons();
+            p.shouldScan = true;
+        }
+        if(msg.equals("lose")){
+            clearButtons();
+        }
+        char type = msg.charAt(0);
+        String value = msg.substring(2);
+        if(type == 'b'){
+            bones = Integer.parseInt(value);
+        }
+        else if(type == 'h'){
+            health = Integer.parseInt(value);
+        }
+        else if(type == 'u' && value.compareTo("empty") != 0){
+            powerups.put(value, powerups.get(value) - 1 > 0 ? 0: powerups.get(value)-1);
+        }
+        else if(type == 'p'){
+            boolean has = powerups.containsKey(value);
+            int count = has ? powerups.get(value) : 0;
+            powerups.put(value, count + 1);
+            if(has == false){
+                p.act.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Button btn = new Button(p.act);
+                        btn.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                        btns.add(btn);
+                        ll.addView(btn);
+                    }
+                });
+            }
+        }
+        changeText();
+    }
+
+    void changeText(){
+        class textChanger implements Runnable {
+            String text;
+            TextView txt;
+            textChanger(String s, TextView txt){
+                text = s;
+                this.txt = txt;
+            }
+            @Override
+            public void run() {
+                txt.setText(text);
+            }
+        }
+        p.act.runOnUiThread(new textChanger("Bones: " + bones, boneTxt));
+        p.act.runOnUiThread(new textChanger("HP: " + health, hpTxt));
+        ArrayList<String> powerupNames = new ArrayList<>(powerups.keySet());
+        ArrayList<Integer> powerupNums = new ArrayList<>(powerups.values());
+        for(int i = 0; i < powerupNames.size(); i++){
+            String value = powerupNames.get(i);
+            btns.get(i).setText(powerupNames.get(i) + ": " + powerupNums.get(i));
+            btns.get(i).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Log.e("","p " + value);
+                    if(powerups.get(value) > 0){
+                        p.sendMsg("p " + value);
+                        powerups.put(value, powerups.get(value) - 1);
+                    }
+                }
+            });
+        }
     }
 
     public void run() {
@@ -248,15 +335,13 @@ class Receiver extends Thread {
                     s.receive(msg);
                     p.sendTo = msg.getAddress();
                     String msgRecvd = new String(msg.getData(),0, msg.getLength());
-                    if(msgRecvd.equals("closedGame")){
-                        p.sendTo = null;
-                        p.changeText("Game disconnected.\n Waiting for new connection...");
-                        p.shouldScan = true;
-                    }
-                    Log.e("",msgRecvd);
+                    p.changeVisibility(R.id.boneTxt, View.VISIBLE);
+                    p.changeVisibility(R.id.hpTxt, View.VISIBLE);
+                    parse(msgRecvd);
                 } catch (Exception e) {}
             }
         } catch (Exception e) {
+            Log.e("",e.toString());
             this.run();
         }
     }

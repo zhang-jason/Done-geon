@@ -1,10 +1,13 @@
 import pygame, csv, os
 
+
 class Tile(pygame.sprite.Sprite):
     def __init__(self, image, type, x, y, size):
         pygame.sprite.Sprite.__init__(self)
-        #self.image = spritesheet.parse_sprite(image)
-        self.image = pygame.transform.scale(pygame.image.load((os.path.join(os.path.dirname(__file__), 'assets/tiles', image))).convert_alpha(), (size, size))
+        # self.image = spritesheet.parse_sprite(image)
+        self.image = pygame.transform.scale(
+            pygame.image.load((os.path.join(os.path.dirname(__file__), 'assets/tiles', image))).convert_alpha(),
+            (size, size))
         self.type = type
         self.rect = self.image.get_rect()
         self.rect.x, self.rect.y = x, y
@@ -12,12 +15,13 @@ class Tile(pygame.sprite.Sprite):
     def draw(self, surface):
         surface.blit(self.image, (self.rect.x, self.rect.y))
 
+
 class TileMap():
     def __init__(self, filename, size):
         self.getTileList()
         self.tile_size = size
         self.start_x, self.start_y = 0, 0
-        #self.spritesheet = spritesheet
+        # self.spritesheet = spritesheet
         self.tiles = self.load_tiles(filename)
         self.map_surface = pygame.Surface((self.map_w, self.map_h))
         self.map_surface.set_colorkey((0, 0, 0))
@@ -25,7 +29,8 @@ class TileMap():
 
     def getTileList(self):
         # This may need to have the os.path.join(os.path.dirname(__file__), treatment
-        with open(os.path.join(os.path.dirname(__file__),'Assets/Tiles/tileID.csv'), mode='r', encoding='utf-8-sig') as data:
+        with open(os.path.join(os.path.dirname(__file__), 'Assets/Tiles/tileID.csv'), mode='r',
+                  encoding='utf-8-sig') as data:
             self.tileList = []
             reader = csv.reader(data)
             for row in reader:
@@ -35,7 +40,7 @@ class TileMap():
     def draw_map(self, surface):
         surface.blit(self.map_surface, (0, 0))
 
-    def load_map (self):
+    def load_map(self):
         for tile in self.tiles:
             tile.draw(self.map_surface)
 
@@ -60,7 +65,7 @@ class TileMap():
                     image, type = self.tileList[int(tile) - 1]
                     tiles.append(Tile(image, type, x * self.tile_size, y * self.tile_size, self.tile_size))
                     # print('Image:' + image + '\nType:' + type)
-                    
+
                 # elif tile == '258':
                 #     tiles.append(Tile('wall_inner_corner_mid_left.png', x * self.tile_size, y * self.tile_size, self.tile_size))
                 # elif tile == '36':

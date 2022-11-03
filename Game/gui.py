@@ -83,17 +83,19 @@ class Inventory():
     def __init__(self, WIN, TILE_SIZE):
         super(Inventory, self).__init__()
         self.TILE_SIZE = TILE_SIZE
+        self.image = pygame.transform.scale(pygame.image.load(join(dirname(dirname(__file__)), 'game/assets/inventory',
+                                                                    'empty.png')), (self.TILE_SIZE, self.TILE_SIZE))
 
         # Variable Stuff
-        self.maxItems = 3
-        self.currItems = 0
-        self.itemList = []
+        self.currItem = ''
+        #self.itemList = []
 
-    def addItem(self, item):
-        if self.currItems < self.maxItems:
-            self.itemList.append(item)
+    def update(self, WIN, player):
+        self.currItem = player.powerup
 
-    def update(self, WIN):
-        if self.currItems > 0:
-            self.rect.left = self.TILE_SIZE * (15 - self.currItems)
-
+        self.image = pygame.transform.scale(pygame.image.load(join(dirname(dirname(__file__)), 'game/assets/inventory',
+                                                                f'{self.currItem}.png')), (self.TILE_SIZE, self.TILE_SIZE))
+        self.image_rect = self.image.get_rect()
+        self.image_rect.left = self.TILE_SIZE * 14
+        self.image_rect.centery = self.TILE_SIZE * 8 + (self.TILE_SIZE // 2)
+        WIN.blit(self.image, self.image_rect)

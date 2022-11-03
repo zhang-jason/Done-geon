@@ -2,12 +2,15 @@ package edu.ufl.donegeon;
 
 import android.app.Activity;
 import android.content.Context;
+import android.media.Image;
 import android.net.wifi.WifiManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.GridLayout;
 
 import java.math.BigInteger;
 import java.net.*;
@@ -22,9 +25,12 @@ public class Peer extends Thread {
     DatagramSocket s;
     Context context;
     TextView txt;
+    TextView lifeTxt;
+    TextView bneTxt;
     EditText editTxt;
     Activity act;
-
+    GridLayout healthGrid;
+    ImageView bneCnt;
 
     View.OnClickListener listener = new View.OnClickListener() {
         @Override
@@ -71,8 +77,34 @@ public class Peer extends Thread {
                 editTxt.setVisibility(visibility);
             }
         }
-        visibilityChanger vC = new visibilityChanger(btnID,txtID,visibility);
+        visibilityChanger vC = new visibilityChanger(btnID,txtID, visibility);
         act.runOnUiThread(vC);
+    }
+
+    void changeVisibilityGrid(int gridID, int lifeTxtID, int bneCntID, int bneTxtID, int visibility){
+        class visibilityChangerGrid implements Runnable {
+            int gridID, lifeTxtID, bneCntID, bneTxtID,visibility;
+            visibilityChangerGrid(int gridID, int lifeTxtID, int bneCntID, int bneTxtID, int visibility){
+                this.gridID = gridID;
+                this.lifeTxtID = lifeTxtID;
+                this.visibility = visibility;
+                this.bneCntID = bneCntID;
+                this.bneTxtID = bneTxtID;
+            }
+            @Override
+            public void run() {
+                healthGrid = act.findViewById(gridID);
+                healthGrid.setVisibility(visibility);
+                lifeTxt = act.findViewById(lifeTxtID);
+                lifeTxt.setVisibility(visibility);
+                bneCnt = act.findViewById(bneCntID);
+                bneCnt.setVisibility(visibility);
+                bneTxt = act.findViewById(bneTxtID);
+                bneTxt.setVisibility(visibility);
+            }
+        }
+        visibilityChangerGrid vCG = new visibilityChangerGrid(gridID, lifeTxtID, bneCntID, bneTxtID, visibility);
+        act.runOnUiThread(vCG);
     }
 
     void scan(){
@@ -108,8 +140,9 @@ public class Peer extends Thread {
                 sleep(500);
             }catch(Exception e){}
         }
+        changeVisibilityGrid(R.id.lifeGrid, R.id.healthBar, R.id.boneCntPic, R.id.boneCntTxt, View.VISIBLE);
         changeText("Connected to: " + sendTo.getHostName() + "\n Scan NFC Tag");
-        changeVisibility(R.id.submitIP,R.id.manualIP,View.GONE);
+        changeVisibility(R.id.submitIP,R.id.manualIP, View.GONE);
     }
 
     void spawnManual(){
@@ -117,7 +150,8 @@ public class Peer extends Thread {
             sleep(5000);
             if(sendTo == null){
                 changeText("Game device not found");
-                changeVisibility(R.id.submitIP,R.id.manualIP,View.VISIBLE);
+                changeVisibility(R.id.submitIP,R.id.manualIP, View.VISIBLE);
+                changeVisibilityGrid(R.id.lifeGrid, R.id.healthBar, R.id.boneCntPic, R.id.boneCntTxt, View.GONE);
             }
         }catch (Exception e){}
     }

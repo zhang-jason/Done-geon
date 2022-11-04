@@ -416,7 +416,6 @@ while True:
         case "Lose":
             print("Lose screen!")
             color = (255, 255, 255)
-            WIN.fill(255)
             neon_yellow_color = (224, 231, 34)
             title_text = font.render('Game Over!', True, color)
             start_text = font.render('Click Here To Return To Menu!', True, color)

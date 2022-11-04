@@ -28,12 +28,9 @@ public class Peer extends Thread {
     String sendMsg;
     DatagramSocket s;
     TextView txt;
-    TextView lifeTxt;
-    TextView bneTxt;
     EditText editTxt;
     Activity act;
-    GridLayout healthGrid;
-    ImageView bneCnt;
+    GridLayout healthGrid,bneCnt;
 
     View.OnClickListener listener = new View.OnClickListener() {
         @Override
@@ -65,29 +62,23 @@ public class Peer extends Thread {
         });
     }
 
-    void changeVisibilityGrid(int gridID, int lifeTxtID, int bneCntID, int bneTxtID, int visibility){
+    void changeVisibilityGrid(int gridID, int bneCntID, int visibility){
         class visibilityChangerGrid implements Runnable {
             int gridID, lifeTxtID, bneCntID, bneTxtID,visibility;
-            visibilityChangerGrid(int gridID, int lifeTxtID, int bneCntID, int bneTxtID, int visibility){
+            visibilityChangerGrid(int gridID, int bneCntID, int visibility){
                 this.gridID = gridID;
-                this.lifeTxtID = lifeTxtID;
                 this.visibility = visibility;
                 this.bneCntID = bneCntID;
-                this.bneTxtID = bneTxtID;
             }
             @Override
             public void run() {
                 healthGrid = act.findViewById(gridID);
                 healthGrid.setVisibility(visibility);
-                lifeTxt = act.findViewById(lifeTxtID);
-                lifeTxt.setVisibility(visibility);
                 bneCnt = act.findViewById(bneCntID);
                 bneCnt.setVisibility(visibility);
-                bneTxt = act.findViewById(bneTxtID);
-                bneTxt.setVisibility(visibility);
             }
         }
-        visibilityChangerGrid vCG = new visibilityChangerGrid(gridID, lifeTxtID, bneCntID, bneTxtID, visibility);
+        visibilityChangerGrid vCG = new visibilityChangerGrid(gridID, bneCntID, visibility);
         act.runOnUiThread(vCG);
     }
 
@@ -124,7 +115,7 @@ public class Peer extends Thread {
                 sleep(500);
             }catch(Exception e){}
         }
-        changeVisibilityGrid(R.id.lifeGrid, R.id.healthBar, R.id.boneCntPic, R.id.boneCntTxt, View.VISIBLE);
+        changeVisibilityGrid(R.id.lifeGrid, R.id.boneCntPic, View.VISIBLE);
         changeText("Connected to: " + sendTo.getHostName() + "\n Scan NFC Tag");
         changeVisibility(R.id.submitIP, View.GONE);
         changeVisibility(R.id.manualIP,View.GONE);
@@ -135,7 +126,6 @@ public class Peer extends Thread {
             sleep(5000);
             if(sendTo == null){
                 changeText("Game device not found");
-                changeVisibilityGrid(R.id.lifeGrid, R.id.healthBar, R.id.boneCntPic, R.id.boneCntTxt, View.GONE);
                 editTxt = act.findViewById(R.id.manualIP);
                 act.findViewById(R.id.submitIP).setOnClickListener(listener);
                 changeVisibility(R.id.submitIP, View.VISIBLE);
@@ -230,8 +220,6 @@ class Receiver extends Thread {
     public Receiver(Peer p,InetAddress thisAddr) {
         this.p = p;
         this.thisAddr = thisAddr;
-        hpTxt = p.act.findViewById(R.id.hpTxt);
-        boneTxt = p.act.findViewById(R.id.boneTxt);
         ll = p.act.findViewById(R.id.layout);
     }
 
@@ -254,8 +242,7 @@ class Receiver extends Thread {
         if(msg.equals("closedGame")){
             p.sendTo = null;
             p.changeText("Game disconnected.\n Waiting for new connection...");
-            p.changeVisibility(R.id.boneTxt, View.GONE);
-            p.changeVisibility(R.id.hpTxt, View.GONE);
+            p.changeVisibilityGrid(R.id.lifeGrid, R.id.boneCntPic, View.GONE);
             clearButtons();
             p.shouldScan = true;
         }
@@ -292,21 +279,36 @@ class Receiver extends Thread {
         changeText();
     }
 
-    void changeText(){
-        class textChanger implements Runnable {
-            String text;
-            TextView txt;
-            textChanger(String s, TextView txt){
-                text = s;
-                this.txt = txt;
-            }
-            @Override
-            public void run() {
-                txt.setText(text);
-            }
+    void updateHealthbar(int health){
+        int[] healthBar = {R.id.healthPic1,R.id.healthPic2,R.id.healthPic3,R.id.healthPic4};
+        for(int i = 0; i < 4;i++){
+            if(i < health)
+                p.changeVisibility(healthBar[i],View.VISIBLE);
+            else
+                p.changeVisibility(healthBar[i],View.GONE);
         }
-        p.act.runOnUiThread(new textChanger("Bones: " + bones, boneTxt));
-        p.act.runOnUiThread(new textChanger("HP: " + health, hpTxt));
+    }
+
+    void updateBones(int bones){
+        int num = bones;
+        boolean blank = true;
+        int[] pos = {R.id.tenk,R.id.onek,R.id.hundred,R.id.ten,R.id.one};
+        int[] size = {10000,1000,100,10,1};
+        for(int i = 0; i < pos.length;i++){
+            int[] images = {blank? R.drawable.blank:R.drawable.zero,R.drawable.one,R.drawable.two,R.drawable.three,R.drawable.four,
+                    R.drawable.five,R.drawable.six,R.drawable.seven,R.drawable.eight,R.drawable.nine};
+            ImageView img = p.act.findViewById(pos[i]);
+            img.setImageResource(images[num/size[i]]);
+            if(num/size[i] != 0 || size[i] == 1)
+                blank = false;
+            num = num % size[i];
+        }
+
+    }
+
+    void changeText(){
+        updateBones(bones);
+        updateHealthbar(health);
         ArrayList<String> powerupNames = new ArrayList<>(powerups.keySet());
         ArrayList<Integer> powerupNums = new ArrayList<>(powerups.values());
         for(int i = 0; i < powerupNames.size(); i++){
@@ -318,7 +320,7 @@ class Receiver extends Thread {
                     Log.e("","p " + value);
                     if(powerups.get(value) > 0){
                         p.sendMsg("p " + value);
-                        powerups.put(value, powerups.get(value) - 1);
+                        powerups.put(value, powerups.get(value) - 1 < 0? 0: powerups.get(value) - 1);
                     }
                 }
             });
@@ -335,8 +337,6 @@ class Receiver extends Thread {
                     s.receive(msg);
                     p.sendTo = msg.getAddress();
                     String msgRecvd = new String(msg.getData(),0, msg.getLength());
-                    p.changeVisibility(R.id.boneTxt, View.VISIBLE);
-                    p.changeVisibility(R.id.hpTxt, View.VISIBLE);
                     parse(msgRecvd);
                 } catch (Exception e) {}
             }

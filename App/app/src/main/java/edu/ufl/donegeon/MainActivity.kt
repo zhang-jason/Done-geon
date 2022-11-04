@@ -62,7 +62,7 @@ class MainActivity : Activity() {
         try {
             var text = String(payload, 3, payload.size - 3)
             txtVw.text = "Message on tag:\n $text"
-            server.sendMsg(text)
+            server.sendMsg("n " + text)
         } catch (e: Exception) {
         }
     }

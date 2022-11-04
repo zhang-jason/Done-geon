@@ -1,10 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:gravity="top|center"
+    android:gravity="center"
     android:id="@+id/layout"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/nfc_contents"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Waiting for connection..."
+        android:gravity="center_vertical|center_horizontal"
+        android:textSize="20dp">
+    </TextView>
+
+    <EditText
+        android:id="@+id/manualIP"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="Enter game device IP"
+        android:gravity="center_vertical|center_horizontal"
+        android:visibility="gone"
+        android:textSize="20dp">
+    </EditText>
+
+    <Button
+        android:id="@+id/submitIP"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Submit"
+        android:gravity="center_vertical|center_horizontal"
+        android:visibility="gone"
+        android:textSize="20dp">
+    </Button>
 
     <GridLayout
         android:id="@+id/lifeGrid"
@@ -12,7 +41,7 @@
         android:layout_height="wrap_content"
         android:alignmentMode="alignBounds"
         android:columnOrderPreserved="false"
-        android:gravity="center_vertical|center_horizontal"
+        android:gravity="center"
         android:useDefaultMargins="true"
         android:visibility="gone">
 
@@ -40,76 +69,46 @@
             android:layout_height="50dp"
             android:src="@drawable/health_pic_foreground" /></GridLayout>
 
-    <TextView
-        android:id="@+id/healthBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="top|center"
-        android:textSize="20dp"
-        android:text="Health Bar"
-        android:visibility="gone"></TextView>
-
-    <ImageView
+    <GridLayout
         android:id="@+id/boneCntPic"
-        android:layout_width="179dp"
-        android:layout_height="118dp"
-        android:layout_marginTop="-15dp"
-        android:layout_marginRight="0dp"
-        android:src="@drawable/bone_counter_foreground"
-        android:visibility="gone"></ImageView>
-
-    <TextView
-        android:id="@+id/boneCntTxt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="-30dp"
-        android:layout_marginRight="0dp"
-        android:textSize="20dp"
-        android:text="Bone Counter"
-        android:visibility="gone"></TextView>
-
-    <TextView
-        android:id="@+id/nfc_contents"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
         android:gravity="center"
-        android:text="Waiting for connection..."
-        android:textSize="20dp"></TextView>
-
-    <TextView
-        android:id="@+id/hpTxt"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical|center_horizontal"
-        android:textSize="20dp"
+        android:horizontalSpacing="0dip"
         android:visibility="gone">
-    </TextView>
 
-    <TextView
-        android:id="@+id/boneTxt"
-        android:layout_width="wrap_content"
+        <ImageView
+            android:id="@+id/boneStart"
+            android:src="@drawable/start" />
+
+        <ImageView
+            android:id="@+id/tenk"
+            android:src="@drawable/blank" />
+
+        <ImageView
+            android:id="@+id/onek"
+            android:src="@drawable/blank" />
+
+        <ImageView
+            android:id="@+id/hundred"
+            android:src="@drawable/blank" />
+
+        <ImageView
+            android:id="@+id/ten"
+            android:src="@drawable/blank" />
+
+        <ImageView
+            android:id="@+id/one"
+            android:src="@drawable/blank" />
+
+        <ImageView
+            android:id="@+id/end"
+            android:src="@drawable/end" /></GridLayout>
+
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical|center_horizontal"
-        android:textSize="20dp"
-        android:visibility="gone">
-    </TextView>
-
-    <EditText
-        android:id="@+id/manualIP"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical|center_horizontal"
-        android:hint="Enter game device IP"
-        android:textSize="20dp"
-        android:visibility="gone"></EditText>
-
-    <Button
-        android:id="@+id/submitIP"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical|center_horizontal"
-        android:text="Submit"
-        android:textSize="20dp"
-        android:visibility="gone"></Button>
-
+        android:layout_marginTop="20sp" />
 </LinearLayout>

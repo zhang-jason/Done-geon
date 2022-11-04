@@ -22,6 +22,8 @@ class Server():
             self.connected = False
         if msg[0] == 'p':
             self.player.use_powerup(msg[2:])
+        if msg[0] == 'n':
+            print("NFC: " + msg[2:])
 
     def readMsg(self):
         while(self.alive):

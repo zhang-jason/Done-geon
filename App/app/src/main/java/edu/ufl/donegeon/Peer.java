@@ -258,7 +258,7 @@ class Receiver extends Thread {
             health = Integer.parseInt(value);
         }
         else if(type == 'u' && value.compareTo("empty") != 0){
-            powerups.put(value, powerups.get(value) - 1 > 0 ? 0: powerups.get(value)-1);
+            powerups.put(value, powerups.get(value) - 1 < 0 ? 0: powerups.get(value)-1);
         }
         else if(type == 'p'){
             boolean has = powerups.containsKey(value);

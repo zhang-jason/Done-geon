@@ -256,6 +256,7 @@ class Receiver extends Thread {
             p.changeText("Game disconnected.\n Waiting for new connection...");
             p.changeVisibility(R.id.boneTxt, View.GONE);
             p.changeVisibility(R.id.hpTxt, View.GONE);
+            p.changeVisibilityGrid(R.id.lifeGrid, R.id.healthBar, R.id.boneCntPic, R.id.boneCntTxt, View.GONE);
             clearButtons();
             p.shouldScan = true;
         }

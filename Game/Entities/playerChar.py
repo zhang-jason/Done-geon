@@ -50,6 +50,7 @@ class Player(Entity):
 
         self.bones = 3
         self.powerup = 'empty'
+        self.powerupTimer = 0
         self.tile_x = 0
         self.tile_y = 0
         self.tile = "-1"
@@ -139,6 +140,7 @@ class Player(Entity):
         match powerup:
             case 'speed':
                 self.speed += 2
+                self.powerupTimer = 1000
             case 'heal':
                 self.get_regen(1)
             case 'shield':
@@ -236,6 +238,11 @@ class Player(Entity):
             self.sprint_cooldown -= 1
             if self.speed > 5:
                 self.speed -= 1
+
+        if self.powerupTimer > 0:
+            self.powerupTimer -= 1
+            if self.powerupTimer == 0:
+                self.speed = 5
 
         # self.move(keys)
         # self.checkCollide(group)

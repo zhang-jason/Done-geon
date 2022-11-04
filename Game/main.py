@@ -316,6 +316,7 @@ while True:
 
     match screen:
         case "Game":
+            print("Game!")
             if player.fall == 1:
                 enemies = pygame.sprite.Group()
                 projectiles = pygame.sprite.Group()
@@ -382,13 +383,81 @@ while True:
 
         case "Start":
             print("Start screen!")
-            screen = "Game"
-            # Todo: add start screen
+            color = (255, 255, 255)
+            WIN.fill(255)
+            neon_yellow_color = (224, 231, 34)
+            title_text = font.render('Done-geon', True, color)
+            start_text = font.render('Click Here To Start!', True, color)
+            button_rect = start_text.get_rect()
+            button_rect[0] = width / 6
+            button_rect[1] = height / 2
+            run = True
+            while run:
+                WIN.blit(title_text, (width / 6, height / 3))
+                WIN.blit(start_text, (width / 6, height / 2))
+                for event in pygame.event.get():
+                    mouse = pygame.mouse.get_pos()
+                    if button_rect.collidepoint(mouse):
+                        start_text = font.render('Click Here To Start!', True, neon_yellow_color)
+                    else:
+                        start_text = font.render('Click Here To Start!', True, color)
+                    if event.type == pygame.QUIT:
+                        pygame.quit()
+                        server.endServer()
+                        clearTempContents()
+                        sys.exit()
+                    if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                        if button_rect.collidepoint(mouse):
+                            print('Clicked!')
+                            screen = "Reset"
+                            run = False
+                pygame.display.update()
 
         case "Lose":
             print("Lose screen!")
-            screen = "Reset"
-            # Todo: add start screen
+            color = (255, 255, 255)
+            WIN.fill(255)
+            neon_yellow_color = (224, 231, 34)
+            title_text = font.render('Game Over!', True, color)
+            start_text = font.render('Click Here To Return To Menu!', True, color)
+            game_text = font.render('Click Here To Play Again!', True, color)
+            button_rect = start_text.get_rect()
+            button_rect[0] = width / 6
+            button_rect[1] = height / 2
+            button_rect_2 = game_text.get_rect()
+            button_rect_2[0] = width / 6
+            button_rect_2[1] = height / 2.5
+            run = True
+            while run:
+                WIN.blit(title_text, (width / 6, height / 3.5))
+                WIN.blit(start_text, (width / 6, height / 2))
+                WIN.blit(game_text, (width / 6, height / 2.5))
+                for event in pygame.event.get():
+                    mouse = pygame.mouse.get_pos()
+                    if button_rect.collidepoint(mouse):
+                        start_text = font.render('Click Here To Return To Menu!', True, neon_yellow_color)
+                    else:
+                        start_text = font.render('Click Here To Return To Menu!', True, color)
+                    if button_rect_2.collidepoint(mouse):
+                        game_text = font.render('Click Here To Play Again!', True, neon_yellow_color)
+                    else:
+                        game_text = font.render('Click Here To Play Again!', True, color)
+                    if event.type == pygame.QUIT:
+                        pygame.quit()
+                        server.endServer()
+                        clearTempContents()
+                        sys.exit()
+                    if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                        if button_rect.collidepoint(mouse):
+                            print('Clicked!')
+                            screen = "Start"
+                            run = False
+                    if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                        if button_rect_2.collidepoint(mouse):
+                            screen = "Reset"
+                            run = False
+                pygame.display.update()
+
 
         case "Reset":
             enemies = pygame.sprite.Group()
@@ -398,7 +467,7 @@ while True:
             mouse_pressed = 0
             health = HealthBar(WIN, player, TILE_SIZE)
             bone_bar = BoneCounter(WIN, player, TILE_SIZE)
-            screen = "Start"
+            screen = "Game"
 
         case other:
             print("Invalid state, return to start screen!")

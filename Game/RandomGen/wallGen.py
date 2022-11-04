@@ -100,43 +100,112 @@ class WallGen():
                     elif(left):
                         self.thirdLayer[i][j] = 35 #three_sides_bottom
                     else:
-                        self.thirdLayer[i][j] = 20 #wall_inner_corner_l_top_right, bottom right L corner
+                        if(topleft):
+                            self.thirdLayer[i][j] = 43 #bottom_right_corner_with_corner, bottom right L corner and topleft corner
+                        else:
+                            self.thirdLayer[i][j] = 20 #wall_inner_corner_l_top_right, bottom right L corner
                 elif(top):
                     if(left):
                         self.thirdLayer[i][j] = 34 #three sides top
                     else:
                         if(bottomleft):
-                            self.thirdLayer[i][j] = -1 # CHANGE THIS VALUE
+                            self.thirdLayer[i][j] = 45 #top_right_corner_with_corner top right L corner and bottomleft corner
                         else:
                             self.thirdLayer[i][j] = 31 #wall_corner_top_right_1 top right L corner
                 elif(left):
                     self.thirdLayer[i][j] = 36 #two_sides_left_right
                 else:
-                    self.thirdLayer[i][j] = 17 #wall_side_mid_left right wall
+                    if(topleft):
+                        if(bottomleft):
+                            self.thirdLayer[i][j] = 59 #rightwall_bottomleft_topleft_corners right wall with both left corners
+                        else:
+                            self.thirdLayer[i][j] = 60 #rightwall_topleft_corner right wall with topleft corner
+                    elif(bottomleft):
+                        self.thirdLayer[i][j] = 58 #rightwall_bottomleft_corner right wall with bottomleft corner
+                    else:
+                        self.thirdLayer[i][j] = 17 #wall_side_mid_left right wall
             elif(left):
                 if(bottom):
                     if(top):
                         self.thirdLayer[i][j] = 32 #three_sides_left
                     else:
-                        self.thirdLayer[i][j] = 28 #wall_corner_bottom_left left bottom L corner
+                        if(topright):
+                            self.thirdLayer[i][j] = 44 #bottom_left_corner_with_corner left bottom L corner and topright corner
+                        else:
+                            self.thirdLayer[i][j] = 28 #wall_corner_bottom_left left bottom L corner
                 elif(top):
-                    self.thirdLayer[i][j] = 30 #wall_corner_top_left_1 top left L corner
-                    #self.thirdLayer[i][j] = 18
+                    if(bottomright):
+                        self.thirdLayer[i][j] = 46 #top_left_corner_with_corner top left L corner and bottom right corner
+                    else:
+                        self.thirdLayer[i][j] = 30 #wall_corner_top_left_1 top left L corner
                 else:
-                    self.thirdLayer[i][j] = 18 #wall_side_mid_right left wall
+                    if(topright):
+                        if(bottomright):
+                            self.thirdLayer[i][j] = 62 #leftwall_bottomright_topright_corners left wall with both right corners
+                        else:
+                            self.thirdLayer[i][j] = 63 #leftwall_topright_corner left wall with topright corner
+                    elif(bottomright):
+                        self.thirdLayer[i][j] = 61 #leftwall_bottomright_corner left wall with bottomright corner
+                    else:
+                        self.thirdLayer[i][j] = 18 #wall_side_mid_right left wall
             elif(top):
                 if(bottom):
                     self.thirdLayer[i][j] = 37 #two_sides_top_bottom
                 else:
-                    self.thirdLayer[i][j] = 16 #wall_top_mid2 top wall
+                    if(bottomleft):
+                        if(bottomright):
+                            self.thirdLayer[i][j] = 65 #topwall_bottomright_bottomleft_corners top wall both bottom corners
+                        else:
+                            self.thirdLayer[i][j] = 64 #topwall_bottomleft_corner top wall and bottomleft corner
+                    elif(bottomright):
+                        self.thirdLayer[i][j] = 66 #topwall_bottomright_corner top wall and bottomright corner
+                    else:
+                        self.thirdLayer[i][j] = 16 #wall_top_mid2 top wall
             elif(bottom):
-                self.thirdLayer[i][j] = 15 #wall_top_mid bottom wall
+                if(topleft):
+                    if(topright):
+                        self.thirdLayer[i][j] = 68 #bottomwall_topleft_topright_corners bottom wall and both top corners
+                    else:
+                        self.thirdLayer[i][j] = 67 #bottomwall_topleft_corner bottom wall and topleft corner
+                elif(topright):
+                    self.thirdLayer[i][j] = 69 #bottomwall_topright_corner bottom wall and topright corner
+                else:
+                    self.thirdLayer[i][j] = 15 #wall_top_mid bottom wall
             elif(topright):
-                self.thirdLayer[i][j] = 41 #top_right_corner dot corner
+                if(topleft):
+                    if(bottomright):
+                        if(bottomleft):
+                            self.thirdLayer[i][j] = 54 #four_corners
+                        else:
+                            self.thirdLayer[i][j] = 52 #bottomright_topleft_topright_corners
+                    elif(bottomleft):
+                        self.thirdLayer[i][j] = 48 #bottomleft_topleft_topright_corners
+                    else:
+                        self.thirdLayer[i][j] = 55 #topright, topleft
+                elif(bottomright):
+                    if(bottomleft):
+                        self.thirdLayer[i][j] = 50 #bottomright_bottomleft_topright_corners
+                    else:
+                        self.thirdLayer[i][j] = 53 #bottomright_topright_corners
+                elif(bottomleft):
+                    self.thirdLayer[i][j] = 56 #topright, bottomleft
+                else:
+                    self.thirdLayer[i][j] = 41 #top_right_corner dot corner
             elif(topleft):
-                self.thirdLayer[i][j] = 40 #top_left_corner dot corner
+                if(bottomright):
+                    if(bottomleft):
+                        self.thirdLayer[i][j] = 49 #bottomright_bottomleft_topleft_corners
+                    else:
+                        self.thirdLayer[i][j] = 51 #bottomright_topleft_corners
+                elif(bottomleft):
+                    self.thirdLayer[i][j] = 57 #topleft, bottomleft
+                else:
+                    self.thirdLayer[i][j] = 40 #top_left_corner dot corner
             elif(bottomright):
-                self.thirdLayer[i][j] = 39 #wall_side_top_left bottom right dot corner
+                if(bottomleft):
+                    self.thirdLayer[i][j] = 47 #bottomleft_bottomright_corners
+                else:
+                    self.thirdLayer[i][j] = 39 #wall_side_top_left bottom right dot corner
             elif(bottomleft):
                 self.thirdLayer[i][j] = 38 #wall_side_top_right bottom left dot corner
 

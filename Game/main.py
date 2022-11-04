@@ -265,7 +265,10 @@ font = pygame.font.SysFont('Arial', round(TILE_SIZE))
 
 
 def random_spawn():
-    return randint(TILE_SIZE * 2, width - TILE_SIZE * 2), randint(TILE_SIZE * 2, height - TILE_SIZE * 2)
+    validCoord = choice(room.holeList)
+    y = validCoord[0] * TILE_SIZE + TILE_SIZE // 2
+    x = validCoord[1] * TILE_SIZE + TILE_SIZE // 2
+    return (x, y)
 
 
 while True:
@@ -316,7 +319,7 @@ while True:
 
     match screen:
         case "Game":
-            print("Game!")
+            #print("Game!")
             if player.fall == 1:
                 enemies = pygame.sprite.Group()
                 projectiles = pygame.sprite.Group()

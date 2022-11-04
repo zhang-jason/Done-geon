@@ -18,6 +18,7 @@ class Room():
         self.tileSize = tileSize
         self.roomIndex = roomIndex
         self.room = self.genMap()
+        self.holeList = self.findHoles()
         self.powerups = pygame.sprite.Group()
         self.genPowerups()
 
@@ -31,10 +32,11 @@ class Room():
         return map
 
     def drawRoom(self, WIN):
-        for i in self.room:
-            i.draw_map(WIN)
-
+        self.room[0].draw_map(WIN)
+        self.room[1].draw_map(WIN)
         self.powerups.draw(WIN)
+        self.room[2].draw_map(WIN)
+        
 
     def genMap(self):
         room = []
@@ -53,19 +55,27 @@ class Room():
     def genPowerups(self):
         currPowerups = 0
         maxPowerups = 3
-        powerupType = ['speed', 'heal', 'shield']
-
-        map = self.getMap(self.roomIndex, 2)
+        powerupType = ['speed', 'heal'] #add shield later
 
         while currPowerups < maxPowerups:
-            x = randint(2, len(map) - 1)
-            y = randint(2, len(map[0]) - 1)
+            validCoord = choice(self.holeList)
+            y = validCoord[0] * self.tileSize + self.tileSize // 2
+            x = validCoord[1] * self.tileSize + self.tileSize // 2
+            self.powerups.add(Powerup((x, y), choice(powerupType), self.tileSize))
+            currPowerups += 1
 
-            if map[x][y] == '-1':
-                x = (x * self.tileSize) + self.tileSize // 2
-                y = (y * self.tileSize) + self.tileSize // 2
-                self.powerups.add(Powerup((x, y), choice(powerupType), self.tileSize))
-                currPowerups += 1
+    def findHoles(self):
+        collide = self.getMap(self.roomIndex, 2)
+        noncollide = self.getMap(self.roomIndex, 3)
+        specialHoles = ['9','10','11']
+        holeList = []
+
+        for i in range(len(collide)):
+            for j in range(len(collide[0])):
+                if collide[i][j] == '-1' and noncollide[i][j] not in specialHoles:
+                    holeList.append((i, j))
+
+        return holeList
 
     def __getTileMap__(self, layerIndex):
         filename = os.path.join(os.path.dirname(__file__), '..', 'assets/tiles/temprooms',

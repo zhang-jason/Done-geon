@@ -138,12 +138,12 @@ class Player(Entity):
         if powerup is None:
             powerup = self.powerup
         match powerup:
-            case 'speed':
+            case 'Speed':
                 self.speed += 2
                 self.powerupTimer = 1000
-            case 'heal':
+            case 'Heal':
                 self.get_regen(1)
-            case 'shield':
+            case 'Shield':
                 print('shielded!')
 
         print(f'used {powerup}')

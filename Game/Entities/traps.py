@@ -31,8 +31,6 @@ class Trap(Entity):
         self.rect.centerx, self.rect.centery = position
 
     def update(self):
-        print(f'Cooldown: {self.cooldown}')
-
         if self.activate:
             if self.activate:
                 self.cooldown = 10

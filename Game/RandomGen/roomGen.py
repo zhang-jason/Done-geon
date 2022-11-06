@@ -37,8 +37,8 @@ class Room():
     def drawRoom(self, WIN):
         self.room[0].draw_map(WIN)
         self.room[1].draw_map(WIN)
-        self.powerups.draw(WIN)
         self.traps.draw(WIN)
+        self.powerups.draw(WIN)
         self.room[2].draw_map(WIN)
         
 

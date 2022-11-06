@@ -9,6 +9,7 @@ from RandomGen.wallGen import WallGen
 from RandomGen.collideGen import CollideGen
 from tiles import TileMap
 from Entities.powerup import Powerup
+from Entities.traps import Trap
 
 
 class Room():
@@ -21,6 +22,8 @@ class Room():
         self.holeList = self.findHoles()
         self.powerups = pygame.sprite.Group()
         self.genPowerups()
+        self.traps = pygame.sprite.Group()
+        self.genTraps()
 
     def getMap(self, roomIndex, layerIndex):
         map = []
@@ -35,6 +38,7 @@ class Room():
         self.room[0].draw_map(WIN)
         self.room[1].draw_map(WIN)
         self.powerups.draw(WIN)
+        self.traps.draw(WIN)
         self.room[2].draw_map(WIN)
         
 
@@ -52,10 +56,11 @@ class Room():
 
         return room
 
+    # Randomly generate powerups around the room
     def genPowerups(self):
         currPowerups = 0
-        maxPowerups = 3
-        powerupType = ['speed', 'heal'] #add shield later
+        maxPowerups = randint(2,4)
+        powerupType = ['Speed', 'Heal'] #add shield later
 
         while currPowerups < maxPowerups:
             validCoord = choice(self.holeList)
@@ -64,6 +69,19 @@ class Room():
             self.powerups.add(Powerup((x, y), choice(powerupType), self.tileSize))
             currPowerups += 1
 
+    def genTraps(self):
+        currTraps = 0
+        maxTraps = 1
+        trapType = ['Spikes']
+
+        while currTraps < maxTraps:
+            validCoord = choice(self.holeList)
+            y = validCoord[0] * self.tileSize + self.tileSize // 2
+            x = validCoord[1] * self.tileSize + self.tileSize // 2
+            self.traps.add(Trap((x, y), choice(trapType), self.tileSize))
+            currTraps += 1
+
+    # Returns a list of empty floor tiles (valid tiles to spawn entities)
     def findHoles(self):
         collide = self.getMap(self.roomIndex, 2)
         noncollide = self.getMap(self.roomIndex, 3)

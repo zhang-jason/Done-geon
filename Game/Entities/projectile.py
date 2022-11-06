@@ -51,5 +51,3 @@ class Projectile(Entity):
         if self.current_sprite >= len(self.sprites):
             self.current_sprite = 0
         self.image = self.sprites[int(self.current_sprite)]
-
-        # Update Math

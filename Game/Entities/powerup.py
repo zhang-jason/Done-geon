@@ -5,7 +5,6 @@ from os.path import join
 from os.path import dirname
 
 class Powerup(Entity):
-    # Team is whether Player or Enemy used projectile, Ability is type of projectile (e.g. fireball, arrow, etc.)
     def __init__(self, position, ability, TILE_SIZE):
         super(Powerup, self).__init__()
 

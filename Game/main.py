@@ -94,7 +94,7 @@ def clearTempContents():
 
 
 updateCount = 0
-screen = "Game"  # can be "Start", "Game", "Pause", maybe lose/win?
+screen = "Start"  # can be "Start", "Game", "Pause", maybe lose/win?
 
 
 def get_player_move(player_ent, keys_main):  # sets target relative to player center
@@ -250,6 +250,13 @@ def detect_item(p):
         server.sendMsg("p " + p.ability)
         p.kill()
 
+def detect_trap(t):
+    t.update()
+
+    for e in enemies:
+        if e.rect.colliderect(t.rect) and t.cooldown <= 0:
+            t.activate = True
+            e.kill()
 
 roomList = []
 for index, iter in enumerate(range(randint(3, 6))):
@@ -316,6 +323,7 @@ while True:
     # Remove old sprites to not hog resources; trust me, this got ugly on my old PC
     WIN.fill(0)
     keys = pygame.key.get_pressed()
+    
 
     match screen:
         case "Game":
@@ -359,6 +367,8 @@ while True:
                     detect_melee(e)
             for p in room.powerups:
                 detect_item(p)
+            for t in room.traps:
+                detect_trap(t)
             player.update()
             if mouse_pressed:
                 player.attack(projectiles)
@@ -387,7 +397,7 @@ while True:
         case "Start":
             print("Start screen!")
             color = (255, 255, 255)
-            WIN.fill(255)
+            #WIN.fill(255)
             neon_yellow_color = (224, 231, 34)
             title_text = font.render('Done-geon', True, color)
             start_text = font.render('Click Here To Start!', True, color)
@@ -396,8 +406,11 @@ while True:
             button_rect[1] = height / 2
             run = True
             while run:
+                WIN.fill(0)
                 WIN.blit(title_text, (width / 6, height / 3))
                 WIN.blit(start_text, (width / 6, height / 2))
+                cursor_img_rect.center = pygame.mouse.get_pos()
+                WIN.blit(cursor_img, cursor_img_rect)
                 for event in pygame.event.get():
                     mouse = pygame.mouse.get_pos()
                     if button_rect.collidepoint(mouse):
@@ -431,9 +444,12 @@ while True:
             button_rect_2[1] = height / 2.5
             run = True
             while run:
+                WIN.fill(0)
                 WIN.blit(title_text, (width / 6, height / 3.5))
                 WIN.blit(start_text, (width / 6, height / 2))
                 WIN.blit(game_text, (width / 6, height / 2.5))
+                cursor_img_rect.center = pygame.mouse.get_pos()
+                WIN.blit(cursor_img, cursor_img_rect)
                 for event in pygame.event.get():
                     mouse = pygame.mouse.get_pos()
                     if button_rect.collidepoint(mouse):

@@ -71,7 +71,7 @@ class Room():
 
     def genTraps(self):
         currTraps = 0
-        maxTraps = 1
+        maxTraps = randint(2,4)
         trapType = ['Spikes']
 
         while currTraps < maxTraps:

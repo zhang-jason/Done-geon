@@ -8,8 +8,7 @@ import pygame
 import pygame.locals as c
 
 class Reaper(Player):
-    def __init__(self, startPosition, TILE_SIZE):
-
+    def __init__(self, startPosition, TILE_SIZE,player= None):
         size = (TILE_SIZE*5//6, TILE_SIZE*5//6)
 
         self.idleSprites = self.__getSprites__('Reaper', 'Idle', size)
@@ -20,6 +19,9 @@ class Reaper(Player):
         self.current_sprite = 0
         self.image = self.currentSprites[self.current_sprite]
         self.rect = self.image.get_rect()
-        self.rect.left, self.rect.top = startPosition
+        if player is None:
+            self.rect.left, self.rect.top = startPosition
+        else:
+            self.rect.left, self.rect.top = player.rect.left, player.rect.top
 
-        super(Reaper, self).__init__(startPosition, TILE_SIZE)
+        super(Reaper, self).__init__(startPosition, TILE_SIZE,player)

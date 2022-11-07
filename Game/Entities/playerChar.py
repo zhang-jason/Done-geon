@@ -7,8 +7,27 @@ import pygame
 import pygame.locals as c
 
 class Player(Entity):
-    def __init__(self, startPosition, TILE_SIZE):
+    def __init__(self, startPosition, TILE_SIZE, player= None):
         super(Player, self).__init__()
+        if(player is None):
+            self.bones = 3
+            self.powerup = 'empty'
+            self.powerupTimer = 0
+            self.tile_x = 0
+            self.tile_y = 0
+            self.tile = "-1"
+            self.fall = 0
+            self.current_health = 4
+        else:
+            self.bones = player.bones
+            self.powerup = player.powerup
+            self.powerupTimer = player.powerupTimer
+            self.tile_x = player.tile_x
+            self.tile_y = player.tile_y
+            self.tile = player.tile
+            self.fall = player.fall
+            self.current_health = player.current_health
+            
         self.sprint_cooldown = 0
         self.TILE_SIZE = TILE_SIZE
 
@@ -40,18 +59,9 @@ class Player(Entity):
         self.speed = 5  # how far it moves
         self.set_speed(self.speed)  # is this necessary? should test later... prior to sprint mechanics
         self.collidable = True
-        self.current_health = 4
         self.max_health = 4
         self.iframes = 0
         self.alive = True
-
-        self.bones = 3
-        self.powerup = 'empty'
-        self.powerupTimer = 0
-        self.tile_x = 0
-        self.tile_y = 0
-        self.tile = "-1"
-        self.fall = 0
 
         # self.velocity = pygame.math.Vector2()
 

@@ -9,6 +9,7 @@ class Server():
             self.player = player
             self.connected = True
             self.alive = True
+            self.newPlayer = False
             self.receiver = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
             self.receiver.bind((socket.gethostname(),65432))
             self.sender = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
@@ -24,6 +25,8 @@ class Server():
             self.player.use_powerup(msg[2:])
         if msg[0] == 'n':
             print("NFC: " + msg[2:])
+            self.playerType = msg[2:]
+            self.newPlayer = True
 
     def readMsg(self):
         while(self.alive):

@@ -27,7 +27,7 @@ class Projectile(Entity):
 
         # Image and Animations
         self.sprites = []
-        for i in range(1, 30, 1):
+        for i in range(1, 31, 1):
             image = pygame.transform.scale(pygame.image.load(
                 join(dirname(dirname(__file__)), f'assets/projectiles/{ability}', f'{i}.png')), (TILE_SIZE*3//4, TILE_SIZE*3//4))
             image = pygame.transform.rotate(image, math.degrees(-angle))

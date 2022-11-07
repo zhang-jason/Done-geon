@@ -15,22 +15,14 @@ class Minion(Entity):
         self.player = player
         self.TILE_SIZE = TILE_SIZE
         # Sprite Animation
-        self.idleSprites = []
+        self.sprites = player.runSprites
         # self.is_animating == False
         size = (TILE_SIZE*2//3, TILE_SIZE*5//6)
-        self.idleSprites.append(pygame.transform.scale(pygame.image.load(
-            join(dirname(dirname(__file__)), 'assets/Necromancer/', 'necromancer_minion 16x16.png')), size))
-        trans_image = pygame.image.load(
-            join(dirname(dirname(__file__)), 'assets/Necromancer/', 'necromancer_minion 16x16.png'))
-        trans_color = trans_image.get_at((0, 0))
-        for x in self.idleSprites:
-            x.set_colorkey(trans_color)
 
         self.current_sprite = 0
-        self.image = self.idleSprites[self.current_sprite]
+        self.image = self.sprites[self.current_sprite]
         self.rect = self.image.get_rect()
         self.rect.left, self.rect.top = startPosition
-        self.flippedImage = False
 
         # how often the character can move (every five ticks)
         self.canMove = pygame.time.get_ticks() + 5
@@ -55,6 +47,16 @@ class Minion(Entity):
 
     def update(self, projectiles, enemies):
         super(Minion, self).update(projectiles)
+
+        self.current_sprite += 0.05  # Controls how fast the animations cycle
+        if self.current_sprite >= len(self.sprites):
+            self.current_sprite = 0
+        self.image = self.sprites[int(self.current_sprite)]
+        
+        if self.flippedImage:
+            self.image = pygame.transform.flip(self.sprites[int(self.current_sprite)], True, False)
+        else:
+            self.image = pygame.transform.flip(self.sprites[int(self.current_sprite)], False, False)
 
         # Scuffed random attack pattern generator
         rand_attack = randint(1, 250)

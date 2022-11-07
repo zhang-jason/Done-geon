@@ -27,6 +27,11 @@ class Enemy(Entity):
             self.current_sprite = 0
         self.image = self.sprites[int(self.current_sprite)]
 
+        if self.flippedImage:
+            self.image = pygame.transform.flip(self.sprites[int(self.current_sprite)], True, False)
+        else:
+            self.image = pygame.transform.flip(self.sprites[int(self.current_sprite)], False, False)
+
         # pCoords = self.player.rect.center
         # coords = self.rect.center
         # move = pygame.math.Vector2(pCoords[0]-coords[0], pCoords[1]-coords[1])

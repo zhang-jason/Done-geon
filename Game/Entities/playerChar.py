@@ -6,40 +6,37 @@ from math import sqrt
 import pygame
 import pygame.locals as c
 
-
 class Player(Entity):
     def __init__(self, startPosition, TILE_SIZE):
         super(Player, self).__init__()
         self.sprint_cooldown = 0
         self.TILE_SIZE = TILE_SIZE
-        # Sprite Animation
-        self.idleSprites = []
-        # self.is_animating == False
-        size = (TILE_SIZE*2//3, TILE_SIZE*5//6)
-        self.idleSprites.append(pygame.transform.scale(pygame.image.load(
-            join(dirname(dirname(__file__)), 'assets/Necromancer/Idle', 'necromancer_idle_anim_f0.png')), size))
-        self.idleSprites.append(pygame.transform.scale(pygame.image.load(
-            join(dirname(dirname(__file__)), 'assets/Necromancer/Idle', 'necromancer_idle_anim_f1.png')), size))
-        self.idleSprites.append(pygame.transform.scale(pygame.image.load(
-            join(dirname(dirname(__file__)), 'assets/Necromancer/Idle', 'necromancer_idle_anim_f2.png')), size))
-        self.idleSprites.append(pygame.transform.scale(pygame.image.load(
-            join(dirname(dirname(__file__)), 'assets/Necromancer/Idle', 'necromancer_idle_anim_f3.png')), size))
 
-        trans_image = pygame.image.load(
-            join(dirname(dirname(__file__)), 'assets/Necromancer/Idle', 'necromancer_idle_anim_f0.png'))
-        trans_color = trans_image.get_at((0, 0))
-        for x in self.idleSprites:
-            x.set_colorkey(trans_color)
+        # self.idleSprites.append(pygame.transform.scale(pygame.image.load(
+        #     join(dirname(dirname(__file__)), 'assets/Necromancer/Idle', 'necromancer_idle_anim_f0.png')), size))
+        # self.idleSprites.append(pygame.transform.scale(pygame.image.load(
+        #     join(dirname(dirname(__file__)), 'assets/Necromancer/Idle', 'necromancer_idle_anim_f1.png')), size))
+        # self.idleSprites.append(pygame.transform.scale(pygame.image.load(
+        #     join(dirname(dirname(__file__)), 'assets/Necromancer/Idle', 'necromancer_idle_anim_f2.png')), size))
+        # self.idleSprites.append(pygame.transform.scale(pygame.image.load(
+        #     join(dirname(dirname(__file__)), 'assets/Necromancer/Idle', 'necromancer_idle_anim_f3.png')), size))
 
-        self.current_sprite = 0
-        self.image = self.idleSprites[self.current_sprite]
-        self.rect = self.image.get_rect()
-        self.rect.left, self.rect.top = startPosition
-        self.flippedImage = False
+        # trans_image = pygame.image.load(
+        #     join(dirname(dirname(__file__)), 'assets/Necromancer/Idle', 'necromancer_idle_anim_f0.png'))
+        # trans_color = trans_image.get_at((0, 0))
+        # for x in self.idleSprites:
+        #     x.set_colorkey(trans_color)
+
+        # self.current_sprite = 0
+        # self.image = self.currentSprites[self.current_sprite]
+        # self.rect = self.image.get_rect()
+        # self.rect.left, self.rect.top = startPosition
+        # self.flippedImage = False
 
         # how often the character can move (every five ticks)
         self.canMove = pygame.time.get_ticks() + 5
         self.canAttack = pygame.time.get_ticks() + 240
+        self.moving = False
         self.speed = 5  # how far it moves
         self.set_speed(self.speed)  # is this necessary? should test later... prior to sprint mechanics
         self.collidable = True
@@ -224,14 +221,20 @@ class Player(Entity):
     # def update(self, keys, group, tiles):
     def update(self):
         # Update Sprite Animation
-        self.current_sprite += 0.05  # Controls how fast the animations cycle
-        if self.current_sprite >= len(self.idleSprites):
-            self.current_sprite = 0
-        self.image = self.idleSprites[int(self.current_sprite)]
-        if self.flippedImage:
-            self.image = pygame.transform.flip(self.idleSprites[int(self.current_sprite)], True, False)
+        if self.moving:
+            self.currentSprites = self.runSprites
         else:
-            self.image = pygame.transform.flip(self.idleSprites[int(self.current_sprite)], False, False)
+            self.currentSprites = self.idleSprites
+
+        self.current_sprite += 0.05  # Controls how fast the animations cycle
+        if self.current_sprite >= len(self.currentSprites):
+            self.current_sprite = 0
+        self.image = self.currentSprites[int(self.current_sprite)]
+
+        if self.flippedImage:
+            self.image = pygame.transform.flip(self.currentSprites[int(self.current_sprite)], True, False)
+        else:
+            self.image = pygame.transform.flip(self.currentSprites[int(self.current_sprite)], False, False)
         if self.iframes:
             self.iframes -= 1
         if self.sprint_cooldown:
@@ -252,3 +255,19 @@ class Player(Entity):
     def reset(self):
         self.current_health = 4
         self.alive = True
+
+    def __getSprites__(self, type, status, size):
+        spriteList = []
+
+        dirPath = join(dirname(dirname(__file__)), f'assets/{type}/{status}')
+        for i, file in enumerate(os.listdir(dirPath)):
+            f = os.path.join(dirPath, f'{i}.png')
+            if os.path.isfile(f):
+                spriteList.append(pygame.transform.scale(pygame.image.load(f), size))
+
+        trans_image = pygame.image.load(join(dirPath, '0.png'))
+        trans_color = trans_image.get_at((0, 0))
+        for x in spriteList:
+            x.set_colorkey(trans_color)
+
+        return spriteList

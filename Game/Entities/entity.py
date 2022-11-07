@@ -9,6 +9,7 @@ class Entity(pygame.sprite.Sprite):
         self.collidable = 1
         self.dx = 0
         self.dy = 0
+        self.flippedImage = False
 
     def set_target(self, target):
         self.target = target

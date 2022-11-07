@@ -6,8 +6,8 @@ from numpy import power
 import pygame.locals as c
 
 # Modular Files
-import components
-from Entities.playerChar import Player
+from Entities.necromancer import Necromancer
+from Entities.reaper import Reaper
 from Entities.projectile import Projectile
 from Entities.powerup import Powerup
 from Entities.nonMoveObj import Obj
@@ -70,7 +70,14 @@ STONE_TILE = scale_image(pygame.image.load(os.path.join(os.path.dirname(__file__
 enemies = pygame.sprite.Group()
 projectiles = pygame.sprite.Group()
 minions = pygame.sprite.Group()
-player = Player((width / 3, height / 2), TILE_SIZE)
+playerType = 'Reaper'
+match playerType:
+    case 'Necromancer':
+        print('Created Necromancer')
+        player = Necromancer((width / 3, height / 2), TILE_SIZE)
+    case 'Reaper':
+        print('Created Reaper')
+        player = Reaper((width / 3, height / 2), TILE_SIZE)
 mouse_pressed = 0
 mouse_right_pressed = 0
 key_shift_pressed = 0
@@ -113,6 +120,10 @@ def get_player_move(player_ent, keys_main):  # sets target relative to player ce
     if player_ent.fall:
         player_ent.dx = 0
         player_ent.dy = player_ent.speed
+    if player_ent.dx == 0 and player_ent.dy == 0:
+        player_ent.moving = False
+    else:
+        player_ent.moving = True
 
 
 def move_calc_player(ent):
@@ -181,6 +192,11 @@ def move_calc_enemy(ent):
             diff_y_scaled *= ent.speed
             ent.dx = diff_x_scaled
             ent.dy = diff_y_scaled
+
+    if ent.dx < 0:
+        ent.flippedImage = True
+    else:
+        ent.flippedImage = False
 
 
 room_fall_maps = []
@@ -481,7 +497,13 @@ while True:
             enemies = pygame.sprite.Group()
             projectiles = pygame.sprite.Group()
             minions = pygame.sprite.Group()
-            player = Player((width / 3, height / 2), TILE_SIZE)
+            match playerType:
+                case 'Necromancer':
+                    print('Created Necromancer')
+                    player = Necromancer((width / 3, height / 2), TILE_SIZE)
+                case 'Reaper':
+                    print('Created Reaper')
+                    player = Reaper((width / 3, height / 2), TILE_SIZE)
             mouse_pressed = 0
             health = HealthBar(WIN, player, TILE_SIZE)
             bone_bar = BoneCounter(WIN, player, TILE_SIZE)

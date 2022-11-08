@@ -4,7 +4,7 @@ from os import listdir
 from os.path import join, dirname, isfile
 
 class VFX(Entity):
-    def __init__(self, type, ent, size, one_time=False):
+    def __init__(self, type, size, ent=None, one_time=False):
         super(VFX, self).__init__()
 
         self.type = type
@@ -15,7 +15,8 @@ class VFX(Entity):
         self.current_sprite = 0
         self.image = self.sprites[self.current_sprite]
         self.rect = self.image.get_rect()
-        self.rect.center = ent.rect.center
+        if ent:
+            self.rect.center = ent.rect.center
 
     def update(self, ent):
         # Update Sprite Animation

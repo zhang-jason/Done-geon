@@ -295,9 +295,9 @@ def addVFX(type):
         case 'Empty':
             return
         case 'Heal':
-            playerVFX.add(VFX(type, player, (TILE_SIZE, TILE_SIZE), True))
+            playerVFX.add(VFX(type, (TILE_SIZE, TILE_SIZE), player, True))
         case 'Speed' | 'Shield':
-            playerVFX.add(VFX(type, player, (TILE_SIZE, TILE_SIZE)))
+            playerVFX.add(VFX(type, (TILE_SIZE, TILE_SIZE), player))
 
 roomList = []
 for index, iter in enumerate(range(randint(3, 6))):
@@ -345,7 +345,6 @@ while True:
             if event.key == constants.K_q:
                 server.sendMsg("u " + player.powerup)
                 addVFX(player.powerup)
-                print(playerVFX)
                 player.use_powerup()
             elif event.key == constants.K_SPACE:
                 # Testing Random Room Hopping

@@ -4,7 +4,7 @@ from os import listdir
 from os.path import join, dirname, isfile
 
 class VFX(Entity):
-    def __init__(self, type, size, ent=None, one_time=False):
+    def __init__(self, type, size, position, one_time=False):
         super(VFX, self).__init__()
 
         self.type = type
@@ -15,10 +15,9 @@ class VFX(Entity):
         self.current_sprite = 0
         self.image = self.sprites[self.current_sprite]
         self.rect = self.image.get_rect()
-        if ent:
-            self.rect.center = ent.rect.center
+        self.rect.center = position
 
-    def update(self, ent):
+    def update(self, position):
         # Update Sprite Animation
         self.current_sprite += 0.20
         if self.current_sprite >= len(self.sprites):
@@ -29,7 +28,7 @@ class VFX(Entity):
                 self.current_sprite = 0
         self.image = self.sprites[int(self.current_sprite)]
         self.rect = self.image.get_rect()
-        self.rect.center = ent.rect.center
+        self.rect.center = position
 
     def __getSprites__(self, type, size):
         spriteList = []

@@ -295,9 +295,9 @@ def addVFX(type):
         case 'Empty':
             return
         case 'Heal':
-            playerVFX.add(VFX(type, (TILE_SIZE, TILE_SIZE), player, True))
+            playerVFX.add(VFX(type, (TILE_SIZE, TILE_SIZE), player.rect.center, True))
         case 'Speed' | 'Shield':
-            playerVFX.add(VFX(type, (TILE_SIZE, TILE_SIZE), player))
+            playerVFX.add(VFX(type, (TILE_SIZE, TILE_SIZE), player.rect.center))
 
 roomList = []
 for index, iter in enumerate(range(randint(3, 6))):
@@ -437,10 +437,10 @@ while True:
                         v.kill()
                     else:
                         WIN.blit(v.image, v.rect)
-                        v.update(player)
+                        v.update(player.rect.center)
                 if player.powerupTimer > 0 and not v.one_time:
                     WIN.blit(v.image, v.rect)
-                    v.update(player)
+                    v.update(player.rect.center)
                 elif player.powerupTimer <= 0 and not v.one_time:
                     v.kill()
             health.update(WIN, player)

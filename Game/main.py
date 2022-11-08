@@ -14,6 +14,7 @@ from Entities.nonMoveObj import Obj
 from Entities.wizard import Wizard
 from Entities.knight import Knight
 from Entities.minion import Minion
+from vfx import VFX
 from gui import *
 from tiles import *
 from RandomGen.roomGen import Room
@@ -70,6 +71,7 @@ STONE_TILE = scale_image(pygame.image.load(os.path.join(os.path.dirname(__file__
 enemies = pygame.sprite.Group()
 projectiles = pygame.sprite.Group()
 minions = pygame.sprite.Group()
+playerVFX = pygame.sprite.Group()
 playerType = 'Reaper'
 match playerType:
     case 'Necromancer':
@@ -247,7 +249,8 @@ def detect_projectile(p):
                     m.kill()
         if player.rect.collidepoint(p.rect.center):
             p.kill()
-            player.get_hit(p.damage)
+            if not player.immune:
+                player.get_hit(p.damage)
 
 def detect_player_melee():
     if pygame.time.get_ticks() >= player.canAttack:
@@ -269,7 +272,8 @@ def detect_melee(e):
             if m.current_health <= 0:
                 m.kill()
     if player.rect.collidepoint(e.rect.center):
-        player.get_hit(e.damage)
+        if not player.immune:
+            player.get_hit(e.damage)
 
 
 def detect_item(p):
@@ -285,6 +289,15 @@ def detect_trap(t):
         if e.rect.colliderect(t.rect) and t.cooldown <= 0:
             t.activate = True
             e.kill()
+
+def addVFX(type):
+    match type:
+        case 'Empty':
+            return
+        case 'Heal':
+            playerVFX.add(VFX(type, player, (TILE_SIZE, TILE_SIZE), True))
+        case 'Speed' | 'Shield':
+            playerVFX.add(VFX(type, player, (TILE_SIZE, TILE_SIZE)))
 
 roomList = []
 for index, iter in enumerate(range(randint(3, 6))):
@@ -331,6 +344,8 @@ while True:
         if event.type == constants.KEYDOWN:
             if event.key == constants.K_q:
                 server.sendMsg("u " + player.powerup)
+                addVFX(player.powerup)
+                print(playerVFX)
                 player.use_powerup()
             elif event.key == constants.K_SPACE:
                 # Testing Random Room Hopping
@@ -417,6 +432,18 @@ while True:
             if player.fall:
                 player.fall -= 1
             WIN.blit(player.image, player.rect)
+            for v in playerVFX:
+                if v.one_time:
+                    if v.done:
+                        v.kill()
+                    else:
+                        WIN.blit(v.image, v.rect)
+                        v.update(player)
+                if player.powerupTimer > 0 and not v.one_time:
+                    WIN.blit(v.image, v.rect)
+                    v.update(player)
+                elif player.powerupTimer <= 0 and not v.one_time:
+                    v.kill()
             health.update(WIN, player)
             bone_bar.update(WIN, player)
             inventory.update(WIN, player)

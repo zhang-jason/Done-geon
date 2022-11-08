@@ -1,7 +1,3 @@
-import os
-from os.path import join, dirname
-from Entities.entity import Entity
-from Entities.projectile import Projectile
 from Entities.playerChar import Player
 from math import sqrt
 import pygame

@@ -1,6 +1,3 @@
-import os
-from os.path import join, dirname
-from Entities.entity import Entity
 from Entities.projectile import Projectile
 from Entities.playerChar import Player
 from math import sqrt
@@ -23,7 +20,6 @@ class Necromancer(Player):
             self.rect.left, self.rect.top = startPosition
         else:
             self.rect.left, self.rect.top = player.rect.left, player.rect.top
-        print(self.rect)
 
         self.canAttack = pygame.time.get_ticks() + 480
         super(Necromancer, self).__init__(startPosition, TILE_SIZE,player)

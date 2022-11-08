@@ -60,7 +60,7 @@ class Room():
     def genPowerups(self):
         currPowerups = 0
         maxPowerups = randint(2,4)
-        powerupType = ['Speed', 'Heal'] #add shield later
+        powerupType = ['Speed', 'Heal', 'Shield']
 
         while currPowerups < maxPowerups:
             validCoord = choice(self.holeList)

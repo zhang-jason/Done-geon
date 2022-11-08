@@ -1,5 +1,5 @@
-import os
-from os.path import join, dirname
+from os import listdir
+from os.path import join, dirname, isfile
 from Entities.entity import Entity
 from Entities.projectile import Projectile
 from math import sqrt
@@ -13,6 +13,7 @@ class Player(Entity):
             self.bones = 3
             self.powerup = 'empty'
             self.powerupTimer = 0
+            self.immune = False
             self.tile_x = 0
             self.tile_y = 0
             self.tile = "-1"
@@ -144,7 +145,8 @@ class Player(Entity):
             case 'Heal':
                 self.get_regen(1)
             case 'Shield':
-                print('shielded!')
+                self.powerupTimer = 1000
+                self.immune = True
 
         print(f'used {powerup}')
         self.powerup = 'empty'
@@ -224,7 +226,6 @@ class Player(Entity):
     # def update(self, keys, group, tiles):
     def update(self):
         # Update Sprite Animation
-
         if self.current_sprite >= len(self.currentSprites):
             self.current_sprite = 0
             if self.attacking:
@@ -246,6 +247,7 @@ class Player(Entity):
             self.powerupTimer -= 1
             if self.powerupTimer == 0:
                 self.speed = 5
+                self.immune = False
 
         # self.move(keys)
         # self.checkCollide(group)
@@ -260,9 +262,9 @@ class Player(Entity):
         spriteList = []
 
         dirPath = join(dirname(dirname(__file__)), f'assets/{type}/{status}')
-        for i, file in enumerate(os.listdir(dirPath)):
-            f = os.path.join(dirPath, f'{i}.png')
-            if os.path.isfile(f):
+        for i, file in enumerate(listdir(dirPath)):
+            f = join(dirPath, f'{i}.png')
+            if isfile(f):
                 spriteList.append(pygame.transform.scale(pygame.image.load(f), size))
 
         trans_image = pygame.image.load(join(dirPath, '0.png'))

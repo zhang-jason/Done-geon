@@ -1,7 +1,7 @@
 import os
 from random import choice, randint
 import sys
-from math import floor, sqrt
+from math import floor, sqrt, hypot
 from numpy import power
 import pygame.locals as c
 
@@ -249,6 +249,18 @@ def detect_projectile(p):
             p.kill()
             player.get_hit(p.damage)
 
+def detect_player_melee():
+    if pygame.time.get_ticks() >= player.canAttack:
+        for e in enemies:
+            attackPosition = player.rect.center
+            attackRadius = 2 * hypot(attackPosition[0] - player.rect.bottomright[0], attackPosition[1] - player.rect.bottomright[1])
+            distance = hypot(attackPosition[0] - e.rect.centerx, attackPosition[1] - e.rect.centery)
+            player.canAttack = pygame.time.get_ticks() + 480 # make sure this matches the canAttack in reaper
+            #pygame.draw.circle(WIN, (240,248,255), attackPosition, attackRadius, ) # Draw the hitbox of the attack
+
+            if distance <= attackRadius:
+                e.kill()
+                player.bones += 1
 
 def detect_melee(e):
     for m in minions:
@@ -387,7 +399,12 @@ while True:
                 detect_trap(t)
             player.update()
             if mouse_pressed:
-                player.attack(projectiles)
+                player.attacking = True
+                match playerType:
+                    case 'Necromancer':
+                        player.attack(projectiles)
+                    case 'Reaper':
+                        detect_player_melee()
             if key_shift_pressed:
                 player.sprint()
             if key_e_pressed:

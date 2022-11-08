@@ -54,7 +54,7 @@ class Player(Entity):
 
         # how often the character can move (every five ticks)
         self.canMove = pygame.time.get_ticks() + 5
-        self.canAttack = pygame.time.get_ticks() + 240
+        self.attacking = False
         self.moving = False
         self.speed = 5  # how far it moves
         self.set_speed(self.speed)  # is this necessary? should test later... prior to sprint mechanics
@@ -95,13 +95,6 @@ class Player(Entity):
     #         self.canMove = pygame.time.get_ticks() + 5
     #         self.collideDir = 0
     #     self.rect.move_ip(self.velocity)
-
-    def attack(self, projectiles):
-        if pygame.time.get_ticks() >= self.canAttack:
-            player = self.rect.center
-            cursor = pygame.mouse.get_pos()
-            self.canAttack = pygame.time.get_ticks() + 240
-            projectiles.add(Projectile(player, cursor, True, 'Magic Ball', self.TILE_SIZE))
 
     def sprint(self):
         if self.sprint_cooldown <= 0:
@@ -231,14 +224,11 @@ class Player(Entity):
     # def update(self, keys, group, tiles):
     def update(self):
         # Update Sprite Animation
-        if self.moving:
-            self.currentSprites = self.runSprites
-        else:
-            self.currentSprites = self.idleSprites
 
-        self.current_sprite += 0.05  # Controls how fast the animations cycle
         if self.current_sprite >= len(self.currentSprites):
             self.current_sprite = 0
+            if self.attacking:
+                self.attacking = False
         self.image = self.currentSprites[int(self.current_sprite)]
 
         if self.flippedImage:

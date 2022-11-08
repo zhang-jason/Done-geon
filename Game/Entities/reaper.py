@@ -24,4 +24,21 @@ class Reaper(Player):
         else:
             self.rect.left, self.rect.top = player.rect.left, player.rect.top
 
+        self.canAttack = pygame.time.get_ticks() + 480
         super(Reaper, self).__init__(startPosition, TILE_SIZE,player)
+
+    def update(self):
+        if self.attacking:
+            self.currentSprites = self.attackSprites
+        else:
+            if self.moving:
+                self.currentSprites = self.runSprites
+            else:
+                self.currentSprites = self.idleSprites
+
+        if self.attacking:
+            self.current_sprite += 0.20  # Controls how fast the animations cycle
+        else:
+            self.current_sprite += 0.05
+
+        super(Reaper, self).update()

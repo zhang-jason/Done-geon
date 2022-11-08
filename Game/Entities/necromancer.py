@@ -25,5 +25,28 @@ class Necromancer(Player):
             self.rect.left, self.rect.top = player.rect.left, player.rect.top
         print(self.rect)
 
+        self.canAttack = pygame.time.get_ticks() + 480
         super(Necromancer, self).__init__(startPosition, TILE_SIZE,player)
 
+    def attack(self, projectiles):
+        if pygame.time.get_ticks() >= self.canAttack:
+            player = self.rect.center
+            cursor = pygame.mouse.get_pos()
+            self.canAttack = pygame.time.get_ticks() + 480
+            projectiles.add(Projectile(player, cursor, True, 'Magic Ball', self.TILE_SIZE))
+
+    def update(self):
+        if self.attacking:
+            self.currentSprites = self.attackSprites
+        else:
+            if self.moving:
+                self.currentSprites = self.runSprites
+            else:
+                self.currentSprites = self.idleSprites
+
+        if self.attacking:
+            self.current_sprite += 0.10  # Controls how fast the animations cycle
+        else:
+            self.current_sprite += 0.05
+
+        super(Necromancer, self).update()

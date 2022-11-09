@@ -93,13 +93,16 @@ server = Server(player)
 time = 0
 roomIndex = 0
 
+# dirSFX = join(dirname(dirname(__file__)), 'Game/SFX')
+# pygame.mixer.music.load(join(dirSFX, 'bg.wav'))
+# pygame.mixer.music.play(-1)
 
 def clearTempContents():
-    directory = os.path.join(os.path.dirname(__file__), 'assets/tiles/temprooms/')
+    directory = join(dirname(__file__), 'assets/tiles/temprooms/')
     retain = ['.gitignore']
     for file in os.listdir(directory):
         if file not in retain:
-            os.remove(os.path.join(directory, file))
+            os.remove(join(directory, file))
 
 
 updateCount = 0

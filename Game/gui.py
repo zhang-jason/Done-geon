@@ -65,7 +65,8 @@ class BoneCounter():
         trans_color = trans_image.get_at((0, 0))
         self.image.set_colorkey(trans_color)
         self.rect = self.image.get_rect()
-        self.font = pygame.font.SysFont('Arial', round(TILE_SIZE//2))
+        fontDir = join(dirname(dirname(__file__)), 'Game/', 'Toriko.ttf')
+        self.font = pygame.font.Font(fontDir, round(TILE_SIZE))
 
     def update(self, WIN, player):
         self.bones = player.bones
@@ -73,7 +74,7 @@ class BoneCounter():
         text = self.font.render(str(player.bones), True, pygame.color.Color(0))
         text_rect = text.get_rect()
         text_rect.left = self.TILE_SIZE * 13
-        text_rect.centery = self.TILE_SIZE / 2
+        text_rect.centery = self.rect.centery + self.rect.centery // 3
         WIN.blit(self.image, self.rect)
         WIN.blit(text, text_rect)
         # TODO: Change this to update in main, we're passing the whole freaking window in here

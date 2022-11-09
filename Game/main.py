@@ -309,7 +309,8 @@ if roomIndex >= len(roomList):
     roomIndex = 0
 room = roomList[roomIndex]
 
-font = pygame.font.SysFont('Arial', round(TILE_SIZE))
+fontDir = join(dirname(dirname(__file__)), 'Game/', 'Toriko.ttf')
+font = pygame.font.Font(fontDir, round(TILE_SIZE))
 
 
 def random_spawn():
@@ -447,6 +448,7 @@ while True:
             bone_bar.update(WIN, player)
             inventory.update(WIN, player)
 
+            pygame.mouse.set_visible(False)
             cursor_img_rect.center = pygame.mouse.get_pos()
             WIN.blit(cursor_img, cursor_img_rect)
             if player.get_health() <= 0:
@@ -468,8 +470,7 @@ while True:
                 WIN.fill(0)
                 WIN.blit(title_text, (width / 6, height / 3))
                 WIN.blit(start_text, (width / 6, height / 2))
-                cursor_img_rect.center = pygame.mouse.get_pos()
-                WIN.blit(cursor_img, cursor_img_rect)
+                pygame.mouse.set_visible(True)
                 for event in pygame.event.get():
                     mouse = pygame.mouse.get_pos()
                     if button_rect.collidepoint(mouse):
@@ -507,8 +508,7 @@ while True:
                 WIN.blit(title_text, (width / 6, height / 3.5))
                 WIN.blit(start_text, (width / 6, height / 2))
                 WIN.blit(game_text, (width / 6, height / 2.5))
-                cursor_img_rect.center = pygame.mouse.get_pos()
-                WIN.blit(cursor_img, cursor_img_rect)
+                pygame.mouse.set_visible(True)
                 for event in pygame.event.get():
                     mouse = pygame.mouse.get_pos()
                     if button_rect.collidepoint(mouse):

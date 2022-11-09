@@ -564,14 +564,22 @@ while True:
     if time < pygame.time.get_ticks():
         server.sendMsg("h " + str(player.get_health()))
         server.sendMsg("b " + str(player.bones))
-        if server.newPlayer:
-            server.newPlayer = False
-            match server.playerType:
-                case 'Necromancer':
-                    player = Necromancer((width / 3, height / 2), TILE_SIZE,player)
-                case 'Reaper':
-                    player = Reaper((width / 3, height / 2), TILE_SIZE,player)
         time = pygame.time.get_ticks() + 1000
+
+    if server.newPowerup:
+        server.newPowerup = False
+        addVFX(server.powerup)
+        player.use_powerup(server.powerup)
+    if server.newPlayer:
+        server.newPlayer = False
+        playerType = server.playerType
+        match playerType:
+            case 'Necromancer':
+                player = Necromancer((width / 3, height / 2), TILE_SIZE,player)
+            case 'Reaper':
+                player = Reaper((width / 3, height / 2), TILE_SIZE,player)
+        for m in minions:
+            m.player = player
 
     pygame.display.update()
     updateCount += 1

@@ -23,6 +23,7 @@ class Player(Entity):
             self.bones = player.bones
             self.powerup = player.powerup
             self.powerupTimer = player.powerupTimer
+            self.immune = player.immune
             self.tile_x = player.tile_x
             self.tile_y = player.tile_y
             self.tile = player.tile

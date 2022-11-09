@@ -1,6 +1,5 @@
 import socket
 import threading
-from Entities.playerChar import Player
 
 
 class Server():
@@ -10,6 +9,7 @@ class Server():
             self.connected = True
             self.alive = True
             self.newPlayer = False
+            self.newPowerup = False
             self.receiver = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
             self.receiver.bind((socket.gethostname(),65432))
             self.sender = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
@@ -22,7 +22,8 @@ class Server():
         if msg == "appClosed":
             self.connected = False
         if msg[0] == 'p':
-            self.player.use_powerup(msg[2:])
+            self.powerup = msg[2:]
+            self.newPowerup = True
         if msg[0] == 'n':
             print("NFC: " + msg[2:])
             self.playerType = msg[2:]

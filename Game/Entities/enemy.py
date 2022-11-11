@@ -1,8 +1,8 @@
 import pygame
 from Entities.entity import Entity
 from Entities.projectile import Projectile
-from os.path import join
-from os.path import dirname
+from os import listdir
+from os.path import join, dirname, isfile
 
 
 class Enemy(Entity):
@@ -31,6 +31,22 @@ class Enemy(Entity):
             self.image = pygame.transform.flip(self.sprites[int(self.current_sprite)], True, False)
         else:
             self.image = pygame.transform.flip(self.sprites[int(self.current_sprite)], False, False)
+
+    def __getSprites__(self, type, status, size):
+        spriteList = []
+
+        dirPath = join(dirname(dirname(__file__)), f'assets/{type}/{status}')
+        for i, file in enumerate(listdir(dirPath)):
+            f = join(dirPath, f'{i}.png')
+            if isfile(f):
+                spriteList.append(pygame.transform.scale(pygame.image.load(f), size))
+
+        trans_image = pygame.image.load(join(dirPath, '0.png'))
+        trans_color = trans_image.get_at((0, 0))
+        for x in spriteList:
+            x.set_colorkey(trans_color)
+
+        return spriteList
 
         # pCoords = self.player.rect.center
         # coords = self.rect.center

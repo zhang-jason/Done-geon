@@ -1,8 +1,9 @@
 from Entities.projectile import Projectile
 from Entities.playerChar import Player
-from math import sqrt
+from os.path import join, dirname
 import pygame
 import pygame.locals as c
+from pygame import mixer
 
 class Necromancer(Player):
     def __init__(self, startPosition, TILE_SIZE,player= None):
@@ -22,10 +23,12 @@ class Necromancer(Player):
             self.rect.left, self.rect.top = player.rect.left, player.rect.top
 
         self.canAttack = pygame.time.get_ticks() + 480
+        self.attack_sound = mixer.Sound(join(dirname(dirname(__file__)), 'assets/SFX/Game/Player', 'Ranged_Attack.wav'))
         super(Necromancer, self).__init__(startPosition, TILE_SIZE,player)
 
     def attack(self, projectiles):
         if pygame.time.get_ticks() >= self.canAttack:
+            mixer.Sound.play(self.attack_sound)
             player = self.rect.center
             cursor = pygame.mouse.get_pos()
             self.canAttack = pygame.time.get_ticks() + 480

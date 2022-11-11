@@ -1,8 +1,8 @@
 import pygame
 import math
 from Entities.entity import Entity
-from os.path import join
-from os.path import dirname
+from os import listdir
+from os.path import join, dirname, isfile
 
 
 class Projectile(Entity):
@@ -27,14 +27,18 @@ class Projectile(Entity):
 
         # Image and Animations
         self.sprites = []
-        for i in range(1, 31, 1):
-            image = pygame.transform.scale(pygame.image.load(
-                join(dirname(dirname(__file__)), f'assets/projectiles/{ability}', f'{i}.png')), (TILE_SIZE*3//4, TILE_SIZE*3//4))
-            image = pygame.transform.rotate(image, math.degrees(-angle))
-            self.sprites.append(image)
+        dir = join(dirname(dirname(__file__)), f'assets/projectiles/{ability}')
+        size = (TILE_SIZE*3//4, TILE_SIZE*3//4)
+        for path in listdir(dir):
+            file = join(dir, path)
+            if isfile(file):
+                image = pygame.transform.scale(pygame.image.load(
+                    file), size)
+                image = pygame.transform.rotate(image, math.degrees(-angle))
+                self.sprites.append(image)
 
         trans_image = pygame.image.load(
-            join(dirname(dirname(__file__)), 'assets/projectiles/Fireball', '1.png'))
+            join(dirname(dirname(__file__)), f'assets/projectiles/{ability}', '0.png'))
         trans_color = trans_image.get_at((0, 0))
         for x in self.sprites:
             x.set_colorkey(trans_color)

@@ -5,6 +5,7 @@ from Entities.projectile import Projectile
 from math import sqrt
 import pygame
 import pygame.locals as c
+from pygame import mixer
 
 class Player(Entity):
     def __init__(self, startPosition, TILE_SIZE, player= None):
@@ -31,6 +32,11 @@ class Player(Entity):
             self.current_health = player.current_health
             
         self.sprint_cooldown = 0
+        self.sprint_sound = mixer.Sound(join(dirname(dirname(__file__)), 'assets/SFX/Game/Player', 'Sprint.wav'))
+        self.hurt_sound = mixer.Sound(join(dirname(dirname(__file__)), 'assets/SFX/Game/Player', 'Hurt.wav'))
+        self.powerup_loop = mixer.Sound(join(dirname(dirname(__file__)), 'assets/SFX/Game/Player', 'Powerup_Loop.wav'))
+        self.powerup_one_time = mixer.Sound(join(dirname(dirname(__file__)), 'assets/SFX/Game/Player', 'Powerup_One_Time.wav'))
+        self.powerupChannel = None
         self.TILE_SIZE = TILE_SIZE
 
         # self.idleSprites.append(pygame.transform.scale(pygame.image.load(
@@ -100,6 +106,7 @@ class Player(Entity):
 
     def sprint(self):
         if self.sprint_cooldown <= 0:
+            mixer.Sound.play(self.sprint_sound)
             self.speed = 20
             self.sprint_cooldown = 90
             self.iframes = 15
@@ -123,6 +130,7 @@ class Player(Entity):
             if (self.current_health - hitDmg) > 0:
                 self.current_health -= hitDmg
                 self.iframes = 60
+                mixer.Sound.play(self.hurt_sound)
             else:
                 self.current_health = 0
                 self.alive = False
@@ -144,6 +152,7 @@ class Player(Entity):
                 self.speed += 2
                 self.powerupTimer = 1000
             case 'Heal':
+                mixer.Sound.play(self.powerup_one_time)
                 self.get_regen(1)
             case 'Shield':
                 self.powerupTimer = 1000
@@ -245,8 +254,13 @@ class Player(Entity):
                 self.speed -= 1
 
         if self.powerupTimer > 0:
+            if self.powerupChannel is None:
+                self.powerupChannel = mixer.find_channel()
+                self.powerupChannel.play(self.powerup_loop, -1)
             self.powerupTimer -= 1
             if self.powerupTimer == 0:
+                self.powerupChannel.stop()
+                self.powerupChannel = None
                 self.speed = 5
                 self.immune = False
 

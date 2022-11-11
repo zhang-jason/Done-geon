@@ -72,12 +72,12 @@ class Room():
     def genTraps(self):
         currTraps = 0
         maxTraps = randint(2,4)
-        trapType = ['Spikes']
+        trapType = ['Spike', 'Fire']
 
         while currTraps < maxTraps:
             validCoord = choice(self.holeList)
-            y = validCoord[0] * self.tileSize + self.tileSize // 2
-            x = validCoord[1] * self.tileSize + self.tileSize // 2
+            y = validCoord[0] * self.tileSize
+            x = validCoord[1] * self.tileSize
             self.traps.add(Trap((x, y), choice(trapType), self.tileSize))
             currTraps += 1
 

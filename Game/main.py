@@ -22,8 +22,10 @@ from server import Server
 
 import pygame
 from pygame import constants
+from pygame import mixer
 
 pygame.init()
+pygame.mixer.init(channels=10)
 
 display_info = pygame.display.Info()
 width = display_info.current_w
@@ -42,11 +44,46 @@ HEIGHT = TILE_SIZE * NUM_TILES_Y
 print(WIDTH)
 print(HEIGHT)  # Just double-checking my math here
 
+fontDir = join(dirname(dirname(__file__)), 'Game/', 'Toriko.ttf')
+font = pygame.font.Font(fontDir, round(TILE_SIZE))
+
+# Sound Effects (Not BGM)
+dirSFX = join(dirname(dirname(__file__)), 'game/assets/SFX/Menu')
+menu_hover = mixer.Sound(join(dirSFX, 'Hover.mp3'))
+menu_click = mixer.Sound(join(dirSFX, 'Click.mp3'))
+lose_sound = mixer.Sound(join(dirSFX, 'Lose.ogg'))
+start_BGM = join(dirSFX, 'Start_BGM.mp3')
+lose_BGM = join(dirSFX, 'Lose_BGM.ogg')
+
+dirSFX = join(dirname(dirname(__file__)), 'game/assets/SFX/Game/Player')
+melee_attack = mixer.Sound(join(dirSFX, 'Melee_Attack.wav'))
+player_hurt = mixer.Sound(join(dirSFX, 'Hurt.wav'))
+player_death = mixer.Sound(join(dirSFX, 'Death.wav'))
+
+dirSFX = join(dirname(dirname(__file__)), 'game/assets/SFX/Game/Env')
+spike_trap = mixer.Sound(join(dirSFX, 'Spike.wav'))
+fire_trap = mixer.Sound(join(dirSFX, 'Fire.wav'))
+game_BGM = join(dirSFX, 'Game_BGM.ogg')
+
+# Sound Settings Adjustment
+audio_master = 1
+audio_BGM = 0.5 * audio_master
+audio_sfx = 0.5 * audio_master
+
+menu_hover.set_volume(audio_sfx)
+menu_click.set_volume(audio_sfx)
+lose_sound.set_volume(audio_sfx)
+melee_attack.set_volume(audio_sfx)
+player_hurt.set_volume(audio_sfx)
+player_death.set_volume(audio_sfx)
+spike_trap.set_volume(audio_sfx)
+fire_trap.set_volume(audio_sfx)
+
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Done-geon")
 pygame.mouse.set_visible(False)
 cursor_img = pygame.transform.scale(pygame.image.load(
-    os.path.join(os.path.dirname(os.path.dirname(__file__)), 'game/assets', 'Crosshair02.png')), (28, 28))
+    join(dirname(dirname(__file__)), 'game/assets', 'Crosshair02.png')), (28, 28))
 cursor_img_rect = cursor_img.get_rect()
 
 print("Created Window")
@@ -72,7 +109,7 @@ enemies = pygame.sprite.Group()
 projectiles = pygame.sprite.Group()
 minions = pygame.sprite.Group()
 playerVFX = pygame.sprite.Group()
-playerType = 'Reaper'
+playerType = 'Necromancer'
 match playerType:
     case 'Necromancer':
         print('Created Necromancer')
@@ -92,10 +129,6 @@ server = Server(player)
 # server test variables
 time = 0
 roomIndex = 0
-
-# dirSFX = join(dirname(dirname(__file__)), 'Game/SFX')
-# pygame.mixer.music.load(join(dirSFX, 'bg.wav'))
-# pygame.mixer.music.play(-1)
 
 def clearTempContents():
     directory = join(dirname(__file__), 'assets/tiles/temprooms/')
@@ -235,7 +268,6 @@ def move_entities():
         p.rect.center = (int(p.x), int(p.y))
         # TODO: remove projectiles upon OOB or tile collision?
 
-
 def detect_projectile(p):
     if p.type:  # true for friendly
         for e in enemies:
@@ -255,19 +287,6 @@ def detect_projectile(p):
             if not player.immune:
                 player.get_hit(p.damage)
 
-def detect_player_melee():
-    if pygame.time.get_ticks() >= player.canAttack:
-        for e in enemies:
-            attackPosition = player.rect.center
-            attackRadius = 2 * hypot(attackPosition[0] - player.rect.bottomright[0], attackPosition[1] - player.rect.bottomright[1])
-            distance = hypot(attackPosition[0] - e.rect.centerx, attackPosition[1] - e.rect.centery)
-            player.canAttack = pygame.time.get_ticks() + 480 # make sure this matches the canAttack in reaper
-            #pygame.draw.circle(WIN, (240,248,255), attackPosition, attackRadius, ) # Draw the hitbox of the attack
-
-            if distance <= attackRadius:
-                e.kill()
-                player.bones += 1
-
 def detect_melee(e):
     for m in minions:
         if m.rect.collidepoint(e.rect.center):
@@ -278,6 +297,25 @@ def detect_melee(e):
         if not player.immune:
             player.get_hit(e.damage)
 
+def detect_player_melee():
+    if pygame.time.get_ticks() >= player.canAttack:
+        mixer.Sound.play(melee_attack)
+        
+        for e in enemies:
+            attackPosition = player.rect.center
+            attackRadius = 2 * hypot(attackPosition[0] - player.rect.bottomright[0], attackPosition[1] - player.rect.bottomright[1])
+            distance = hypot(attackPosition[0] - e.rect.centerx, attackPosition[1] - e.rect.centery)
+            player.canAttack = pygame.time.get_ticks() + 480 # make sure this matches the canAttack in reaper
+
+            direction = attackPosition[0] - e.rect.centerx
+            if player.flippedImage:
+                if distance <= attackRadius and direction >= 0:
+                    e.kill()
+                    player.bones += 1
+            else:
+                if distance <= attackRadius and direction <= 0:
+                    e.kill()
+                    player.bones += 1
 
 def detect_item(p):
     if player.rect.collidepoint(p.rect.center):
@@ -288,10 +326,21 @@ def detect_item(p):
 def detect_trap(t):
     t.update()
 
-    for e in enemies:
-        if e.rect.colliderect(t.rect) and t.cooldown <= 0:
-            t.activate = True
-            e.kill()
+    if t.cooldown <= 0:
+        killed = False
+        for e in enemies:
+            if e.rect.colliderect(t.hitbox):
+                t.activate = True
+                t.cooldown = 10
+                e.kill()
+                killed = True
+        
+        if killed:
+            match t.type:
+                case 'Spike':
+                    mixer.Sound.play(spike_trap)
+                case 'Fire':
+                    mixer.Sound.play(fire_trap)
 
 def addVFX(type):
     match type:
@@ -311,10 +360,6 @@ for index, iter in enumerate(range(randint(3, 6))):
 if roomIndex >= len(roomList):
     roomIndex = 0
 room = roomList[roomIndex]
-
-fontDir = join(dirname(dirname(__file__)), 'Game/', 'Toriko.ttf')
-font = pygame.font.Font(fontDir, round(TILE_SIZE))
-
 
 def random_spawn():
     validCoord = choice(room.holeList)
@@ -382,6 +427,8 @@ while True:
                     roomIndex = 0
                 room = roomList[roomIndex]
             room.drawRoom(WIN)
+            for t in room.traps:
+                pygame.draw.rect(WIN, (0,0,0), t.hitbox, 2)
 
             # hitbox = (player.rect.topleft[0], player.rect.topleft[1], player.rect.width, player.rect.height) # NEW
             # pygame.draw.rect(WIN, (255,0,0), hitbox,2)
@@ -457,6 +504,8 @@ while True:
             if player.get_health() <= 0:
                 server.sendMsg("lose")
                 screen = "Lose"
+                mixer.stop()
+                mixer.music.stop()
 
         case "Start":
             print("Start screen!")
@@ -469,6 +518,10 @@ while True:
             button_rect[0] = width / 6
             button_rect[1] = height / 2
             run = True
+            hovered = False
+            mixer.music.load(start_BGM)
+            mixer.music.set_volume(audio_BGM)
+            mixer.music.play(-1)
             while run:
                 WIN.fill(0)
                 WIN.blit(title_text, (width / 6, height / 3))
@@ -478,8 +531,12 @@ while True:
                     mouse = pygame.mouse.get_pos()
                     if button_rect.collidepoint(mouse):
                         start_text = font.render('Click Here To Start!', True, neon_yellow_color)
+                        if not hovered:
+                            hovered = True
+                            mixer.Sound.play(menu_hover)
                     else:
                         start_text = font.render('Click Here To Start!', True, color)
+                        hovered = False
                     if event.type == pygame.QUIT:
                         pygame.quit()
                         server.endServer()
@@ -487,10 +544,12 @@ while True:
                         sys.exit()
                     if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                         if button_rect.collidepoint(mouse):
-                            print('Clicked!')
+                            mixer.Sound.play(menu_click)
                             screen = "Reset"
                             run = False
                 pygame.display.update()
+            mixer.stop()
+            mixer.music.stop()
 
         case "Lose":
             print("Lose screen!")
@@ -506,6 +565,13 @@ while True:
             button_rect_2[0] = width / 6
             button_rect_2[1] = height / 2.5
             run = True
+            startHovered = False
+            playHovered = False
+            mixer.Sound.play(player_death)
+            mixer.Sound.play(lose_sound)
+            mixer.music.load(lose_BGM)
+            mixer.music.set_volume(audio_BGM)
+            mixer.music.play(-1)
             while run:
                 WIN.fill(0)
                 WIN.blit(title_text, (width / 6, height / 3.5))
@@ -516,12 +582,20 @@ while True:
                     mouse = pygame.mouse.get_pos()
                     if button_rect.collidepoint(mouse):
                         start_text = font.render('Click Here To Return To Menu!', True, neon_yellow_color)
+                        if not startHovered:
+                            startHovered = True
+                            mixer.Sound.play(menu_hover)
                     else:
                         start_text = font.render('Click Here To Return To Menu!', True, color)
+                        startHovered = False
                     if button_rect_2.collidepoint(mouse):
                         game_text = font.render('Click Here To Play Again!', True, neon_yellow_color)
+                        if not playHovered:
+                            playHovered = True
+                            mixer.Sound.play(menu_hover)
                     else:
                         game_text = font.render('Click Here To Play Again!', True, color)
+                        playHovered = False
                     if event.type == pygame.QUIT:
                         pygame.quit()
                         server.endServer()
@@ -529,15 +603,19 @@ while True:
                         sys.exit()
                     if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                         if button_rect.collidepoint(mouse):
-                            print('Clicked!')
+                            mixer.Sound.play(menu_click)
+                            mixer.music.stop()
                             screen = "Start"
                             run = False
                     if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                         if button_rect_2.collidepoint(mouse):
+                            mixer.Sound.play(menu_click)
+                            mixer.music.stop()
                             screen = "Reset"
                             run = False
                 pygame.display.update()
-
+            mixer.stop()
+            mixer.music.stop()
 
         case "Reset":
             enemies = pygame.sprite.Group()

@@ -1,7 +1,9 @@
 import pygame
+from pygame import mixer, Rect
 from Entities.entity import Entity
-from os.path import join
-from os.path import dirname
+from os import listdir
+from os.path import join, dirname
+from dirMods import getImages
 
 class Trap(Entity):
     def __init__(self, position, type, TILE_SIZE):
@@ -14,40 +16,42 @@ class Trap(Entity):
         #self.size = (TILE_SIZE*3//4, TILE_SIZE*3//4)
 
         # Image and Animations
-        self.sprites = []
-        for i in range(1, 5, 1):
-            image = pygame.transform.scale(pygame.image.load(
-                join(dirname(dirname(__file__)), f'assets/Traps/{type}', f'{i}.png')), (TILE_SIZE, TILE_SIZE))
-            self.sprites.append(image)
-        trans_image = pygame.image.load(
-            join(dirname(dirname(__file__)), f'assets/Traps/{type}', '1.png'))
-        trans_color = trans_image.get_at((0, 0))
-        for x in self.sprites:
-            x.set_colorkey(trans_color)
+        imageDir = join(dirname(dirname(__file__)), f'assets/Traps/{type}')
+        match type:
+            case 'Spike':
+                scaling = (TILE_SIZE, TILE_SIZE)
+            case 'Fire':
+                scaling = (TILE_SIZE, TILE_SIZE * (41/32))
+        self.sprites = getImages(imageDir, scaling)
 
         self.current_sprite = 0
         self.image = self.sprites[self.current_sprite]
         self.rect = self.image.get_rect()
-        self.rect.centerx, self.rect.centery = position
+        self.rect.x, self.rect.y = position
+        self.hitbox = Rect(position[0], position[1], TILE_SIZE, TILE_SIZE)
+
+        match type:
+            case 'Spike':
+                self.rect.centery -= 20
+            case 'Fire':
+                self.rect.centery -= 65
+
 
     def update(self):
         if self.activate:
-            if self.activate:
-                self.cooldown = 10
-
-                if int(self.current_sprite) <= 3:
-                    self.current_sprite += 0.20
-                    if self.current_sprite > len(self.sprites):
-                        self.current_sprite = 3
-                        self.activate = False
-                    self.image = self.sprites[int(self.current_sprite)]
-                else:
+            if int(self.current_sprite) < len(self.sprites):
+                self.current_sprite += 0.25
+                if self.current_sprite >= len(self.sprites):
                     self.activate = False
-        else:
-            if self.current_sprite > 0:
-                self.current_sprite -= 0.20
-                if self.current_sprite <= 0:
                     self.current_sprite = 0
-                self.image = self.sprites[int(self.current_sprite)]
-            if self.cooldown > 0:
-                self.cooldown -= 0.05
+
+        # else:
+        #     if self.current_sprite > 0:
+        #         self.current_sprite -= 0.20
+        #         if self.current_sprite <= 0:
+        #             self.current_sprite = 0
+        #         self.image = self.sprites[int(self.current_sprite)]
+
+        if self.cooldown > 0:
+            self.cooldown -= 0.05
+        self.image = self.sprites[int(self.current_sprite)]

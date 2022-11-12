@@ -27,12 +27,10 @@ class Necromancer(Player):
         super(Necromancer, self).__init__(startPosition, TILE_SIZE,player)
 
     def attack(self, projectiles):
-        if pygame.time.get_ticks() >= self.canAttack:
-            mixer.Sound.play(self.attack_sound)
-            player = self.rect.center
-            cursor = pygame.mouse.get_pos()
-            self.canAttack = pygame.time.get_ticks() + 480
-            projectiles.add(Projectile(player, cursor, True, 'Magic Ball', self.TILE_SIZE))
+        player = self.rect.center
+        cursor = pygame.mouse.get_pos()
+        self.canAttack = pygame.time.get_ticks() + 480
+        projectiles.add(Projectile(player, cursor, True, 'Magic Ball', self.TILE_SIZE))
 
     def update(self):
         if self.attacking:

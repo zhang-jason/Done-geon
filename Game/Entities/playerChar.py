@@ -288,3 +288,9 @@ class Player(Entity):
             x.set_colorkey(trans_color)
 
         return spriteList
+
+    def setVolume(self, audio_sfx):
+        self.sprint_sound.set_volume(audio_sfx)
+        self.hurt_sound.set_volume(audio_sfx)
+        self.powerup_loop.set_volume(audio_sfx)
+        self.powerup_one_time.set_volume(audio_sfx)

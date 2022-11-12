@@ -57,6 +57,7 @@ lose_BGM = join(dirSFX, 'Lose_BGM.ogg')
 
 dirSFX = join(dirname(dirname(__file__)), 'game/assets/SFX/Game/Player')
 melee_attack = mixer.Sound(join(dirSFX, 'Melee_Attack.wav'))
+ranged_attack = mixer.Sound(join(dirSFX, 'Ranged_Attack.wav'))
 player_hurt = mixer.Sound(join(dirSFX, 'Hurt.wav'))
 player_death = mixer.Sound(join(dirSFX, 'Death.wav'))
 
@@ -66,18 +67,21 @@ fire_trap = mixer.Sound(join(dirSFX, 'Fire.wav'))
 game_BGM = join(dirSFX, 'Game_BGM.ogg')
 
 # Sound Settings Adjustment
-audio_master = 1
-audio_BGM = 0.5 * audio_master
-audio_sfx = 0.5 * audio_master
+audio_master = 0.50
+audio_BGM = 0.50 * audio_master
+audio_sfx = 0.50 * audio_master
 
-menu_hover.set_volume(audio_sfx)
-menu_click.set_volume(audio_sfx)
-lose_sound.set_volume(audio_sfx)
-melee_attack.set_volume(audio_sfx)
-player_hurt.set_volume(audio_sfx)
-player_death.set_volume(audio_sfx)
-spike_trap.set_volume(audio_sfx)
-fire_trap.set_volume(audio_sfx)
+def setVolume(audio_sfx):
+    menu_hover.set_volume(audio_sfx)
+    menu_click.set_volume(audio_sfx)
+    lose_sound.set_volume(audio_sfx)
+    melee_attack.set_volume(audio_sfx)
+    ranged_attack.set_volume(audio_sfx)
+    player_hurt.set_volume(audio_sfx)
+    player_death.set_volume(audio_sfx)
+    spike_trap.set_volume(audio_sfx)
+    fire_trap.set_volume(audio_sfx)
+    player.setVolume(audio_sfx)
 
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Done-geon")
@@ -367,6 +371,7 @@ def random_spawn():
     x = validCoord[1] * TILE_SIZE + TILE_SIZE // 2
     return (x, y)
 
+setVolume(audio_sfx)
 
 while True:
     # User interaction:
@@ -405,6 +410,20 @@ while True:
                 key_shift_pressed = 1
             elif event.key == constants.K_e:
                 key_e_pressed = 1
+            elif event.key == constants.K_UP and audio_master <= 0.95:
+                audio_master += 0.05
+                audio_BGM *= audio_master
+                audio_sfx *= audio_master
+                setVolume(audio_sfx)
+                player.setVolume(audio_sfx)
+                print('Increase Volume')
+            elif event.key == constants.K_DOWN and audio_master >= 0.05:
+                audio_master -= 0.05
+                audio_BGM *= audio_master
+                audio_sfx *= audio_master
+                setVolume(audio_sfx)
+                player.setVolume(audio_sfx)
+                print('Decrease Volume')
         if event.type == constants.KEYUP:
             if event.key == constants.K_RSHIFT or event.key == constants.K_LSHIFT:
                 key_shift_pressed = 0
@@ -427,8 +446,6 @@ while True:
                     roomIndex = 0
                 room = roomList[roomIndex]
             room.drawRoom(WIN)
-            for t in room.traps:
-                pygame.draw.rect(WIN, (0,0,0), t.hitbox, 2)
 
             # hitbox = (player.rect.topleft[0], player.rect.topleft[1], player.rect.width, player.rect.height) # NEW
             # pygame.draw.rect(WIN, (255,0,0), hitbox,2)
@@ -467,7 +484,9 @@ while True:
                 player.attacking = True
                 match playerType:
                     case 'Necromancer':
-                        player.attack(projectiles)
+                        if pygame.time.get_ticks() >= player.canAttack:
+                            mixer.Sound.play(ranged_attack)
+                            player.attack(projectiles)
                     case 'Reaper':
                         detect_player_melee()
             if key_shift_pressed:

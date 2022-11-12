@@ -32,9 +32,9 @@ class Trap(Entity):
 
         match type:
             case 'Spike':
-                self.rect.centery -= 20
+                self.rect.centery -= TILE_SIZE / 7
             case 'Fire':
-                self.rect.centery -= 65
+                self.rect.centery -= TILE_SIZE / 2.25
 
 
     def update(self):

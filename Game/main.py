@@ -528,11 +528,11 @@ while True:
 
         case "Start":
             print("Start screen!")
-            color = (255, 255, 255)
-            #WIN.fill(255)
-            neon_yellow_color = (224, 231, 34)
-            title_text = font.render('Done-geon', True, color)
-            start_text = font.render('Click Here To Start!', True, color)
+            WIN.fill(pygame.color.Color(0))
+            color = pygame.color.Color(255, 255, 255)
+            neon_yellow_color = pygame.color.Color(224, 231, 34)
+            title_text = font.render('Done-geon', True, color, pygame.SRCALPHA)
+            start_text = font.render('Click Here To Start!', True, color, pygame.SRCALPHA)
             button_rect = start_text.get_rect()
             button_rect[0] = width / 6
             button_rect[1] = height / 2
@@ -541,20 +541,26 @@ while True:
             mixer.music.load(start_BGM)
             mixer.music.set_volume(audio_BGM)
             mixer.music.play(-1)
+            start_text_yellow = False
             while run:
-                WIN.fill(0)
+                WIN.fill(pygame.color.Color(0))
+                # WIN.fill(0)
+                if start_text_yellow:
+                    start_text = font.render('Click Here To Start!', True, neon_yellow_color, pygame.SRCALPHA)
+                else:
+                    start_text = font.render('Click Here To Start!', True, color, pygame.SRCALPHA)
                 WIN.blit(title_text, (width / 6, height / 3))
                 WIN.blit(start_text, (width / 6, height / 2))
                 pygame.mouse.set_visible(True)
                 for event in pygame.event.get():
                     mouse = pygame.mouse.get_pos()
                     if button_rect.collidepoint(mouse):
-                        start_text = font.render('Click Here To Start!', True, neon_yellow_color)
+                        start_text_yellow = True
                         if not hovered:
                             hovered = True
                             mixer.Sound.play(menu_hover)
                     else:
-                        start_text = font.render('Click Here To Start!', True, color)
+                        start_text_yellow = False
                         hovered = False
                     if event.type == pygame.QUIT:
                         pygame.quit()
@@ -572,11 +578,11 @@ while True:
 
         case "Lose":
             print("Lose screen!")
-            color = (255, 255, 255)
-            neon_yellow_color = (224, 231, 34)
-            title_text = font.render('Game Over!', True, color)
-            start_text = font.render('Click Here To Return To Menu!', True, color)
-            game_text = font.render('Click Here To Play Again!', True, color)
+            color = pygame.color.Color(255, 255, 255)
+            neon_yellow_color = pygame.color.Color(224, 231, 34)
+            title_text = font.render('Game Over!', True, color, pygame.SRCALPHA)
+            start_text = font.render('Click Here To Return To Menu!', True, color, pygame.SRCALPHA)
+            game_text = font.render('Click Here To Play Again!', True, color, pygame.SRCALPHA)
             button_rect = start_text.get_rect()
             button_rect[0] = width / 6
             button_rect[1] = height / 2
@@ -600,20 +606,20 @@ while True:
                 for event in pygame.event.get():
                     mouse = pygame.mouse.get_pos()
                     if button_rect.collidepoint(mouse):
-                        start_text = font.render('Click Here To Return To Menu!', True, neon_yellow_color)
+                        start_text = font.render('Click Here To Return To Menu!', True, neon_yellow_color, pygame.SRCALPHA)
                         if not startHovered:
                             startHovered = True
                             mixer.Sound.play(menu_hover)
                     else:
-                        start_text = font.render('Click Here To Return To Menu!', True, color)
+                        start_text = font.render('Click Here To Return To Menu!', True, color, pygame.SRCALPHA)
                         startHovered = False
                     if button_rect_2.collidepoint(mouse):
-                        game_text = font.render('Click Here To Play Again!', True, neon_yellow_color)
+                        game_text = font.render('Click Here To Play Again!', True, neon_yellow_color, pygame.SRCALPHA)
                         if not playHovered:
                             playHovered = True
                             mixer.Sound.play(menu_hover)
                     else:
-                        game_text = font.render('Click Here To Play Again!', True, color)
+                        game_text = font.render('Click Here To Play Again!', True, color, pygame.SRCALPHA)
                         playHovered = False
                     if event.type == pygame.QUIT:
                         pygame.quit()

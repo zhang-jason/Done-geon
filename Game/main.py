@@ -251,7 +251,11 @@ def move_entities():
     player.tile_x = round((player.rect.centerx - TILE_SIZE / 2) / TILE_SIZE)
     player.tile_y = round((player.rect.bottom - TILE_SIZE / 2) / TILE_SIZE)
     player.tile = room_fall_maps[roomIndex][player.tile_y][player.tile_x]
-    if player.tile == "-1" and player.fall == 0 and player.speed <= 5:
+    if player.tile == "-1" and player.fall == 0 and player.speed <= 5:  # for holes
+        player.fall = 10
+        player.get_hit(1)
+        player.iframes = 10
+    elif player.tile == "-2" and player.fall == 0 and player.speed <= 5:  # for ladders
         player.fall = 10
         player.iframes = 10
     for e in enemies:

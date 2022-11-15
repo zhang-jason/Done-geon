@@ -10,6 +10,7 @@ class Server():
             self.alive = True
             self.newPlayer = False
             self.newPowerup = False
+            self.newMinion = False
             self.receiver = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
             self.receiver.bind((socket.gethostname(),65432))
             self.sender = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
@@ -28,6 +29,9 @@ class Server():
             print("NFC: " + msg[2:])
             self.playerType = msg[2:]
             self.newPlayer = True
+        if msg[0] == 'm':
+            self.minionType = msg[2:]
+            self.newMinion = True
 
     def readMsg(self):
         while(self.alive):

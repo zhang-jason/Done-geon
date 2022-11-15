@@ -388,6 +388,8 @@ def random_spawn():
 
 setVolume(audio_sfx)
 
+minionType = 'Random'
+
 while True:
     # User interaction:
     for event in pygame.event.get():
@@ -512,8 +514,11 @@ while True:
                     minion_cooldown = pygame.time.get_ticks() + 720
                     # add something to specify melee vs. ranged, but for now it's random
                     minionList = ['Melee_Corpse_Zombie', 'Melee_Sand_Zombie', 'Melee_Skeleton_Knight', 'Ranged_Sand_Archer', 'Ranged_Witch']
-                    minionType = choice(minionList)
-                    minions.add(Minion(random_spawn(),TILE_SIZE, player, minionType))
+                    if minionType == 'Random':
+                        minions.add(Minion(random_spawn(),TILE_SIZE, player, choice(minionList)))
+                    else:
+                        minions.add(Minion(random_spawn(),TILE_SIZE, player, minionType))
+                    
             if player.fall:
                 player.fall -= 1
             WIN.blit(player.image, player.rect)
@@ -683,7 +688,7 @@ while True:
     if time < pygame.time.get_ticks():
         server.sendMsg("h " + str(player.get_health()))
         server.sendMsg("b " + str(player.bones))
-        time = pygame.time.get_ticks() + 1000
+        time = pygame.time.get_ticks() + 500
 
     if server.newPowerup:
         server.newPowerup = False
@@ -699,6 +704,9 @@ while True:
                 player = Reaper((width / 3, height / 2), TILE_SIZE,player)
         for m in minions:
             m.player = player
+    if server.newMinion:
+        server.newMinion = False
+        minionType = server.minionType
 
     pygame.display.update()
     updateCount += 1

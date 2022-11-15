@@ -19,6 +19,7 @@ from gui import *
 from tiles import *
 from RandomGen.roomGen import Room
 from server import Server
+from dirMods import getImages
 
 import pygame
 from pygame import constants
@@ -82,6 +83,11 @@ def setVolume(audio_sfx):
     spike_trap.set_volume(audio_sfx)
     fire_trap.set_volume(audio_sfx)
     player.setVolume(audio_sfx)
+
+# Preloading Some Longer Animations for Performance
+heal_vfx = getImages(join(dirname(dirname(__file__)), f'game/assets/vfx/heal'), (TILE_SIZE, TILE_SIZE))
+shield_vfx = getImages(join(dirname(dirname(__file__)), f'game/assets/vfx/shield'), (TILE_SIZE, TILE_SIZE))
+speed_vfx = getImages(join(dirname(dirname(__file__)), f'game/assets/vfx/speed'), (TILE_SIZE, TILE_SIZE))
 
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Done-geon")
@@ -299,6 +305,8 @@ def detect_melee(e):
     for m in minions:
         if m.rect.collidepoint(e.rect.center):
             m.get_hit(e.damage)
+            if 'Melee' in m.type:
+                e.kill()
             if m.current_health <= 0:
                 m.kill()
     if player.rect.collidepoint(e.rect.center):
@@ -355,9 +363,11 @@ def addVFX(type):
         case 'Empty':
             return
         case 'Heal':
-            playerVFX.add(VFX(type, (TILE_SIZE, TILE_SIZE), player.rect.center, True))
-        case 'Speed' | 'Shield':
-            playerVFX.add(VFX(type, (TILE_SIZE, TILE_SIZE), player.rect.center))
+            playerVFX.add(VFX(type, (TILE_SIZE, TILE_SIZE), player.rect.center, True, heal_vfx))
+        case 'Speed':
+            playerVFX.add(VFX(type, (TILE_SIZE, TILE_SIZE), player.rect.center, sprites=speed_vfx))
+        case 'Shield':
+            playerVFX.add(VFX(type, (TILE_SIZE, TILE_SIZE), player.rect.center, sprites=shield_vfx))
 
 roomList = []
 for index, iter in enumerate(range(randint(3, 6))):
@@ -498,10 +508,10 @@ while True:
             if key_e_pressed:
                 if player.bones >= 3:  # selected_minion.cost
                     player.bones -= 3
-                    minions.add(
-                        Minion(random_spawn(),
-                               TILE_SIZE, player)
-                    )
+                    # add something to specify melee vs. ranged, but for now it's random
+                    minionList = ['Melee_Corpse_Zombie', 'Melee_Sand_Zombie', 'Melee_Skeleton_Knight', 'Ranged_Sand_Archer', 'Ranged_Witch']
+                    minionType = choice(minionList)
+                    minions.add(Minion(random_spawn(),TILE_SIZE, player, minionType))
             if player.fall:
                 player.fall -= 1
             WIN.blit(player.image, player.rect)

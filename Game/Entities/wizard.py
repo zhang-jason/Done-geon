@@ -16,7 +16,7 @@ class Wizard(Enemy):
     def attack(self, projectiles):
         enemy = self.rect.center
         pCoords = self.player.rect.center
-        projectiles.add(Projectile(enemy, pCoords, False, 'Pink Ball', self.TILE_SIZE))
+        projectiles.add(Projectile(enemy, pCoords, False, 'Pink Ball', (self.TILE_SIZE*3//4, self.TILE_SIZE*3//4)))
 
     def update(self, projectiles):
         super(Wizard, self).update(projectiles)

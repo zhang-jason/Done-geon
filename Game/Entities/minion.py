@@ -1,23 +1,25 @@
-import os
-import random
 from os.path import join, dirname
 from random import randint
 
 from Entities.entity import Entity
 from Entities.projectile import Projectile
+from dirMods import getImages
 import pygame
 
 
 class Minion(Entity):
-    def __init__(self, startPosition, TILE_SIZE, player):
+    def __init__(self, startPosition, TILE_SIZE, player, type):
         super(Minion, self).__init__()
         self.iframes = 0
         self.player = player
         self.TILE_SIZE = TILE_SIZE
         # Sprite Animation
-        self.sprites = player.runSprites
-        # self.is_animating == False
-        size = (TILE_SIZE*2//3, TILE_SIZE*5//6)
+        size = (TILE_SIZE*1//2, TILE_SIZE*1//2)
+        self.sprites = getImages(join(dirname(dirname(__file__)), f'assets/minions/{type}'), size)
+        self.type = type
+        self.ranged = False
+        if 'Ranged' in type:
+            self.ranged = True
 
         self.current_sprite = 0
         self.image = self.sprites[self.current_sprite]
@@ -41,7 +43,10 @@ class Minion(Entity):
             for e in enemies:
                 if enemy == i:
                     eCoords = e.rect.center
-                    projectiles.add(Projectile(minion, eCoords, True, 'Magic Ball', self.TILE_SIZE*2/3))
+                    if 'Archer' in self.type:
+                        projectiles.add(Projectile(minion, eCoords, True, 'Arrow', (self.TILE_SIZE*1//2, self.TILE_SIZE*1//4)))
+                    else:
+                        projectiles.add(Projectile(minion, eCoords, True, 'Magic Ball', (self.TILE_SIZE*1//2, self.TILE_SIZE*1//2)))
                     break
                 i += 1
 
@@ -59,9 +64,10 @@ class Minion(Entity):
             self.image = pygame.transform.flip(self.sprites[int(self.current_sprite)], False, False)
 
         # Scuffed random attack pattern generator
-        rand_attack = randint(1, 250)
-        if rand_attack == 1:
-            self.attack(projectiles, enemies)
+        if self.ranged:
+            rand_attack = randint(1, 125)
+            if rand_attack == 1:
+                self.attack(projectiles, enemies)
         if self.iframes:
             self.iframes -= 1
 

@@ -7,13 +7,15 @@ from os.path import join, dirname, isfile
 
 class Projectile(Entity):
     # Team is whether Player or Enemy used projectile, Ability is type of projectile (e.g. fireball, arrow, etc.)
-    def __init__(self, startPosition, endPosition, friendly, ability, TILE_SIZE):
+    def __init__(self, startPosition, endPosition, friendly, ability, size):
         super(Projectile, self).__init__()
 
         # Math Stuff
         self.startPosition = startPosition
         self.endPosition = endPosition
         self.speed = 2
+        if ability is 'Arrow':
+            self.speed = 4
         self.canMove = 0
         angle = math.atan2(endPosition[1] - startPosition[1], endPosition[0] - startPosition[0])
         self.dx = math.cos(angle) * self.speed
@@ -28,7 +30,6 @@ class Projectile(Entity):
         # Image and Animations
         self.sprites = []
         dir = join(dirname(dirname(__file__)), f'assets/projectiles/{ability}')
-        size = (TILE_SIZE*3//4, TILE_SIZE*3//4)
         for path in listdir(dir):
             file = join(dir, path)
             if isfile(file):

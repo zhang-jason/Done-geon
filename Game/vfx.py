@@ -4,14 +4,17 @@ from os import listdir
 from os.path import join, dirname, isfile
 
 class VFX(Entity):
-    def __init__(self, type, size, position, one_time=False):
+    def __init__(self, type, size, position, one_time=False, sprites=None):
         super(VFX, self).__init__()
 
         self.type = type
         self.one_time = one_time
         if self.one_time:
             self.done = False
-        self.sprites = self.__getSprites__(type, size)
+        if sprites == None:
+            self.sprites = self.__getSprites__(type, size)
+        else:
+            self.sprites = sprites
         self.current_sprite = 0
         self.image = self.sprites[self.current_sprite]
         self.rect = self.image.get_rect()

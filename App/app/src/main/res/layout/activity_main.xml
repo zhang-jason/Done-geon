@@ -105,6 +105,35 @@
             android:id="@+id/end"
             android:src="@drawable/end" /></GridLayout>
 
+    <GridLayout
+        android:id="@+id/pwrUpGrid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:horizontalSpacing="0dip"
+        android:visibility="gone">
+
+        <Button
+            android:id="@+id/heal"
+            android:text="Heal: 0"
+            android:drawableTop="@drawable/heal_empty"
+            android:drawablePadding="10dp"
+            android:background="@android:color/transparent"/>
+
+        <Button
+            android:id="@+id/shield"
+            android:text="Sheild: 0"
+            android:drawableTop="@drawable/shield_empty"
+            android:drawablePadding="10dp"
+            android:background="@android:color/transparent"/>
+
+        <Button
+            android:id="@+id/speed"
+            android:text="Speed: 0"
+            android:drawableTop="@drawable/speed_empty"
+            android:drawablePadding="10dp"
+            android:background="@android:color/transparent"/></GridLayout>
+
 
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"

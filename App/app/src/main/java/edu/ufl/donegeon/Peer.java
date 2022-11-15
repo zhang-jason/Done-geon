@@ -117,6 +117,7 @@ public class Peer extends Thread {
         }
         changeVisibilityGrid(R.id.lifeGrid, R.id.boneCntPic, View.VISIBLE);
         changeText("Connected to: " + sendTo.getHostName() + "\n Scan NFC Tag");
+        changeVisibility(R.id.pwrUpGrid,View.VISIBLE);
         changeVisibility(R.id.submitIP, View.GONE);
         changeVisibility(R.id.manualIP,View.GONE);
     }
@@ -223,31 +224,17 @@ class Receiver extends Thread {
         ll = p.act.findViewById(R.id.layout);
     }
 
-    void clearButtons(){
-        powerups = new HashMap<>();
-        for(Button b : btns){
-            p.act.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    ll.removeView(b);
-                }
-            });
-        }
-        btns = new ArrayList<>();
-    }
-
-
-
     void parse(String msg){
         if(msg.equals("closedGame")){
             p.sendTo = null;
             p.changeText("Game disconnected.\n Waiting for new connection...");
             p.changeVisibilityGrid(R.id.lifeGrid, R.id.boneCntPic, View.GONE);
-            clearButtons();
+            p.changeVisibility(R.id.pwrUpGrid,View.GONE);
+            setupBtns();
             p.shouldScan = true;
         }
         if(msg.equals("lose")){
-            clearButtons();
+            setupBtns();
         }
         char type = msg.charAt(0);
         String value = msg.substring(2);
@@ -264,19 +251,8 @@ class Receiver extends Thread {
             boolean has = powerups.containsKey(value);
             int count = has ? powerups.get(value) : 0;
             powerups.put(value, count + 1);
-            if(has == false){
-                p.act.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Button btn = new Button(p.act);
-                        btn.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-                        btns.add(btn);
-                        ll.addView(btn);
-                    }
-                });
-            }
         }
-        changeText();
+        updateUI();
     }
 
     void updateHealthbar(int health){
@@ -295,29 +271,30 @@ class Receiver extends Thread {
         int[] pos = {R.id.tenk,R.id.onek,R.id.hundred,R.id.ten,R.id.one};
         int[] size = {10000,1000,100,10,1};
         for(int i = 0; i < pos.length;i++){
+            if(num/size[i] != 0 || size[i] == 1)
+                blank = false;
             int[] images = {blank? R.drawable.blank:R.drawable.zero,R.drawable.one,R.drawable.two,R.drawable.three,R.drawable.four,
                     R.drawable.five,R.drawable.six,R.drawable.seven,R.drawable.eight,R.drawable.nine};
             ImageView img = p.act.findViewById(pos[i]);
             img.setImageResource(images[num/size[i]]);
-            if(num/size[i] != 0 || size[i] == 1)
-                blank = false;
             num = num % size[i];
         }
 
     }
 
-    void changeText(){
-        updateBones(bones);
-        updateHealthbar(health);
-        ArrayList<String> powerupNames = new ArrayList<>(powerups.keySet());
-        ArrayList<Integer> powerupNums = new ArrayList<>(powerups.values());
-        for(int i = 0; i < powerupNames.size(); i++){
-            String value = powerupNames.get(i);
-            btns.get(i).setText(powerupNames.get(i) + ": " + powerupNums.get(i));
-            btns.get(i).setOnClickListener(new View.OnClickListener() {
+    String[] powerupNames = {"Heal","Shield","Speed"};
+    int[] btnIds = {R.id.heal,R.id.shield,R.id.speed};
+    int[] icons = {R.drawable.heal,R.drawable.shield,R.drawable.speed};
+    int[] icons_empty = {R.drawable.heal_empty,R.drawable.shield_empty,R.drawable.speed_empty};
+
+    void setupBtns(){
+        for(int i = 0; i < powerupNames.length; i++){
+            powerups.put(powerupNames[i],0);
+            Button btn = p.act.findViewById(btnIds[i]);
+            String value = powerupNames[i];
+            btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Log.e("","p " + value);
                     if(powerups.get(value) > 0){
                         p.sendMsg("p " + value);
                         powerups.put(value, powerups.get(value) - 1 < 0? 0: powerups.get(value) - 1);
@@ -327,7 +304,27 @@ class Receiver extends Thread {
         }
     }
 
+    void greyOut(Button btn, int image){
+        btn.setCompoundDrawablesWithIntrinsicBounds(0, image, 0, 0);
+    }
+
+    void updateBtns(){
+        for(int i = 0; i < powerupNames.length; i++){
+            Button btn = p.act.findViewById(btnIds[i]);
+            int count = powerups.get(powerupNames[i]);
+            btn.setText(powerupNames[i] + ": " + count);
+            greyOut(btn,count > 0? icons[i] : icons_empty[i]);
+        }
+    }
+
+    void updateUI(){
+        updateBones(bones);
+        updateHealthbar(health);
+        updateBtns();
+    }
+
     public void run() {
+        setupBtns();
         try {
             DatagramSocket s = new DatagramSocket(port,thisAddr);
             while(p.alive){

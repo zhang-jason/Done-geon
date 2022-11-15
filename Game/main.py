@@ -131,6 +131,7 @@ mouse_pressed = 0
 mouse_right_pressed = 0
 key_shift_pressed = 0
 key_e_pressed = 0
+minion_cooldown = pygame.time.get_ticks() + 720
 health = HealthBar(WIN, player, TILE_SIZE)
 bone_bar = BoneCounter(WIN, player, TILE_SIZE)
 inventory = Inventory(WIN, TILE_SIZE)
@@ -506,8 +507,9 @@ while True:
             if key_shift_pressed:
                 player.sprint()
             if key_e_pressed:
-                if player.bones >= 3:  # selected_minion.cost
+                if player.bones >= 3 and pygame.time.get_ticks() >= minion_cooldown:  # selected_minion.cost
                     player.bones -= 3
+                    minion_cooldown = pygame.time.get_ticks() + 720
                     # add something to specify melee vs. ranged, but for now it's random
                     minionList = ['Melee_Corpse_Zombie', 'Melee_Sand_Zombie', 'Melee_Skeleton_Knight', 'Ranged_Sand_Archer', 'Ranged_Witch']
                     minionType = choice(minionList)

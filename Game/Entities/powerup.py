@@ -1,8 +1,6 @@
 import pygame
-import math
 from Entities.entity import Entity
-from os.path import join
-from os.path import dirname
+from os.path import join, dirname
 
 class Powerup(Entity):
     def __init__(self, position, ability, TILE_SIZE):

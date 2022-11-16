@@ -90,6 +90,8 @@ shield_vfx = getImages(join(dirname(dirname(__file__)), f'game/assets/vfx/shield
 speed_vfx = getImages(join(dirname(dirname(__file__)), f'game/assets/vfx/speed'), (TILE_SIZE, TILE_SIZE))
 blood_vfx = getImages(join(dirname(dirname(__file__)), f'game/assets/vfx/blood'), (TILE_SIZE, TILE_SIZE))
 enemy_spawn_vfx = getImages(join(dirname(dirname(__file__)), f'game/assets/vfx/enemy_spawn'), (TILE_SIZE, TILE_SIZE))
+minion_spawn_vfx = getImages(join(dirname(dirname(__file__)), f'game/assets/vfx/minion_spawn'), (TILE_SIZE, TILE_SIZE))
+projectile_hit_vfx = getImages(join(dirname(dirname(__file__)), f'game/assets/vfx/projectile_hit'), (TILE_SIZE*3, TILE_SIZE*3))
 
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Done-geon")
@@ -276,7 +278,8 @@ def move_entities():
         e.y = e.rect.centery + e.dy
         e.rect.center = (e.x, e.y)
     for m in minions:
-        move_calc_enemy(m)
+        if m.canMove:
+            move_calc_enemy(m)
         detect_collision(m)
         m.x = m.rect.centerx + m.dx
         m.y = m.rect.centery + m.dy
@@ -292,6 +295,7 @@ def detect_projectile(p):
         for e in enemies:
             if e.rect.collidepoint(p.rect.center):
                 staticVFX.add(VFX('Blood', (TILE_SIZE, TILE_SIZE), e.rect.center, True, blood_vfx))
+                staticVFX.add(VFX('Projectile_Hit', (TILE_SIZE, TILE_SIZE), e.rect.center, True, projectile_hit_vfx))
                 p.kill()
                 e.kill()
                 player.bones += 1
@@ -528,10 +532,13 @@ while True:
                     minion_cooldown = pygame.time.get_ticks() + 720
                     # add something to specify melee vs. ranged, but for now it's random
                     minionList = ['Melee_Corpse_Zombie', 'Melee_Sand_Zombie', 'Melee_Skeleton_Knight', 'Ranged_Sand_Archer', 'Ranged_Witch']
+                    spawn_coord = random_spawn()
                     if minionType == 'Random':
-                        minions.add(Minion(random_spawn(),TILE_SIZE, player, choice(minionList)))
+                        spawned_minion = Minion(spawn_coord,TILE_SIZE, player, choice(minionList))
                     else:
-                        minions.add(Minion(random_spawn(),TILE_SIZE, player, minionType))
+                        spawned_minion = Minion(spawn_coord,TILE_SIZE, player, minionType)
+                    minions.add(spawned_minion)
+                    staticVFX.add(VFX('Minion_Spawn', (TILE_SIZE, TILE_SIZE), spawned_minion.rect.center, True, minion_spawn_vfx))
                     
             if player.fall:
                 player.fall -= 1
@@ -554,7 +561,7 @@ while True:
                         v.kill()
                     else:
                         WIN.blit(v.image, v.rect)
-                        if v.type == 'Enemy_Spawn':
+                        if v.type == 'Enemy_Spawn' or 'Minion_Spawn':
                             speedVal = 0.15
                         else:
                             speedVal = 1

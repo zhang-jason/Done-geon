@@ -26,14 +26,14 @@ class Minion(Entity):
         self.rect = self.image.get_rect()
         self.rect.left, self.rect.top = startPosition
 
-        # how often the character can move (every five ticks)
-        self.canMove = pygame.time.get_ticks() + 5
+        self.canMove = False
         self.canAttack = pygame.time.get_ticks() + 240
         self.speed = 4  # how far it moves
         self.collidable = True
         self.current_health = 2
         self.max_health = 2
         self.alive = True
+        self.spawn_cooldown = 180
 
     def attack(self, projectiles, enemies):
         minion = self.rect.center
@@ -52,7 +52,10 @@ class Minion(Entity):
 
     def update(self, projectiles, enemies):
         super(Minion, self).update(projectiles)
-
+        if self.spawn_cooldown >= 0:
+            self.spawn_cooldown -= 1
+        else:
+            self.canMove = True
         self.current_sprite += 0.05  # Controls how fast the animations cycle
         if self.current_sprite >= len(self.sprites):
             self.current_sprite = 0

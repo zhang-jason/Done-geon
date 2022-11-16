@@ -547,9 +547,6 @@ while True:
                 if v.one_time:
                     if v.done:
                         v.kill()
-                    else:
-                        WIN.blit(v.image, v.rect)
-                        v.update(player.rect.center)
                 if player.powerupTimer > 0 and not v.one_time:
                     WIN.blit(v.image, v.rect)
                     v.update(player.rect.center)
@@ -561,7 +558,7 @@ while True:
                         v.kill()
                     else:
                         WIN.blit(v.image, v.rect)
-                        if v.type == 'Enemy_Spawn' or 'Minion_Spawn':
+                        if v.type in ['Enemy_Spawn', 'Minion_Spawn']:
                             speedVal = 0.15
                         else:
                             speedVal = 1

@@ -10,7 +10,7 @@ class Wizard(Enemy):
         self.sprites = self.__getSprites__('Wizard', 'Run', size)
         self.image = self.sprites[self.current_sprite]
         self.rect = self.image.get_rect()
-        self.rect.left, self.rect.top = startPosition
+        self.rect.centerx, self.rect.centery = startPosition
 
     # Ranged enemy has special attack
     def attack(self, projectiles):

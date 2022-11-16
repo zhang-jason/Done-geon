@@ -86,8 +86,10 @@ def setVolume(audio_sfx):
 
 # Preloading Some Longer Animations for Performance
 heal_vfx = getImages(join(dirname(dirname(__file__)), f'game/assets/vfx/heal'), (TILE_SIZE, TILE_SIZE))
-shield_vfx = getImages(join(dirname(dirname(__file__)), f'game/assets/vfx/shield'), (TILE_SIZE, TILE_SIZE))
+shield_vfx = getImages(join(dirname(dirname(__file__)), f'game/assets/vfx/shield'), (TILE_SIZE*4//3, TILE_SIZE*4//3))
 speed_vfx = getImages(join(dirname(dirname(__file__)), f'game/assets/vfx/speed'), (TILE_SIZE, TILE_SIZE))
+blood_vfx = getImages(join(dirname(dirname(__file__)), f'game/assets/vfx/blood'), (TILE_SIZE, TILE_SIZE))
+enemy_spawn_vfx = getImages(join(dirname(dirname(__file__)), f'game/assets/vfx/enemy_spawn'), (TILE_SIZE, TILE_SIZE))
 
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Done-geon")
@@ -119,6 +121,7 @@ enemies = pygame.sprite.Group()
 projectiles = pygame.sprite.Group()
 minions = pygame.sprite.Group()
 playerVFX = pygame.sprite.Group()
+staticVFX = pygame.sprite.Group()
 playerType = 'Necromancer'
 match playerType:
     case 'Necromancer':
@@ -266,7 +269,8 @@ def move_entities():
         player.fall = 10
         player.iframes = 10
     for e in enemies:
-        move_calc_enemy(e)
+        if e.canMove:
+            move_calc_enemy(e)
         detect_collision(e)
         e.x = e.rect.centerx + e.dx
         e.y = e.rect.centery + e.dy
@@ -287,6 +291,7 @@ def detect_projectile(p):
     if p.type:  # true for friendly
         for e in enemies:
             if e.rect.collidepoint(p.rect.center):
+                staticVFX.add(VFX('Blood', (TILE_SIZE, TILE_SIZE), e.rect.center, True, blood_vfx))
                 p.kill()
                 e.kill()
                 player.bones += 1
@@ -295,23 +300,27 @@ def detect_projectile(p):
             if m.rect.collidepoint(p.rect.center):
                 p.kill()
                 m.get_hit(p.damage)
+                staticVFX.add(VFX('Blood', (TILE_SIZE, TILE_SIZE), m.rect.center, True, blood_vfx))
                 if m.current_health <= 0:
                     m.kill()
         if player.rect.collidepoint(p.rect.center):
             p.kill()
             if not player.immune:
+                staticVFX.add(VFX('Blood', (TILE_SIZE, TILE_SIZE), player.rect.center, True, blood_vfx))
                 player.get_hit(p.damage)
 
 def detect_melee(e):
     for m in minions:
         if m.rect.collidepoint(e.rect.center):
             m.get_hit(e.damage)
+            staticVFX.add(VFX('Blood', (TILE_SIZE, TILE_SIZE), m.rect.center, True, blood_vfx))
             if 'Melee' in m.type:
                 e.kill()
             if m.current_health <= 0:
                 m.kill()
     if player.rect.collidepoint(e.rect.center):
-        if not player.immune:
+        if not player.immune and not player.iframes:
+            playerVFX.add(VFX('Blood', (TILE_SIZE, TILE_SIZE), player.rect.center, True, blood_vfx))
             player.get_hit(e.damage)
 
 def detect_player_melee():
@@ -327,10 +336,12 @@ def detect_player_melee():
             direction = attackPosition[0] - e.rect.centerx
             if player.flippedImage:
                 if distance <= attackRadius and direction >= 0:
+                    staticVFX.add(VFX('Blood', (TILE_SIZE, TILE_SIZE), e.rect.center, True, blood_vfx))
                     e.kill()
                     player.bones += 1
             else:
                 if distance <= attackRadius and direction <= 0:
+                    staticVFX.add(VFX('Blood', (TILE_SIZE, TILE_SIZE), e.rect.center, True, blood_vfx))
                     e.kill()
                     player.bones += 1
 
@@ -380,8 +391,8 @@ if roomIndex >= len(roomList):
     roomIndex = 0
 room = roomList[roomIndex]
 
-def random_spawn():
-    validCoord = choice(room.holeList)
+def random_spawn(): 
+    validCoord = choice(room.validTiles)
     y = validCoord[0] * TILE_SIZE + TILE_SIZE // 2
     x = validCoord[1] * TILE_SIZE + TILE_SIZE // 2
     return (x, y)
@@ -466,14 +477,17 @@ while True:
             # pygame.draw.rect(WIN, (255,0,0), hitbox,2)
 
             # Update Functions
+            enemy_choice = ['Wizard', 'Knight']
             if len(enemies) < 1:
                 for i in range(round(player.bones / 4 + 1)):
-                    enemies.add(
-                        Wizard(random_spawn(), player,
-                               TILE_SIZE))
-                    enemies.add(
-                        Knight(random_spawn(), player,
-                               TILE_SIZE))
+                    spawn_coord = random_spawn()
+                    match choice(enemy_choice):
+                        case 'Wizard':
+                            spawned_enemy = Wizard(spawn_coord, player, TILE_SIZE)
+                        case 'Knight':
+                            spawned_enemy = Knight(spawn_coord, player, TILE_SIZE)
+                    enemies.add(spawned_enemy)
+                    staticVFX.add(VFX('Enemy_Spawn', (TILE_SIZE, TILE_SIZE), spawned_enemy.rect.center, True, enemy_spawn_vfx))
             for m in minions:
                 WIN.blit(m.image, m.rect)
                 m.update(projectiles, enemies)
@@ -529,6 +543,17 @@ while True:
                     v.update(player.rect.center)
                 elif player.powerupTimer <= 0 and not v.one_time:
                     v.kill()
+            for v in staticVFX:
+                if v.one_time:
+                    if v.done:
+                        v.kill()
+                    else:
+                        WIN.blit(v.image, v.rect)
+                        if v.type == 'Enemy_Spawn':
+                            speedVal = 0.15
+                        else:
+                            speedVal = 1
+                        v.update(speed=speedVal)
             health.update(WIN, player)
             bone_bar.update(WIN, player)
             inventory.update(WIN, player)

@@ -19,10 +19,11 @@ class VFX(Entity):
         self.image = self.sprites[self.current_sprite]
         self.rect = self.image.get_rect()
         self.rect.center = position
+        self.static_position = position
 
-    def update(self, position):
+    def update(self, position=None, speed=0.20):
         # Update Sprite Animation
-        self.current_sprite += 0.20
+        self.current_sprite += speed
         if self.current_sprite >= len(self.sprites):
             if self.one_time:
                 self.done = True
@@ -31,11 +32,14 @@ class VFX(Entity):
                 self.current_sprite = 0
         self.image = self.sprites[int(self.current_sprite)]
         self.rect = self.image.get_rect()
-        self.rect.center = position
+        if position is not None:
+            self.rect.center = position
+        else:
+            self.rect.center = self.static_position
+
 
     def __getSprites__(self, type, size):
         spriteList = []
-
         dirPath = join(dirname(dirname(__file__)), f'game/assets/VFX/{type}')
         for i, file in enumerate(listdir(dirPath)):
             f = join(dirPath, f'{i}.png')

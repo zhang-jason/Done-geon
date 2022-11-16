@@ -12,16 +12,21 @@ class Enemy(Entity):
         # Sprite Info
         self.sprites = []
         self.current_sprite = 0
-        self.canMove = 0
+        self.canMove = False
         self.speed = 3
         self.health = 4
         self.player = player
         self.collidable = 1
         self.damage = 1
+        self.spawn_cooldown = 180
         # self.collideDir = 0
 
     def update(self, projectiles):
         # Update Sprite Animation
+        if self.spawn_cooldown >= 0:
+            self.spawn_cooldown -= 1
+        else:
+            self.canMove = True
         self.current_sprite += 0.05
         if self.current_sprite >= len(self.sprites):
             self.current_sprite = 0

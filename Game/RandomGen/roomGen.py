@@ -19,7 +19,7 @@ class Room():
         self.tileSize = tileSize
         self.roomIndex = roomIndex
         self.room = self.genMap()
-        self.holeList = self.findHoles()
+        self.validTiles = self.findValidTiles()
         self.powerups = pygame.sprite.Group()
         self.genPowerups()
         self.traps = pygame.sprite.Group()
@@ -63,7 +63,8 @@ class Room():
         powerupType = ['Speed', 'Heal', 'Shield']
 
         while currPowerups < maxPowerups:
-            validCoord = choice(self.holeList)
+            validCoord = choice(self.validTiles)
+            self.validTiles.remove(validCoord)
             y = validCoord[0] * self.tileSize + self.tileSize // 2
             x = validCoord[1] * self.tileSize + self.tileSize // 2
             self.powerups.add(Powerup((x, y), choice(powerupType), self.tileSize))
@@ -75,25 +76,26 @@ class Room():
         trapType = ['Spike', 'Fire']
 
         while currTraps < maxTraps:
-            validCoord = choice(self.holeList)
+            validCoord = choice(self.validTiles)
+            self.validTiles.remove(validCoord)
             y = validCoord[0] * self.tileSize
             x = validCoord[1] * self.tileSize
             self.traps.add(Trap((x, y), choice(trapType), self.tileSize))
             currTraps += 1
 
     # Returns a list of empty floor tiles (valid tiles to spawn entities)
-    def findHoles(self):
+    def findValidTiles(self):
         collide = self.getMap(self.roomIndex, 2)
         noncollide = self.getMap(self.roomIndex, 3)
         specialHoles = ['9','10','11']
-        holeList = []
+        validTiles = []
 
         for i in range(len(collide)):
             for j in range(len(collide[0])):
                 if collide[i][j] == '-1' and noncollide[i][j] not in specialHoles:
-                    holeList.append((i, j))
+                    validTiles.append((i, j))
 
-        return holeList
+        return validTiles
 
     def __getTileMap__(self, layerIndex):
         filename = os.path.join(os.path.dirname(__file__), '..', 'assets/tiles/temprooms',

@@ -46,7 +46,7 @@ class Minion(Entity):
                     if 'Archer' in self.type:
                         projectiles.add(Projectile(minion, eCoords, True, 'Arrow', (self.TILE_SIZE*1//2, self.TILE_SIZE*1//4)))
                     else:
-                        projectiles.add(Projectile(minion, eCoords, True, 'Magic Ball', (self.TILE_SIZE*1//2, self.TILE_SIZE*1//2)))
+                        projectiles.add(Projectile(minion, eCoords, True, 'Magic Ball', (self.TILE_SIZE*2//3, self.TILE_SIZE*2//3)))
                     break
                 i += 1
 

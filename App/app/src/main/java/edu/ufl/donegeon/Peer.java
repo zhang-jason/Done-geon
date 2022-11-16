@@ -118,6 +118,8 @@ public class Peer extends Thread {
         changeVisibilityGrid(R.id.lifeGrid, R.id.boneCntPic, View.VISIBLE);
         changeText("Connected to: " + sendTo.getHostName() + "\n Scan NFC Tag");
         changeVisibility(R.id.pwrUpGrid,View.VISIBLE);
+        changeVisibility(R.id.minionGrid,View.VISIBLE);
+        changeVisibility(R.id.minionGrid1,View.VISIBLE);
         changeVisibility(R.id.submitIP, View.GONE);
         changeVisibility(R.id.manualIP,View.GONE);
     }
@@ -230,6 +232,8 @@ class Receiver extends Thread {
             p.changeText("Game disconnected.\n Waiting for new connection...");
             p.changeVisibilityGrid(R.id.lifeGrid, R.id.boneCntPic, View.GONE);
             p.changeVisibility(R.id.pwrUpGrid,View.GONE);
+            p.changeVisibility(R.id.minionGrid,View.GONE);
+            p.changeVisibility(R.id.minionGrid1,View.GONE);
             setupBtns();
             p.shouldScan = true;
         }
@@ -282,10 +286,21 @@ class Receiver extends Thread {
 
     }
 
+    void greyOut(Button btn, int image){
+        btn.setCompoundDrawablesWithIntrinsicBounds(0, image, 0, 0);
+    }
+
     String[] powerupNames = {"Heal","Shield","Speed"};
     int[] btnIds = {R.id.heal,R.id.shield,R.id.speed};
     int[] icons = {R.drawable.heal,R.drawable.shield,R.drawable.speed};
     int[] icons_empty = {R.drawable.heal_empty,R.drawable.shield_empty,R.drawable.speed_empty};
+
+    String[] minionNames = {"Melee_Corpse_Zombie", "Melee_Sand_Zombie", "Melee_Skeleton_Knight",
+            "Ranged_Sand_Archer", "Ranged_Witch", "Random"};
+    int[] mnIds = {R.id.mone,R.id.mtwo,R.id.mthree,R.id.mfour,R.id.mfive,R.id.mrand};
+    int[] mnIcons = {R.drawable.mone,R.drawable.mtwo,R.drawable.mthree,R.drawable.mfour,R.drawable.mfive,R.drawable.mrand};
+    int[] mn_icons_empty = {R.drawable.mone_grey,R.drawable.mtwo_grey,R.drawable.mthree_grey,
+            R.drawable.mfour_grey,R.drawable.mfive_grey,R.drawable.mrand_grey};
 
     void setupBtns(){
         for(int i = 0; i < powerupNames.length; i++){
@@ -302,10 +317,20 @@ class Receiver extends Thread {
                 }
             });
         }
-    }
-
-    void greyOut(Button btn, int image){
-        btn.setCompoundDrawablesWithIntrinsicBounds(0, image, 0, 0);
+        for(int i = 0; i < minionNames.length; i++){
+            Button btn = p.act.findViewById(mnIds[i]);
+            String value = minionNames[i];
+            btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    p.sendMsg("m " + value);
+                    for(int i = 0; i < minionNames.length;i++){
+                        Button btn = p.act.findViewById(mnIds[i]);
+                        greyOut(btn,minionNames[i].equals(value)?mnIcons[i]:mn_icons_empty[i]);
+                    }
+                }
+            });
+        }
     }
 
     void updateBtns(){

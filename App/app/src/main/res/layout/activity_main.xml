@@ -106,6 +106,59 @@
             android:src="@drawable/end" /></GridLayout>
 
     <GridLayout
+        android:id="@+id/minionGrid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:horizontalSpacing="0dip"
+        android:columnCount="4"
+        android:visibility="gone">
+
+        <Button
+            android:id="@+id/mone"
+            android:drawableTop="@drawable/mone_grey"
+            android:drawablePadding="10dp"
+            android:background="@android:color/transparent"/>
+
+        <Button
+            android:id="@+id/mtwo"
+            android:drawableTop="@drawable/mtwo_grey"
+            android:drawablePadding="10dp"
+            android:background="@android:color/transparent"/>
+
+        <Button
+            android:id="@+id/mthree"
+            android:drawableTop="@drawable/mthree_grey"
+            android:drawablePadding="10dp"
+            android:background="@android:color/transparent"/>
+
+        <Button
+            android:id="@+id/mfour"
+            android:drawableTop="@drawable/mfour_grey"
+            android:drawablePadding="10dp"
+            android:background="@android:color/transparent"/></GridLayout>
+    <GridLayout
+        android:id="@+id/minionGrid1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:horizontalSpacing="0dip"
+        android:columnCount="4"
+        android:visibility="gone">
+
+        <Button
+            android:id="@+id/mfive"
+            android:drawableTop="@drawable/mfive_grey"
+            android:drawablePadding="10dp"
+            android:background="@android:color/transparent"/>
+
+        <Button
+            android:id="@+id/mrand"
+            android:drawableTop="@drawable/mrand"
+            android:drawablePadding="10dp"
+            android:background="@android:color/transparent"/></GridLayout>
+
+    <GridLayout
         android:id="@+id/pwrUpGrid"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -133,7 +186,6 @@
             android:drawableTop="@drawable/speed_empty"
             android:drawablePadding="10dp"
             android:background="@android:color/transparent"/></GridLayout>
-
 
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"

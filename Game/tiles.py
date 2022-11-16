@@ -61,51 +61,17 @@ class TileMap():
             for tile in row:
                 if tile == '0':
                     self.start_x, self.start_y = x * self.tile_size, y * self.tile_size
+                elif tile == '70':
+                    image, type = self.tileList[int(tile) - 1]
+                    self.exit = Tile(image, type, x * self.tile_size, y * self.tile_size, self.tile_size)
+                    tiles.append(self.exit)
+                elif tile == '71':
+                    image, type = self.tileList[int(tile) - 1]
+                    self.entrance = Tile(image, type, x * self.tile_size, y * self.tile_size, self.tile_size)
+                    tiles.append(self.entrance)
                 elif tile > '0':
                     image, type = self.tileList[int(tile) - 1]
                     tiles.append(Tile(image, type, x * self.tile_size, y * self.tile_size, self.tile_size))
-                    # print('Image:' + image + '\nType:' + type)
-
-                # elif tile == '258':
-                #     tiles.append(Tile('wall_inner_corner_mid_left.png', x * self.tile_size, y * self.tile_size, self.tile_size))
-                # elif tile == '36':
-                #     tiles.append(Tile('wall_fountain_mid_red_anim_f0.png', x * self.tile_size, y * self.tile_size, self.tile_size))
-                # elif tile == '33':
-                #     tiles.append(Tile('wall_mid.png', x * self.tile_size, y * self.tile_size, self.tile_size))
-                # elif tile == '34':
-                #     tiles.append(Tile('wall_right.png', x * self.tile_size, y * self.tile_size, self.tile_size))
-                # elif tile == '259':
-                #     tiles.append(Tile('wall_inner_corner_mid_rigth.png', x * self.tile_size, y * self.tile_size, self.tile_size))
-                # elif tile == '68':
-                #     tiles.append(Tile('wall_fountain_basin_red_anim_f0.png', x * self.tile_size, y * self.tile_size, self.tile_size))
-                # elif tile == '129':
-                #     tiles.append(Tile('floor_1.png', x * self.tile_size, y * self.tile_size, self.tile_size))
-                # elif tile == '323':
-                #     tiles.append(Tile('wall_mid.png', x * self.tile_size, y * self.tile_size, self.tile_size))
-                # elif tile == '5':
-                #     tiles.append(Tile('wall_top_mid2.png', x * self.tile_size, y * self.tile_size, self.tile_size))
-                # elif tile == '257':
-                #     tiles.append(Tile('wall_side_mid_right.png', x * self.tile_size, y * self.tile_size, self.tile_size))
-                # elif tile == '256':
-                #     tiles.append(Tile('wall_side_mid_left.png', x * self.tile_size, y * self.tile_size, self.tile_size))
-                # elif tile == '226':
-                #     tiles.append(Tile('wall_top_mid.png', x * self.tile_size, y * self.tile_size, self.tile_size))
-                # elif tile == '595':
-                #     tiles.append(Tile('chest_full_open_anim_f0.png', x * self.tile_size, y * self.tile_size, self.tile_size))
-                # elif tile == '294':
-                #     tiles.append(Tile('hole.png', x * self.tile_size, y * self.tile_size, self.tile_size))
-                # elif tile == '165':
-                #     tiles.append(Tile('column_top.png', x * self.tile_size, y * self.tile_size, self.tile_size))
-                # elif tile == '197':
-                #     tiles.append(Tile('column_mid.png', x * self.tile_size, y * self.tile_size, self.tile_size))
-                # elif tile == '229':
-                #     tiles.append(Tile('coulmn_base.png', x * self.tile_size, y * self.tile_size, self.tile_size))
-                # elif tile == '290':
-                #     tiles.append(Tile('wall_inner_corner_l_top_left.png', x * self.tile_size, y * self.tile_size, self.tile_size))
-                # elif tile == '291':
-                #     tiles.append(Tile('wall_inner_corner_l_top_rigth.png', x * self.tile_size, y * self.tile_size, self.tile_size))
-                # elif tile == '195':
-                #     tiles.append(Tile('floor_ladder.png', x * self.tile_size, y * self.tile_size, self.tile_size))
                 x += 1
             y += 1
 
@@ -114,3 +80,9 @@ class TileMap():
 
     def get_tiles(self):
         return self.tiles
+
+    def getEntrance(self):
+        return self.entrance
+
+    def getExit(self):
+        return self.exit

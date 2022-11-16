@@ -67,3 +67,5 @@ topwall_bottomright_corner, noncollide
 bottomwall_topleft_corner, noncollide
 bottomwall_topleft_topright_corners, noncollide
 bottomwall_topright_corner, noncollide
+door_closed_exit, collide
+door_open_entrance, collide

@@ -18,6 +18,7 @@ class WallGen():
         self.wallMap = []
         self.thirdLayer = []
         self.genMap(roomIndex)
+        
 
     def initMap(self):
         self.wallMap = [[-1 for x in range(16)] for y in range(9)]
@@ -29,6 +30,7 @@ class WallGen():
         self.genWalls()
         self.genBorders()
         self.fillWalls()
+        self.genDoors(roomIndex)
         
 
         with open(os.path.join(os.path.dirname(__file__), '..', 'assets/tiles/temprooms', f'room{roomIndex}_2.csv'), 'w', newline='') as file:
@@ -44,13 +46,19 @@ class WallGen():
             file.close()
 
     def genWalls(self):
-        for i in range(1, len(self.wallMap) - 1):
+        for i in range(len(self.wallMap) - 1, 0, -1):
             for j in range(1, len(self.wallMap[0]) - 1):
                 if(self.floorMap[i][j] != "-1"):
-                    if(self.floorMap[i + 1][j] == "-1" and (self.wallMap[i + 1][j] == -1 or self.wallMap[i + 1][j] == 13) and self.wallMap[i + 1][j] == -1):
+                    if(self.floorMap[i - 1][j] == "-1" and self.wallMap[i - 1][j] == -1):
+                        if(i > 1):
+                            if(self.floorMap[i - 2][j] == "-1" and self.wallMap[i - 1][j] == -1):
+                                self.wallMap[i - 1][j] = 14
+                            else:
+                                self.wallMap[i - 1][j] = 13
+                        else:
+                            self.wallMap[i - 1][j] = 14
+                    if(self.floorMap[i + 1][j] == "-1" and self.wallMap[i + 1][j] == -1):
                         self.wallMap[i + 1][j] = 13
-                    if(self.floorMap[i - 1][j] == "-1" and (self.wallMap[i - 1][j] == -1 or self.wallMap[i - 1][j] == 13) and self.wallMap[i - 1][j] == -1):
-                        self.wallMap[i - 1][j] = 14
 
     def genBorders(self):
 
@@ -276,6 +284,35 @@ class WallGen():
                 if(self.floorMap[i][j] == "-1" and self.wallMap[i][j] == -1):
                     self.wallMap[i][j] = 42 #black tile collidable
 
+
+    def genDoors(self, roomIndex):
+        print('doors')
+        flag = True
+        flag2 = True
+        while(flag):
+            i = randint(0, 8) #actually y 
+            j = randint(1, 13) #actually x
+            if(self.wallMap[i][j] == 13) and (self.wallMap[i][j - 1] == 13 or self.wallMap[i][j + 1] == 13):
+                self.wallMap[i][j] = 71
+                flag = False
+        while(flag2):
+            i = randint(0, 8)
+            j = randint(1, 14)
+            if(self.wallMap[i][j] == 14) and (self.wallMap[i][j - 1] == 14 or self.wallMap[i][j + 1] == 14) and (self.thirdLayer[i][j] == -1 or self.thirdLayer[i][j] == 16):
+                if(i == 0):
+                    if(j > 4 and j < 12):
+                        self.wallMap[i][j] = 70
+                        flag2 = False
+                        #print('should be in between')
+                        #print(roomIndex)
+                        #print(i)
+                        #print(j)
+                else:
+                    self.wallMap[i][j] = 70
+                    flag2 = False
+        print('doors done')
+            
+
 #right self.floorMap[i + 1][j]
 #left  self.floorMap[i - 1][j]
 #top self.floorMap[i][j - 1]
@@ -285,6 +322,9 @@ class WallGen():
 #topleft self.floorMap[i - 1][j - 1]
 #bottomright self.floorMap[i + 1][j + 1]
 #bottomleft self.floorMap[i - 1][j + 1]
+
+#len(self.wallMap) = 9
+#len(self.wallMap[0]) = 16
 
 
 

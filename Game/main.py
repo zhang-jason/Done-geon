@@ -196,6 +196,10 @@ room_collision_maps = []
 
 
 def get_tile_at(x, y):
+    global roomIndex
+    global room
+    global screen
+    global player
     x = x - TILE_SIZE / 2
     y = y - TILE_SIZE / 2
     tile_x = round(x / TILE_SIZE)
@@ -204,6 +208,27 @@ def get_tile_at(x, y):
         return True
     if room_collision_maps[roomIndex][tile_y][tile_x] == "-1":
         return False
+    
+    elif room_collision_maps[roomIndex][tile_y][tile_x] == "70":
+        roomIndex += 1
+        if roomIndex >= len(roomList):
+            roomIndex = 0
+        room = roomList[roomIndex]
+        tile = room.__getTileMap__(2).getEntrance()
+        player.rect.center = (tile.rect.x + (TILE_SIZE / 2), tile.rect.y - (TILE_SIZE / 2))
+        #screen = "Transition"
+        return False
+    
+    elif room_collision_maps[roomIndex][tile_y][tile_x] == "71":
+        roomIndex -= 1
+        if(roomIndex < 0):
+            roomIndex = len(roomList) - 1
+        room = roomList[roomIndex]
+        tile = room.__getTileMap__(2).getExit()
+        player.rect.center = (tile.rect.x + (TILE_SIZE / 2), tile.rect.y + TILE_SIZE + (TILE_SIZE / 3))
+        #screen = "Transition"
+        return False
+
     else:
         return True
 
@@ -432,12 +457,6 @@ while True:
                 server.sendMsg("u " + player.powerup)
                 addVFX(player.powerup)
                 player.use_powerup()
-            elif event.key == constants.K_SPACE:
-                # Testing Random Room Hopping
-                roomIndex += 1
-                if roomIndex >= len(roomList):
-                    roomIndex = 0
-                room = roomList[roomIndex]
             elif event.key == constants.K_RSHIFT or event.key == constants.K_LSHIFT:
                 key_shift_pressed = 1
             elif event.key == constants.K_e:
@@ -707,6 +726,11 @@ while True:
             health = HealthBar(WIN, player, TILE_SIZE)
             bone_bar = BoneCounter(WIN, player, TILE_SIZE)
             screen = "Game"
+
+        #case "Transition":
+            #WIN.fill(0)
+            #pygame.time.delay(3000)
+            #screen = "Game"
 
         case other:
             print("Invalid state, return to start screen!")

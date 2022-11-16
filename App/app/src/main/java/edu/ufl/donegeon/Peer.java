@@ -238,6 +238,7 @@ class Receiver extends Thread {
             p.shouldScan = true;
         }
         if(msg.equals("lose")){
+            health = 0;
             setupBtns();
         }
         char type = msg.charAt(0);

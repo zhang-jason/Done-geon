@@ -444,6 +444,18 @@ setVolume(audio_sfx)
 
 minionType = 'Random'
 
+def spawnMinion():
+    player.bones -= 3
+    # add something to specify melee vs. ranged, but for now it's random
+    minionList = ['Melee_Corpse_Zombie', 'Melee_Sand_Zombie', 'Melee_Skeleton_Knight', 'Ranged_Sand_Archer', 'Ranged_Witch']
+    spawn_coord = random_spawn()
+    if minionType == 'Random':
+        spawned_minion = Minion(spawn_coord,TILE_SIZE, player, choice(minionList))
+    else:
+        spawned_minion = Minion(spawn_coord,TILE_SIZE, player, minionType)
+    minions.add(spawned_minion)
+    staticVFX.add(VFX('Minion_Spawn', (TILE_SIZE, TILE_SIZE), spawned_minion.rect.center, True, minion_spawn_vfx))
+
 while True:
     # User interaction:
     for event in pygame.event.get():
@@ -561,17 +573,8 @@ while True:
                 player.sprint()
             if key_e_pressed:
                 if player.bones >= 3 and pygame.time.get_ticks() >= minion_cooldown:  # selected_minion.cost
-                    player.bones -= 3
                     minion_cooldown = pygame.time.get_ticks() + 720
-                    # add something to specify melee vs. ranged, but for now it's random
-                    minionList = ['Melee_Corpse_Zombie', 'Melee_Sand_Zombie', 'Melee_Skeleton_Knight', 'Ranged_Sand_Archer', 'Ranged_Witch']
-                    spawn_coord = random_spawn()
-                    if minionType == 'Random':
-                        spawned_minion = Minion(spawn_coord,TILE_SIZE, player, choice(minionList))
-                    else:
-                        spawned_minion = Minion(spawn_coord,TILE_SIZE, player, minionType)
-                    minions.add(spawned_minion)
-                    staticVFX.add(VFX('Minion_Spawn', (TILE_SIZE, TILE_SIZE), spawned_minion.rect.center, True, minion_spawn_vfx))
+                    spawnMinion()
                     
             if player.fall:
                 player.fall -= 1
@@ -774,6 +777,11 @@ while True:
     if server.newMinion:
         server.newMinion = False
         minionType = server.minionType
+        if(player.bones >= 3):
+            minion_cooldown = pygame.time.get_ticks() + 720
+            spawnMinion()
+    if server.checkConnection() is False:
+        minionType = 'Random'
 
     pygame.display.update()
     updateCount += 1

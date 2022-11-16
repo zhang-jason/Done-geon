@@ -250,6 +250,19 @@ def detect_collision(ent):
     else:
         print("ent is non-collidable! This is probably an error!")
 
+def detect_projectile_collision(p):
+    if p.dx > 0:  # check if tile ent would end up in is collidable, if so reduce d to 0
+        if get_tile_at(p.rect.right + p.dx, p.rect.centery):
+            p.kill()
+    elif p.dx < 0:
+        if get_tile_at(p.rect.left + p.dx, p.rect.centery):
+            p.kill()
+    if p.dy < 0:  # Down and up are backwards bc window is drawn top to bottom...
+        if get_tile_at(p.rect.centerx, p.rect.top + p.dy):
+            p.kill()
+    elif p.dy > 0:
+        if get_tile_at(p.rect.centerx, p.rect.bottom + p.dy):
+            p.kill()
 
 def move_calc_enemy(ent):
     player_x = ent.player.rect.centerx
@@ -313,6 +326,7 @@ def move_entities():
         p.x += p.dx
         p.y += p.dy
         p.rect.center = (int(p.x), int(p.y))
+        detect_projectile_collision(p)
         # TODO: remove projectiles upon OOB or tile collision?
 
 def detect_projectile(p):

@@ -1,13 +1,14 @@
 from Entities.enemy import Enemy
 from Entities.projectile import Projectile
 from random import randint
+import numpy as np
 
 class Wizard(Enemy):
-    def __init__(self, startPosition, player, TILE_SIZE):
+    def __init__(self, startPosition, player, TILE_SIZE, boss):
         self.TILE_SIZE = TILE_SIZE
-        super(Wizard, self).__init__(startPosition, player)
+        super(Wizard, self).__init__(startPosition, player, boss)
         size = (TILE_SIZE // 2, TILE_SIZE * 3 // 4)
-        self.sprites = self.__getSprites__('Wizard', 'Run', size)
+        self.sprites = self.__getSprites__('Wizard', 'Run', np.array(size) * (4 if boss else 1))
         self.image = self.sprites[self.current_sprite]
         self.rect = self.image.get_rect()
         self.rect.centerx, self.rect.centery = startPosition

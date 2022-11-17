@@ -6,18 +6,18 @@ from os.path import join, dirname, isfile
 
 
 class Enemy(Entity):
-    def __init__(self, startPosition, player):
+    def __init__(self, startPosition, player, boss):
         super(Enemy, self).__init__()
 
         # Sprite Info
         self.sprites = []
         self.current_sprite = 0
         self.canMove = False
-        self.speed = 3
-        self.health = 4
+        self.speed = 1 if boss else 3
+        self.health = 10 if boss else 4
         self.player = player
         self.collidable = 1
-        self.damage = 1
+        self.damage = 2 if boss else 1
         self.spawn_cooldown = 180
         # self.collideDir = 0
 

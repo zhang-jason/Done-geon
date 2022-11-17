@@ -336,8 +336,10 @@ def detect_projectile(p):
                 staticVFX.add(VFX('Blood', (TILE_SIZE, TILE_SIZE), e.rect.center, True, blood_vfx))
                 staticVFX.add(VFX('Projectile_Hit', (TILE_SIZE, TILE_SIZE), e.rect.center, True, projectile_hit_vfx))
                 p.kill()
-                e.kill()
-                player.bones += 1
+                e.health -= p.damage * 4
+                if e.health <= 0:
+                    e.kill()
+                    player.bones += 1
     else:
         for m in minions:
             if m.rect.collidepoint(p.rect.center):
@@ -533,10 +535,11 @@ while True:
                 for i in range(round(player.bones / 4 + 1)):
                     spawn_coord = random_spawn()
                     match choice(enemy_choice):
+                        #set bool to true to make boss
                         case 'Wizard':
-                            spawned_enemy = Wizard(spawn_coord, player, TILE_SIZE)
+                            spawned_enemy = Wizard(spawn_coord, player, TILE_SIZE,False)
                         case 'Knight':
-                            spawned_enemy = Knight(spawn_coord, player, TILE_SIZE)
+                            spawned_enemy = Knight(spawn_coord, player, TILE_SIZE,False)
                     enemies.add(spawned_enemy)
                     staticVFX.add(VFX('Enemy_Spawn', (TILE_SIZE, TILE_SIZE), spawned_enemy.rect.center, True, enemy_spawn_vfx))
             for m in minions:

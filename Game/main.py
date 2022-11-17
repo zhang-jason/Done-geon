@@ -50,11 +50,11 @@ font = pygame.font.Font(fontDir, round(TILE_SIZE))
 
 # Sound Effects (Not BGM)
 dirSFX = join(dirname(dirname(__file__)), 'game/assets/SFX/Menu')
-menu_hover = mixer.Sound(join(dirSFX, 'Hover.mp3'))
-menu_click = mixer.Sound(join(dirSFX, 'Click.mp3'))
-lose_sound = mixer.Sound(join(dirSFX, 'Lose.ogg'))
-start_BGM = join(dirSFX, 'Start_BGM.mp3')
-lose_BGM = join(dirSFX, 'Lose_BGM.ogg')
+menu_hover = mixer.Sound(join(dirSFX, 'Hover.wav'))
+menu_click = mixer.Sound(join(dirSFX, 'Click.wav'))
+lose_sound = mixer.Sound(join(dirSFX, 'Lose.wav'))
+start_BGM = join(dirSFX, 'Start_BGM.wav')
+lose_BGM = join(dirSFX, 'Lose_BGM.wav')
 
 dirSFX = join(dirname(dirname(__file__)), 'game/assets/SFX/Game/Player')
 melee_attack = mixer.Sound(join(dirSFX, 'Melee_Attack.wav'))
@@ -65,7 +65,7 @@ player_death = mixer.Sound(join(dirSFX, 'Death.wav'))
 dirSFX = join(dirname(dirname(__file__)), 'game/assets/SFX/Game/Env')
 spike_trap = mixer.Sound(join(dirSFX, 'Spike.wav'))
 fire_trap = mixer.Sound(join(dirSFX, 'Fire.wav'))
-game_BGM = join(dirSFX, 'Game_BGM.ogg')
+game_BGM = join(dirSFX, 'Game_BGM.wav')
 
 # Sound Settings Adjustment
 audio_master = 0.50

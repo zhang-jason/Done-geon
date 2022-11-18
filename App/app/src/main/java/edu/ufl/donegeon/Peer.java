@@ -28,11 +28,13 @@ public class Peer extends Thread {
     String sendMsg;
     DatagramSocket s;
     TextView txt;
+    TextView NFCtxt;
     EditText editTxt;
     Activity act;
 
     public Peer(Activity act) {
         txt = act.findViewById(R.id.nfc_contents);
+        NFCtxt = act.findViewById(R.id.NFC_Txt);
         this.act = act;
         editTxt = act.findViewById(R.id.manualIP);
         act.findViewById(R.id.submitIP).setOnClickListener(new View.OnClickListener() {
@@ -48,6 +50,15 @@ public class Peer extends Thread {
             @Override
             public void run() {
                 txt.setText(newText);
+            }
+        });
+    }
+
+    void changeTextNFC(String newText){
+        act.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                NFCtxt.setText(newText);
             }
         });
     }
@@ -94,6 +105,9 @@ public class Peer extends Thread {
                 sleep(500);
             }catch(Exception e){}
         }
+        changeTextNFC("Scan NFC Tag");
+        changeVisibility(R.id.NFC_Txt, View.VISIBLE);
+        changeVisibility(R.id.nfc_contents,View.GONE);
         changeVisibility(R.id.manualIP,View.GONE);
         changeVisibility(R.id.submitIP,View.GONE);
         changeVisibility(R.id.connect,View.GONE);
@@ -197,35 +211,38 @@ class Receiver extends Thread {
     }
 
     void parse(String msg){
-        if(msg.equals("closedGame") || msg.equals("lose")){
+        if(msg.equals("closedGame") || msg.equals("lose")) {
             setupBtns();
             health = 4;
             bones = 0;
-            if(msg.equals("closedGame")){
+            if (msg.equals("closedGame")) {
                 p.sendTo = null;
                 p.changeText("Game disconnected.\n Waiting for new connection...");
-                p.changeVisibility(R.id.game,View.GONE);
-                p.changeVisibility(R.id.connect,View.VISIBLE);
+                p.changeVisibility(R.id.game, View.GONE);
+                p.changeVisibility(R.id.connect, View.VISIBLE);
                 p.shouldScan = true;
+                p.changeTextNFC(".");
+                p.changeVisibility(R.id.NFC_Txt, View.GONE);
+                p.changeVisibility(R.id.PlayerPicNec, View.GONE);
+                p.changeVisibility(R.id.PlayerPicRea, View.GONE);
+                p.changeVisibility(R.id.nfc_contents, View.VISIBLE);
             }
+            char type = msg.charAt(0);
+            String value = msg.substring(2);
+            if (type == 'b') {
+                bones = Integer.parseInt(value);
+            } else if (type == 'h') {
+                health = Integer.parseInt(value);
+            } else if (type == 'u' && value.compareTo("empty") != 0) {
+                powerups.put(value, powerups.get(value) - 1 < 0 ? 0 : powerups.get(value) - 1);
+            } else if (type == 'p') {
+                boolean has = powerups.containsKey(value);
+                int count = has ? powerups.get(value) : 0;
+                powerups.put(value, count + 1);
+            }
+            updateUI();
+
         }
-        char type = msg.charAt(0);
-        String value = msg.substring(2);
-        if(type == 'b'){
-            bones = Integer.parseInt(value);
-        }
-        else if(type == 'h'){
-            health = Integer.parseInt(value);
-        }
-        else if(type == 'u' && value.compareTo("empty") != 0){
-            powerups.put(value, powerups.get(value) - 1 < 0 ? 0: powerups.get(value)-1);
-        }
-        else if(type == 'p'){
-            boolean has = powerups.containsKey(value);
-            int count = has ? powerups.get(value) : 0;
-            powerups.put(value, count + 1);
-        }
-        updateUI();
     }
 
     void updateHealthbar(int health){

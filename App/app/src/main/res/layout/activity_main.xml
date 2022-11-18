@@ -2,12 +2,12 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
-<LinearLayout
-    android:gravity="center"
-    android:id="@+id/connect"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical" >
+    <LinearLayout
+        android:gravity="center"
+        android:id="@+id/connect"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical" >
 
     <TextView
         android:id="@+id/nfc_contents"
@@ -16,6 +16,7 @@
         android:text="Waiting for connection..."
         android:gravity="center_vertical|center_horizontal"
         android:textSize="20dp">
+        <!--android:visibility="gone"-->
     </TextView>
 
     <EditText
@@ -37,6 +38,7 @@
         android:visibility="gone"
         android:textSize="20dp">
     </Button>
+
 </LinearLayout>
 
 <LinearLayout
@@ -55,7 +57,6 @@
         android:columnOrderPreserved="false"
         android:gravity="center"
         android:useDefaultMargins="true">
-
         <ImageView
             android:id="@+id/healthPic1"
             android:layout_width="58dp"
@@ -193,6 +194,34 @@
             android:drawableTop="@drawable/speed_empty"
             android:drawablePadding="10dp"
             android:background="@android:color/transparent"/></GridLayout>
+
+    <TextView
+        android:id="@+id/NFC_Txt"
+        android:layout_width="359dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:gravity="center"
+        android:text="."
+        android:textSize="20dp"
+        android:visibility="gone">
+    </TextView>
+
+    <ImageView
+        android:id="@+id/PlayerPicNec"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/necromancer_pic"
+        android:visibility="gone">
+    </ImageView>
+
+    <ImageView
+        android:id="@+id/PlayerPicRea"
+        android:layout_width="180dp"
+        android:layout_height="177dp"
+        android:src="@drawable/reaper_foreground"
+        android:visibility="gone">
+    </ImageView>
+
 
 </LinearLayout>
 </FrameLayout>

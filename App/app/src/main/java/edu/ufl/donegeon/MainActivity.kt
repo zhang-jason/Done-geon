@@ -7,6 +7,8 @@ import android.content.IntentFilter
 import android.nfc.*
 import android.os.Bundle
 import android.os.Parcelable
+import android.view.View
+import android.widget.ImageView
 import android.widget.TextView
 import edu.ufl.donegeon.databinding.ActivityMainBinding
 
@@ -17,6 +19,8 @@ class MainActivity : Activity() {
     lateinit var pendingIntent: PendingIntent
     lateinit var myTag: Tag
     lateinit var server: Peer
+    lateinit var plyPicN: ImageView
+    lateinit var plyPicR: ImageView
 
 
     public override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,7 +28,10 @@ class MainActivity : Activity() {
         var binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        txtVw = findViewById(R.id.nfc_contents)
+        txtVw = findViewById(R.id.NFC_Txt)
+        plyPicN = findViewById(R.id.PlayerPicNec)
+        plyPicR = findViewById(R.id.PlayerPicRea)
+        //plyPic = findViewById(R.id.PlayerPicNec)
         server = Peer(this)
         server.start()
 
@@ -61,8 +68,16 @@ class MainActivity : Activity() {
         val payload = msgs[0].records[0].payload
         try {
             var text = String(payload, 3, payload.size - 3)
-            txtVw.text = "Message on tag:\n $text"
+            txtVw.text = "You have chosen: $text"
             server.sendMsg("n " + text)
+            if (text == "Necromancer"){
+                plyPicR.visibility = View.GONE
+                plyPicN.visibility = View.VISIBLE
+            }
+            else if (text == "Reaper") {
+                plyPicN.visibility = View.GONE
+                plyPicR.visibility = View.VISIBLE
+            }
         } catch (e: Exception) {
         }
     }

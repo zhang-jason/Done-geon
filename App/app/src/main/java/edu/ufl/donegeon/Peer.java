@@ -30,18 +30,17 @@ public class Peer extends Thread {
     TextView txt;
     EditText editTxt;
     Activity act;
-    GridLayout healthGrid,bneCnt;
-
-    View.OnClickListener listener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            manualConnect(editTxt.getText().toString());
-        }
-    };
 
     public Peer(Activity act) {
         txt = act.findViewById(R.id.nfc_contents);
         this.act = act;
+        editTxt = act.findViewById(R.id.manualIP);
+        act.findViewById(R.id.submitIP).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                manualConnect(editTxt.getText().toString());
+            }
+        });
     }
 
     void changeText(String newText){
@@ -60,26 +59,6 @@ public class Peer extends Thread {
                 act.findViewById(id).setVisibility(visibility);
             }
         });
-    }
-
-    void changeVisibilityGrid(int gridID, int bneCntID, int visibility){
-        class visibilityChangerGrid implements Runnable {
-            int gridID, lifeTxtID, bneCntID, bneTxtID,visibility;
-            visibilityChangerGrid(int gridID, int bneCntID, int visibility){
-                this.gridID = gridID;
-                this.visibility = visibility;
-                this.bneCntID = bneCntID;
-            }
-            @Override
-            public void run() {
-                healthGrid = act.findViewById(gridID);
-                healthGrid.setVisibility(visibility);
-                bneCnt = act.findViewById(bneCntID);
-                bneCnt.setVisibility(visibility);
-            }
-        }
-        visibilityChangerGrid vCG = new visibilityChangerGrid(gridID, bneCntID, visibility);
-        act.runOnUiThread(vCG);
     }
 
     void scan(){
@@ -115,13 +94,10 @@ public class Peer extends Thread {
                 sleep(500);
             }catch(Exception e){}
         }
-        changeVisibilityGrid(R.id.lifeGrid, R.id.boneCntPic, View.VISIBLE);
-        changeText("Connected to: " + sendTo.getHostName() + "\n Scan NFC Tag");
-        changeVisibility(R.id.pwrUpGrid,View.VISIBLE);
-        changeVisibility(R.id.minionGrid,View.VISIBLE);
-        changeVisibility(R.id.minionGrid1,View.VISIBLE);
-        changeVisibility(R.id.submitIP, View.GONE);
         changeVisibility(R.id.manualIP,View.GONE);
+        changeVisibility(R.id.submitIP,View.GONE);
+        changeVisibility(R.id.connect,View.GONE);
+        changeVisibility(R.id.game,View.VISIBLE);
     }
 
     void spawnManual(){
@@ -129,9 +105,7 @@ public class Peer extends Thread {
             sleep(5000);
             if(sendTo == null){
                 changeText("Game device not found");
-                editTxt = act.findViewById(R.id.manualIP);
-                act.findViewById(R.id.submitIP).setOnClickListener(listener);
-                changeVisibility(R.id.submitIP, View.VISIBLE);
+                changeVisibility(R.id.submitIP,View.VISIBLE);
                 changeVisibility(R.id.manualIP,View.VISIBLE);
             }
         }catch (Exception e){}
@@ -211,35 +185,29 @@ public class Peer extends Thread {
 }
 
 class Receiver extends Thread {
-    TextView hpTxt, boneTxt;
     HashMap<String,Integer> powerups = new HashMap<>();
-    int bones = 0, health = 0;
+    int bones = 0, health = 4;
     InetAddress thisAddr;
     int port = 65433;
     Peer p;
-    ArrayList<Button> btns = new ArrayList<>();
-    LinearLayout ll;
 
     public Receiver(Peer p,InetAddress thisAddr) {
         this.p = p;
         this.thisAddr = thisAddr;
-        ll = p.act.findViewById(R.id.layout);
     }
 
     void parse(String msg){
-        if(msg.equals("closedGame")){
-            p.sendTo = null;
-            p.changeText("Game disconnected.\n Waiting for new connection...");
-            p.changeVisibilityGrid(R.id.lifeGrid, R.id.boneCntPic, View.GONE);
-            p.changeVisibility(R.id.pwrUpGrid,View.GONE);
-            p.changeVisibility(R.id.minionGrid,View.GONE);
-            p.changeVisibility(R.id.minionGrid1,View.GONE);
+        if(msg.equals("closedGame") || msg.equals("lose")){
             setupBtns();
-            p.shouldScan = true;
-        }
-        if(msg.equals("lose")){
-            health = 0;
-            setupBtns();
+            health = 4;
+            bones = 0;
+            if(msg.equals("closedGame")){
+                p.sendTo = null;
+                p.changeText("Game disconnected.\n Waiting for new connection...");
+                p.changeVisibility(R.id.game,View.GONE);
+                p.changeVisibility(R.id.connect,View.VISIBLE);
+                p.shouldScan = true;
+            }
         }
         char type = msg.charAt(0);
         String value = msg.substring(2);

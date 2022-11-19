@@ -25,8 +25,8 @@
         android:layout_height="wrap_content"
         android:hint="Enter game device IP"
         android:gravity="center_vertical|center_horizontal"
-        android:visibility="gone"
-        android:textSize="20dp">
+        android:textSize="20dp"
+        android:visibility="gone">
     </EditText>
 
     <Button
@@ -38,190 +38,226 @@
         android:visibility="gone"
         android:textSize="20dp">
     </Button>
+    </LinearLayout>
 
-</LinearLayout>
+        <LinearLayout
+            android:id="@+id/game"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
 
-<LinearLayout
-    android:gravity="center"
-    android:id="@+id/game"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical"
-    android:visibility="gone">
+            <GridLayout
+                android:id="@+id/lifeGrid"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:alignmentMode="alignBounds"
+                android:columnOrderPreserved="false"
+                android:gravity="center"
+                android:useDefaultMargins="true">
 
-    <GridLayout
-        android:id="@+id/lifeGrid"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:alignmentMode="alignBounds"
-        android:columnOrderPreserved="false"
-        android:gravity="center"
-        android:useDefaultMargins="true">
-        <ImageView
-            android:id="@+id/healthPic1"
-            android:layout_width="58dp"
-            android:layout_height="50dp"
-            android:src="@drawable/health_pic_foreground" />
+                <ImageView
+                    android:id="@+id/healthPic1"
+                    android:layout_width="58dp"
+                    android:layout_height="50dp"
+                    android:src="@drawable/health_pic_foreground" />
 
-        <ImageView
-            android:id="@+id/healthPic2"
-            android:layout_width="58dp"
-            android:layout_height="50dp"
-            android:src="@drawable/health_pic_foreground" />
+                <ImageView
+                    android:id="@+id/healthPic2"
+                    android:layout_width="58dp"
+                    android:layout_height="50dp"
+                    android:src="@drawable/health_pic_foreground" />
 
-        <ImageView
-            android:id="@+id/healthPic3"
-            android:layout_width="58dp"
-            android:layout_height="50dp"
-            android:src="@drawable/health_pic_foreground" />
+                <ImageView
+                    android:id="@+id/healthPic3"
+                    android:layout_width="58dp"
+                    android:layout_height="50dp"
+                    android:src="@drawable/health_pic_foreground" />
 
-        <ImageView
-            android:id="@+id/healthPic4"
-            android:layout_width="58dp"
-            android:layout_height="50dp"
-            android:src="@drawable/health_pic_foreground" /></GridLayout>
+                <ImageView
+                    android:id="@+id/healthPic4"
+                    android:layout_width="58dp"
+                    android:layout_height="50dp"
+                    android:src="@drawable/health_pic_foreground" />
+            </GridLayout>
 
-    <GridLayout
-        android:id="@+id/boneCntPic"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:horizontalSpacing="0dip">
+            <GridLayout
+                android:id="@+id/boneCntPic"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:gravity="center"
+                android:horizontalSpacing="0dip">
 
-        <ImageView
-            android:id="@+id/boneStart"
-            android:src="@drawable/start" />
+                <ImageView
+                    android:id="@+id/boneStart"
+                    android:src="@drawable/start" />
 
-        <ImageView
-            android:id="@+id/tenk"
-            android:src="@drawable/blank" />
+                <ImageView
+                    android:id="@+id/tenk"
+                    android:src="@drawable/blank" />
 
-        <ImageView
-            android:id="@+id/onek"
-            android:src="@drawable/blank" />
+                <ImageView
+                    android:id="@+id/onek"
+                    android:src="@drawable/blank" />
 
-        <ImageView
-            android:id="@+id/hundred"
-            android:src="@drawable/blank" />
+                <ImageView
+                    android:id="@+id/hundred"
+                    android:src="@drawable/blank" />
 
-        <ImageView
-            android:id="@+id/ten"
-            android:src="@drawable/blank" />
+                <ImageView
+                    android:id="@+id/ten"
+                    android:src="@drawable/blank" />
 
-        <ImageView
-            android:id="@+id/one"
-            android:src="@drawable/blank" />
+                <ImageView
+                    android:id="@+id/one"
+                    android:src="@drawable/blank" />
 
-        <ImageView
-            android:id="@+id/end"
-            android:src="@drawable/end" /></GridLayout>
+                <ImageView
+                    android:id="@+id/end"
+                    android:src="@drawable/end" />
+            </GridLayout>
 
-    <GridLayout
-        android:id="@+id/minionGrid"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:horizontalSpacing="0dip"
-        android:columnCount="4">
+            <GridLayout
+                android:id="@+id/minionGrid"
+                android:layout_width="wrap_content"
+                android:layout_height="54dp"
+                android:layout_marginTop="30dp"
+                android:columnCount="4"
+                android:gravity="center"
+                android:horizontalSpacing="0dip">
 
-        <Button
-            android:id="@+id/mone"
-            android:drawableTop="@drawable/mone_grey"
-            android:drawablePadding="10dp"
-            android:background="@android:color/transparent"/>
+                <Button
+                    android:id="@+id/mone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:background="@drawable/minion_bg"
+                    android:drawableTop="@drawable/mone_grey"
+                    android:drawablePadding="10dp"
+                    android:paddingTop="10dp"/>
 
-        <Button
-            android:id="@+id/mtwo"
-            android:drawableTop="@drawable/mtwo_grey"
-            android:drawablePadding="10dp"
-            android:background="@android:color/transparent"/>
+                <Button
+                    android:id="@+id/mtwo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:background="@drawable/minion_bg"
+                    android:drawableTop="@drawable/mtwo_grey"
+                    android:paddingTop="10dp"
+                    android:drawablePadding="10dp" />
 
-        <Button
-            android:id="@+id/mthree"
-            android:drawableTop="@drawable/mthree_grey"
-            android:drawablePadding="10dp"
-            android:background="@android:color/transparent"/>
+                <Button
+                    android:id="@+id/mthree"
+                    android:drawableTop="@drawable/mthree_grey"
+                    android:drawablePadding="10dp"
+                    android:paddingTop="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:background="@drawable/minion_bg"/>
 
-        <Button
-            android:id="@+id/mfour"
-            android:drawableTop="@drawable/mfour_grey"
-            android:drawablePadding="10dp"
-            android:background="@android:color/transparent"/></GridLayout>
-    <GridLayout
-        android:id="@+id/minionGrid1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:horizontalSpacing="0dip"
-        android:columnCount="4">
+                <Button
+                    android:id="@+id/mfour"
+                    android:drawableTop="@drawable/mfour_grey"
+                    android:drawablePadding="10dp"
+                    android:paddingTop="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:background="@drawable/minion_bg"/>
+            </GridLayout>
 
-        <Button
-            android:id="@+id/mfive"
-            android:drawableTop="@drawable/mfive_grey"
-            android:drawablePadding="10dp"
-            android:background="@android:color/transparent"/>
+            <GridLayout
+                android:id="@+id/minionGrid1"
+                android:layout_width="wrap_content"
+                android:layout_height="53dp"
+                android:columnCount="4"
+                android:gravity="center"
+                android:horizontalSpacing="0dip">
 
-        <Button
-            android:id="@+id/mrand"
-            android:drawableTop="@drawable/mrand"
-            android:drawablePadding="10dp"
-            android:background="@android:color/transparent"/></GridLayout>
+                <Button
+                    android:id="@+id/mfive"
+                    android:layout_width="91dp"
+                    android:layout_height="match_parent"
+                    android:layout_row="0"
+                    android:layout_column="0"
+                    android:layout_gravity="center"
+                    android:background="@drawable/minion_bg"
+                    android:drawableTop="@drawable/mfive_grey"
+                    android:drawablePadding="10dp"
+                    android:paddingTop="10dp" />
 
-    <GridLayout
-        android:id="@+id/pwrUpGrid"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:horizontalSpacing="0dip">
+                <Button
+                    android:id="@+id/mrand"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:background="@drawable/minion_bg"
+                    android:drawableTop="@drawable/mrand"
+                    android:drawablePadding="10dp"
+                    android:paddingTop="10dp" />
+            </GridLayout>
 
-        <Button
-            android:id="@+id/heal"
-            android:text="Heal: 0"
-            android:drawableTop="@drawable/heal_empty"
-            android:drawablePadding="10dp"
-            android:background="@android:color/transparent"/>
+            <GridLayout
+                android:id="@+id/pwrUpGrid"
+                android:layout_width="wrap_content"
+                android:layout_height="75dp"
+                android:layout_marginTop="20dp"
+                android:gravity="center"
+                android:horizontalSpacing="0dip">
 
-        <Button
-            android:id="@+id/shield"
-            android:text="Sheild: 0"
-            android:drawableTop="@drawable/shield_empty"
-            android:drawablePadding="10dp"
-            android:background="@android:color/transparent"/>
+                <Button
+                    android:id="@+id/heal"
+                    android:background="@android:color/transparent"
+                    android:drawableTop="@drawable/heal_empty"
+                    android:drawablePadding="10dp"
+                    android:text="Heal: 0" />
 
-        <Button
-            android:id="@+id/speed"
-            android:text="Speed: 0"
-            android:drawableTop="@drawable/speed_empty"
-            android:drawablePadding="10dp"
-            android:background="@android:color/transparent"/></GridLayout>
+                <Button
+                    android:id="@+id/shield"
+                    android:background="@android:color/transparent"
+                    android:drawableTop="@drawable/shield_empty"
+                    android:drawablePadding="10dp"
+                    android:text="Shield: 0" />
 
-    <TextView
-        android:id="@+id/NFC_Txt"
-        android:layout_width="359dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:gravity="center"
-        android:text="."
-        android:textSize="20dp"
-        android:visibility="gone">
-    </TextView>
+                <Button
+                    android:id="@+id/speed"
+                    android:background="@android:color/transparent"
+                    android:drawableTop="@drawable/speed_empty"
+                    android:drawablePadding="10dp"
+                    android:text="Speed: 0" />
+            </GridLayout>
 
-    <ImageView
-        android:id="@+id/PlayerPicNec"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/necromancer_pic"
-        android:visibility="gone">
-    </ImageView>
+            <TextView
+                android:id="@+id/NFC_Txt"
+                android:layout_width="359dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:gravity="center"
+                android:text="."
+                android:textSize="20dp"
+                android:visibility="gone">
+            </TextView>
 
-    <ImageView
-        android:id="@+id/PlayerPicRea"
-        android:layout_width="180dp"
-        android:layout_height="177dp"
-        android:src="@drawable/reaper_foreground"
-        android:visibility="gone">
-    </ImageView>
+            <ImageView
+                android:id="@+id/PlayerPicNec"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/necromancer_pic"
+                android:visibility="gone"></ImageView>
+
+            <ImageView
+                android:id="@+id/PlayerPicRea"
+                android:layout_width="180dp"
+                android:layout_height="177dp"
+                android:src="@drawable/reaper_foreground"
+                android:visibility="gone"></ImageView>
 
 
-</LinearLayout>
+
+    </LinearLayout>
+
 </FrameLayout>

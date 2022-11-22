@@ -584,24 +584,26 @@ while True:
             WIN.blit(player.image, player.rect)
             for v in playerVFX:
                 if v.one_time:
+                    v.update(player.rect.center)
                     if v.done:
                         v.kill()
+                    else:
+                        WIN.blit(v.image, v.rect)
                 if player.powerupTimer > 0 and not v.one_time:
                     WIN.blit(v.image, v.rect)
                     v.update(player.rect.center)
                 elif player.powerupTimer <= 0 and not v.one_time:
                     v.kill()
             for v in staticVFX:
-                if v.one_time:
-                    if v.done:
-                        v.kill()
+                if v.done:
+                    v.kill()
+                else:
+                    WIN.blit(v.image, v.rect)
+                    if v.type in ['Enemy_Spawn', 'Minion_Spawn']:
+                        speedVal = 0.15
                     else:
-                        WIN.blit(v.image, v.rect)
-                        if v.type in ['Enemy_Spawn', 'Minion_Spawn']:
-                            speedVal = 0.15
-                        else:
-                            speedVal = 1
-                        v.update(speed=speedVal)
+                        speedVal = 1
+                    v.update(speed=speedVal)
             health.update(WIN, player)
             bone_bar.update(WIN, player)
             inventory.update(WIN, player)

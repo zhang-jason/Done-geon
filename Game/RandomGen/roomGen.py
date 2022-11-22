@@ -40,7 +40,6 @@ class Room():
         self.traps.draw(WIN)
         self.powerups.draw(WIN)
         self.room[2].draw_map(WIN)
-        
 
     def genMap(self):
         room = []

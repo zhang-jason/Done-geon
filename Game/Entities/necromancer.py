@@ -30,7 +30,7 @@ class Necromancer(Player):
         player = self.rect.center
         cursor = pygame.mouse.get_pos()
         self.canAttack = pygame.time.get_ticks() + 480
-        projectiles.add(Projectile(player, cursor, True, 'Fireball', (self.TILE_SIZE, self.TILE_SIZE)))
+        projectiles.add(Projectile(player, cursor, True, 'Magic Ball', (self.TILE_SIZE, self.TILE_SIZE)))
 
     def update(self):
         if self.attacking:

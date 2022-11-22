@@ -17,7 +17,8 @@ class Wizard(Enemy):
     def attack(self, projectiles):
         enemy = self.rect.center
         pCoords = self.player.rect.center
-        projectiles.add(Projectile(enemy, pCoords, False, 'Pink Ball', (self.TILE_SIZE*3//4, self.TILE_SIZE*3//4)))
+        randAttack = randint(1,6)
+        projectiles.add(Projectile(enemy, pCoords, False, f'Enemy_Ball_{randAttack}', (self.TILE_SIZE*3//4, self.TILE_SIZE*3//4)))
 
     def update(self, projectiles):
         super(Wizard, self).update(projectiles)

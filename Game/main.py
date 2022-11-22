@@ -330,7 +330,6 @@ def detect_projectile(p):
     if p.type:  # true for friendly
         for e in enemies:
             if e.rect.collidepoint(p.rect.center):
-                staticVFX.add(VFX('Blood', (TILE_SIZE, TILE_SIZE), e.rect.center, True, blood_vfx))
                 staticVFX.add(VFX('Projectile_Hit', (TILE_SIZE, TILE_SIZE), e.rect.center, True, projectile_hit_vfx))
                 p.kill()
                 e.health -= p.damage * 4

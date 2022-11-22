@@ -89,7 +89,7 @@ heal_vfx = getImages(join(dirname(dirname(__file__)), f'game/assets/vfx/heal'), 
 shield_vfx = getImages(join(dirname(dirname(__file__)), f'game/assets/vfx/shield'), (TILE_SIZE*4//3, TILE_SIZE*4//3))
 speed_vfx = getImages(join(dirname(dirname(__file__)), f'game/assets/vfx/speed'), (TILE_SIZE, TILE_SIZE))
 blood_vfx = getImages(join(dirname(dirname(__file__)), f'game/assets/vfx/blood'), (TILE_SIZE, TILE_SIZE))
-enemy_spawn_vfx = getImages(join(dirname(dirname(__file__)), f'game/assets/vfx/enemy_spawn'), (TILE_SIZE, TILE_SIZE))
+enemy_spawn_vfx = getImages(join(dirname(dirname(__file__)), f'game/assets/vfx/enemy_spawn'), (TILE_SIZE*2, TILE_SIZE*2))
 minion_spawn_vfx = getImages(join(dirname(dirname(__file__)), f'game/assets/vfx/minion_spawn'), (TILE_SIZE, TILE_SIZE))
 projectile_hit_vfx = getImages(join(dirname(dirname(__file__)), f'game/assets/vfx/projectile_hit'), (TILE_SIZE*3, TILE_SIZE*3))
 
@@ -541,7 +541,7 @@ while True:
                         case 'Knight':
                             spawned_enemy = Knight(spawn_coord, player, TILE_SIZE,False)
                     enemies.add(spawned_enemy)
-                    staticVFX.add(VFX('Enemy_Spawn', (TILE_SIZE, TILE_SIZE), spawned_enemy.rect.center, True, enemy_spawn_vfx))
+                    staticVFX.add(VFX('Enemy_Spawn', (TILE_SIZE, TILE_SIZE), spawned_enemy.rect.midtop, True, enemy_spawn_vfx))
             for m in minions:
                 WIN.blit(m.image, m.rect)
                 m.update(projectiles, enemies)

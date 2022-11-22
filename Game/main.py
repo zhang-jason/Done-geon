@@ -8,9 +8,6 @@ import pygame.locals as c
 # Modular Files
 from Entities.necromancer import Necromancer
 from Entities.reaper import Reaper
-from Entities.projectile import Projectile
-from Entities.powerup import Powerup
-from Entities.nonMoveObj import Obj
 from Entities.wizard import Wizard
 from Entities.knight import Knight
 from Entities.minion import Minion

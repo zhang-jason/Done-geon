@@ -4,6 +4,7 @@ from os.path import join, dirname
 import pygame
 import pygame.locals as c
 from pygame import mixer
+from dirMods import getImages
 
 class Necromancer(Player):
     def __init__(self, startPosition, TILE_SIZE,player= None):
@@ -12,6 +13,7 @@ class Necromancer(Player):
         self.idleSprites = self.__getSprites__('Necromancer', 'Idle', size)
         self.runSprites = self.__getSprites__('Necromancer', 'Run', size)
         self.attackSprites = self.__getSprites__('Necromancer', 'Attack', size)
+        self.projectileSprites = getImages((join(dirname(dirname(__file__)), 'assets/Projectiles/Magic_Ball')), (TILE_SIZE*3//4, TILE_SIZE*3//4))
         self.currentSprites = self.idleSprites
 
         self.current_sprite = 0
@@ -30,7 +32,7 @@ class Necromancer(Player):
         player = self.rect.center
         cursor = pygame.mouse.get_pos()
         self.canAttack = pygame.time.get_ticks() + 480
-        projectiles.add(Projectile(player, cursor, True, 'Magic Ball', (self.TILE_SIZE, self.TILE_SIZE)))
+        projectiles.add(Projectile(player, cursor, True, 'Magic Ball', (self.TILE_SIZE*3//4, self.TILE_SIZE*3//4), self.projectileSprites))
 
     def update(self):
         if self.attacking:

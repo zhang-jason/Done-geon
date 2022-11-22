@@ -7,7 +7,7 @@ from os.path import join, dirname, isfile
 
 class Projectile(Entity):
     # Team is whether Player or Enemy used projectile, Ability is type of projectile (e.g. fireball, arrow, etc.)
-    def __init__(self, startPosition, endPosition, friendly, ability, size):
+    def __init__(self, startPosition, endPosition, friendly, ability, size, sprites=None):
         super(Projectile, self).__init__()
 
         # Math Stuff
@@ -29,20 +29,25 @@ class Projectile(Entity):
 
         # Image and Animations
         self.sprites = []
-        dir = join(dirname(dirname(__file__)), f'assets/projectiles/{ability}')
-        for path in listdir(dir):
-            file = join(dir, path)
-            if isfile(file):
-                image = pygame.transform.scale(pygame.image.load(
-                    file), size)
-                image = pygame.transform.rotate(image, math.degrees(-angle))
-                self.sprites.append(image)
+        if sprites is None:
+            dir = join(dirname(dirname(__file__)), f'assets/projectiles/{ability}')
+            for path in listdir(dir):
+                file = join(dir, path)
+                if isfile(file):
+                    image = pygame.transform.scale(pygame.image.load(
+                        file), size)
+                    image = pygame.transform.rotate(image, math.degrees(-angle))
+                    self.sprites.append(image)
 
-        trans_image = pygame.image.load(
-            join(dirname(dirname(__file__)), f'assets/projectiles/{ability}', '0.png'))
-        trans_color = trans_image.get_at((0, 0))
-        for x in self.sprites:
-            x.set_colorkey(trans_color)
+            trans_image = pygame.image.load(
+                join(dirname(dirname(__file__)), f'assets/projectiles/{ability}', '0.png'))
+            trans_color = trans_image.get_at((0, 0))
+            for x in self.sprites:
+                x.set_colorkey(trans_color)
+        else:
+            for x in sprites:
+                image = pygame.transform.rotate(x, math.degrees(-angle))
+                self.sprites.append(image)
 
         self.current_sprite = 0
         self.image = self.sprites[self.current_sprite]

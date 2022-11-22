@@ -1,6 +1,5 @@
 import pygame
 from Entities.entity import Entity
-from Entities.projectile import Projectile
 from os import listdir
 from os.path import join, dirname, isfile
 

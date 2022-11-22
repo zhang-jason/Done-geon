@@ -21,6 +21,9 @@ class Minion(Entity):
         if 'Ranged' in type:
             self.ranged = True
 
+        if self.ranged and 'Archer' not in self.type:
+            self.projectileSprites = getImages((join(dirname(dirname(__file__)), f'assets/Projectiles/Enemy_Ball_{randint(1,6)}')), (TILE_SIZE*3//4, TILE_SIZE*3//4))
+
         self.current_sprite = 0
         self.image = self.sprites[self.current_sprite]
         self.rect = self.image.get_rect()
@@ -47,7 +50,7 @@ class Minion(Entity):
                         projectiles.add(Projectile(minion, eCoords, True, 'Arrow', (self.TILE_SIZE*1//2, self.TILE_SIZE*1//4)))
                     else:
                         randAttack = randint(1,6)
-                        projectiles.add(Projectile(minion, eCoords, True, f'Minion_Ball_{randAttack}', (self.TILE_SIZE*2//3, self.TILE_SIZE*2//3)))
+                        projectiles.add(Projectile(minion, eCoords, True, f'Minion_Ball_{randAttack}', (self.TILE_SIZE*2//3, self.TILE_SIZE*2//3), self.projectileSprites))
                     break
                 i += 1
 

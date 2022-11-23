@@ -119,23 +119,11 @@ bosses = pygame.sprite.Group()
 playerVFX = pygame.sprite.Group()
 staticVFX = pygame.sprite.Group()
 playerType = 'Necromancer'
-match playerType:
-    case 'Necromancer':
-        print('Created Necromancer')
-        player = Necromancer((width / 3, height / 2), TILE_SIZE)
-    case 'Reaper':
-        print('Created Reaper')
-        player = Reaper((width / 3, height / 2), TILE_SIZE)
 mouse_pressed = 0
 mouse_right_pressed = 0
 key_shift_pressed = 0
 key_e_pressed = 0
 minion_cooldown = pygame.time.get_ticks() + 720
-health = HealthBar(WIN, player, TILE_SIZE)
-bone_bar = BoneCounter(WIN, player, TILE_SIZE)
-inventory = Inventory(WIN, TILE_SIZE)
-
-server = Server(player)
 # server test variables
 time = 0
 roomIndex = 0
@@ -436,6 +424,19 @@ def random_spawn():
     y = validCoord[0] * TILE_SIZE + TILE_SIZE // 2
     x = validCoord[1] * TILE_SIZE + TILE_SIZE // 2
     return (x, y)
+
+match playerType:
+    case 'Necromancer':
+        print('Created Necromancer')
+        player = Necromancer(random_spawn(), TILE_SIZE)
+    case 'Reaper':
+        print('Created Reaper')
+        player = Reaper(random_spawn(), TILE_SIZE)
+
+health = HealthBar(WIN, player, TILE_SIZE)
+bone_bar = BoneCounter(WIN, player, TILE_SIZE)
+inventory = Inventory(WIN, TILE_SIZE)
+server = Server(player)
 
 setVolume(audio_sfx)
 
@@ -758,10 +759,10 @@ while True:
             match playerType:
                 case 'Necromancer':
                     print('Created Necromancer')
-                    player = Necromancer((width / 3, height / 2), TILE_SIZE)
+                    player = Necromancer(random_spawn(), TILE_SIZE)
                 case 'Reaper':
                     print('Created Reaper')
-                    player = Reaper((width / 3, height / 2), TILE_SIZE)
+                    player = Reaper(random_spawn(), TILE_SIZE)
             mouse_pressed = 0
             health = HealthBar(WIN, player, TILE_SIZE)
             bone_bar = BoneCounter(WIN, player, TILE_SIZE)
@@ -792,9 +793,9 @@ while True:
         playerType = server.playerType
         match playerType:
             case 'Necromancer':
-                player = Necromancer((width / 3, height / 2), TILE_SIZE,player)
+                player = Necromancer(random_spawn(), TILE_SIZE,player)
             case 'Reaper':
-                player = Reaper((width / 3, height / 2), TILE_SIZE,player)
+                player = Reaper(random_spawn(), TILE_SIZE,player)
         for m in minions:
             m.player = player
     if server.newMinion:

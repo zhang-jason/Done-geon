@@ -16,9 +16,9 @@ class Reaper(Player):
         self.image = self.currentSprites[self.current_sprite]
         self.rect = self.image.get_rect()
         if player is None:
-            self.rect.left, self.rect.top = startPosition
+            self.rect.centerx, self.rect.centery = startPosition
         else:
-            self.rect.left, self.rect.top = player.rect.left, player.rect.top
+            self.rect.centerx, self.rect.centery = player.rect.centerx, player.rect.centery
 
         self.canAttack = pygame.time.get_ticks() + 480
         super(Reaper, self).__init__(startPosition, TILE_SIZE,player)

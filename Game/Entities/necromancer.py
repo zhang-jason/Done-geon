@@ -20,9 +20,9 @@ class Necromancer(Player):
         self.image = self.currentSprites[self.current_sprite]
         self.rect = self.image.get_rect()
         if player is None:
-            self.rect.left, self.rect.top = startPosition
+            self.rect.centerx, self.rect.centery = startPosition
         else:
-            self.rect.left, self.rect.top = player.rect.left, player.rect.top
+            self.rect.centerx, self.rect.centery = player.rect.centerx, player.rect.centery
 
         self.canAttack = pygame.time.get_ticks() + 480
         self.attack_sound = mixer.Sound(join(dirname(dirname(__file__)), 'assets/SFX/Game/Player', 'Ranged_Attack.wav'))

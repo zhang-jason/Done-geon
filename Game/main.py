@@ -11,6 +11,8 @@ from Entities.reaper import Reaper
 from Entities.wizard import Wizard
 from Entities.knight import Knight
 from Entities.minion import Minion
+from Entities.hero import Hero
+from Entities.priestess import Priestess
 from vfx import VFX
 from gui import *
 from tiles import *
@@ -113,6 +115,7 @@ STONE_TILE = scale_image(pygame.image.load(os.path.join(os.path.dirname(__file__
 enemies = pygame.sprite.Group()
 projectiles = pygame.sprite.Group()
 minions = pygame.sprite.Group()
+bosses = pygame.sprite.Group()
 playerVFX = pygame.sprite.Group()
 staticVFX = pygame.sprite.Group()
 playerType = 'Necromancer'
@@ -525,6 +528,8 @@ while True:
             enemy_choice = ['Wizard', 'Knight']
             if len(enemies) < 1:
                 if(room.wave1):
+                    #bosses.add(Hero(random_spawn(), player, TILE_SIZE))
+                    #bosses.add(Priestess(random_spawn(), player, TILE_SIZE))
                     for i in range(round(player.bones / 4 + 1)):
                         spawn_coord = random_spawn()
                         match choice(enemy_choice):
@@ -561,6 +566,9 @@ while True:
             for p in projectiles:
                 WIN.blit(p.image, p.rect)
                 p.update()
+            for b in bosses:
+                WIN.blit(b.image, b.rect)
+                b.update(projectiles)
             get_player_move(player, keys)
             move_entities()
             for p in projectiles:

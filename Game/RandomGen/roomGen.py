@@ -13,17 +13,20 @@ from Entities.traps import Trap
 
 
 class Room():
-    def __init__(self, roomIndex, width, height, tileSize):
+    def __init__(self, roomIndex, width, height, tileSize, numRooms):
         self.width = width
         self.height = height
         self.tileSize = tileSize
         self.roomIndex = roomIndex
-        self.room = self.genMap()
+        self.room = self.genMap(numRooms)
         self.validTiles = self.findValidTiles()
         self.powerups = pygame.sprite.Group()
         self.genPowerups()
         self.traps = pygame.sprite.Group()
         self.genTraps()
+        self.wave1 = True
+        self.wave2 = True
+        self.locked = True
 
     def getMap(self, roomIndex, layerIndex):
         map = []
@@ -41,14 +44,14 @@ class Room():
         self.powerups.draw(WIN)
         self.room[2].draw_map(WIN)
 
-    def genMap(self):
+    def genMap(self, num):
         room = []
 
         FloorGen(self.roomIndex, self.width, self.height)
         room.append(self.__getTileMap__(1))
 
         floorMap = self.getMap(self.roomIndex, 1)
-        WallGen(floorMap, self.roomIndex)
+        WallGen(floorMap, self.roomIndex, num)
         room.append(self.__getTileMap__(2))
 
         room.append(self.__getTileMap__(3))
@@ -95,6 +98,20 @@ class Room():
                     validTiles.append((i, j))
 
         return validTiles
+
+    def unlock(self):
+        collide = self.getMap(self.roomIndex, 2)
+        for i in range(len(collide)):
+            for j in range(len(collide[0])):
+                if collide[i][j] == "70":
+                    collide[i][j] = "72"
+        with open(os.path.join(os.path.dirname(__file__), '..', 'assets/tiles/temprooms', f'room{self.roomIndex}_2.csv'), 'w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerows(collide)
+
+            file.close()
+        self.room[1] = self.__getTileMap__(2)
+        self.locked = False
 
     def __getTileMap__(self, layerIndex):
         filename = os.path.join(os.path.dirname(__file__), '..', 'assets/tiles/temprooms',

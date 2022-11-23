@@ -99,12 +99,6 @@ cursor_img_rect = cursor_img.get_rect()
 
 print("Created Window")
 
-'''
-map = TileMap(os.path.join(os.path.dirname(__file__), 'assets/tiles', 'Test Room 3_Tile Layer 1.csv'), TILE_SIZE)
-map2 = TileMap(os.path.join(os.path.dirname(__file__), 'assets/tiles', 'Test Room 3_Tile Layer 2.csv'), TILE_SIZE)
-map3 = TileMap(os.path.join(os.path.dirname(__file__), 'assets/tiles', 'Test Room 3_Tile Layer 3.csv'), TILE_SIZE)
-'''
-
 
 def scale_image(image):
     return pygame.transform.scale(image, (TILE_SIZE, TILE_SIZE))
@@ -192,7 +186,7 @@ def move_calc_player(ent):
 room_collision_maps = []
 
 
-def get_tile_at(x, y):
+def get_tile_at(x, y, ent):
     global roomIndex
     global room
     global screen
@@ -206,23 +200,25 @@ def get_tile_at(x, y):
     if room_collision_maps[roomIndex][tile_y][tile_x] == "-1":
         return False
     
-    elif room_collision_maps[roomIndex][tile_y][tile_x] == "70":
-        roomIndex += 1
-        if roomIndex >= len(roomList):
-            roomIndex = 0
-        room = roomList[roomIndex]
-        tile = room.__getTileMap__(2).getEntrance()
-        player.rect.center = (tile.rect.x + (TILE_SIZE / 2), tile.rect.y - (TILE_SIZE / 2))
-        #screen = "Transition"
-        return False
-    
-    elif room_collision_maps[roomIndex][tile_y][tile_x] == "71":
+    elif room_collision_maps[roomIndex][tile_y][tile_x] == "71" and isinstance(ent, Player):
         roomIndex -= 1
         if(roomIndex < 0):
             roomIndex = len(roomList) - 1
         room = roomList[roomIndex]
         tile = room.__getTileMap__(2).getExit()
         player.rect.center = (tile.rect.x + (TILE_SIZE / 2), tile.rect.y + TILE_SIZE + (TILE_SIZE / 3))
+
+        #screen = "Transition"
+        return False
+
+    elif room_collision_maps[roomIndex][tile_y][tile_x] == "72" and isinstance(ent, Player):
+        roomIndex += 1
+        if(roomIndex >= len(roomList)):
+            roomIndex = 0
+        room = roomList[roomIndex]
+        tile = room.__getTileMap__(2).getEntrance()
+        player.rect.center = (tile.rect.x + (TILE_SIZE / 2), tile.rect.y - (TILE_SIZE / 2))
+
         #screen = "Transition"
         return False
 
@@ -233,32 +229,32 @@ def get_tile_at(x, y):
 def detect_collision(ent):
     if ent.collidable:
         if ent.dx > 0:  # check if tile ent would end up in is collidable, if so reduce d to 0
-            if get_tile_at(ent.rect.right + ent.dx, ent.rect.centery):
+            if get_tile_at(ent.rect.right + ent.dx, ent.rect.centery, ent):
                 ent.dx = 0
         elif ent.dx < 0:
-            if get_tile_at(ent.rect.left + ent.dx, ent.rect.centery):
+            if get_tile_at(ent.rect.left + ent.dx, ent.rect.centery, ent):
                 ent.dx = 0
         if ent.dy < 0:  # Down and up are backwards bc window is drawn top to bottom...
-            if get_tile_at(ent.rect.centerx, ent.rect.top + ent.dy):
+            if get_tile_at(ent.rect.centerx, ent.rect.top + ent.dy, ent):
                 ent.dy = 0
         elif ent.dy > 0:
-            if get_tile_at(ent.rect.centerx, ent.rect.bottom + ent.dy):
+            if get_tile_at(ent.rect.centerx, ent.rect.bottom + ent.dy, ent):
                 ent.dy = 0
     else:
         print("ent is non-collidable! This is probably an error!")
 
 def detect_projectile_collision(p):
     if p.dx > 0:  # check if tile ent would end up in is collidable, if so reduce d to 0
-        if get_tile_at(p.rect.right + p.dx, p.rect.centery):
+        if get_tile_at(p.rect.right + p.dx, p.rect.centery, p):
             p.kill()
     elif p.dx < 0:
-        if get_tile_at(p.rect.left + p.dx, p.rect.centery):
+        if get_tile_at(p.rect.left + p.dx, p.rect.centery, p):
             p.kill()
     if p.dy < 0:  # Down and up are backwards bc window is drawn top to bottom...
-        if get_tile_at(p.rect.centerx, p.rect.top + p.dy):
+        if get_tile_at(p.rect.centerx, p.rect.top + p.dy, p):
             p.kill()
     elif p.dy > 0:
-        if get_tile_at(p.rect.centerx, p.rect.bottom + p.dy):
+        if get_tile_at(p.rect.centerx, p.rect.bottom + p.dy, p):
             p.kill()
 
 def move_calc_enemy(ent):
@@ -423,13 +419,13 @@ def addVFX(type):
             playerVFX.add(VFX(type, (TILE_SIZE, TILE_SIZE), player.rect.center, sprites=shield_vfx))
 
 roomList = []
-for index, iter in enumerate(range(randint(3, 6))):
-    room = Room(index, NUM_TILES_X, NUM_TILES_Y, TILE_SIZE)
+roomListLength = randint(3, 6)
+for index, iter in enumerate(range(roomListLength)):
+    room = Room(index, NUM_TILES_X, NUM_TILES_Y, TILE_SIZE, roomListLength - 1)
     roomList.append(room)
     room_collision_maps.append(room.getMap(index, 2))
     room_fall_maps.append(room.getMap(index, 1))
-if roomIndex >= len(roomList):
-    roomIndex = 0
+roomIndex = 0
 room = roomList[roomIndex]
 
 def random_spawn(): 
@@ -516,10 +512,10 @@ while True:
             if player.fall == 1:
                 enemies = pygame.sprite.Group()
                 projectiles = pygame.sprite.Group()
-                roomIndex += 1
-                if roomIndex >= len(roomList):
-                    roomIndex = 0
-                room = roomList[roomIndex]
+                #roomIndex += 1
+                #if roomIndex >= len(roomList):
+                    #roomIndex = 0
+                #room = roomList[roomIndex]
             room.drawRoom(WIN)
 
             # hitbox = (player.rect.topleft[0], player.rect.topleft[1], player.rect.width, player.rect.height) # NEW
@@ -528,16 +524,34 @@ while True:
             # Update Functions
             enemy_choice = ['Wizard', 'Knight']
             if len(enemies) < 1:
-                for i in range(round(player.bones / 4 + 1)):
-                    spawn_coord = random_spawn()
-                    match choice(enemy_choice):
-                        #set bool to true to make boss
-                        case 'Wizard':
-                            spawned_enemy = Wizard(spawn_coord, player, TILE_SIZE,False)
-                        case 'Knight':
-                            spawned_enemy = Knight(spawn_coord, player, TILE_SIZE,False)
-                    enemies.add(spawned_enemy)
-                    staticVFX.add(VFX('Enemy_Spawn', (TILE_SIZE, TILE_SIZE), spawned_enemy.rect.midtop, True, enemy_spawn_vfx))
+                if(room.wave1):
+                    for i in range(round(player.bones / 4 + 1)):
+                        spawn_coord = random_spawn()
+                        match choice(enemy_choice):
+                            #set bool to true to make boss
+                            case 'Wizard':
+                                spawned_enemy = Wizard(spawn_coord, player, TILE_SIZE,False)
+                            case 'Knight':
+                                spawned_enemy = Knight(spawn_coord, player, TILE_SIZE,False)
+                        enemies.add(spawned_enemy)
+                        staticVFX.add(VFX('Enemy_Spawn', (TILE_SIZE, TILE_SIZE), spawned_enemy.rect.midtop, True, enemy_spawn_vfx))
+                    room.wave1 = False
+                elif(room.wave2):
+                    for i in range(round(player.bones / 4 + 1)):
+                        spawn_coord = random_spawn()
+                        match choice(enemy_choice):
+                            #set bool to true to make boss
+                            case 'Wizard':
+                                spawned_enemy = Wizard(spawn_coord, player, TILE_SIZE,False)
+                            case 'Knight':
+                                spawned_enemy = Knight(spawn_coord, player, TILE_SIZE,False)
+                        enemies.add(spawned_enemy)
+                        staticVFX.add(VFX('Enemy_Spawn', (TILE_SIZE, TILE_SIZE), spawned_enemy.rect.midtop, True, enemy_spawn_vfx))
+                    room.wave2 = False
+                elif(room.locked):
+                    room.unlock()
+                    room_collision_maps[roomIndex] = room.getMap(roomIndex, 2)
+                    #room.drawRoom(WIN)
             for m in minions:
                 WIN.blit(m.image, m.rect)
                 m.update(projectiles, enemies)

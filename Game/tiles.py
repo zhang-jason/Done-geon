@@ -69,6 +69,10 @@ class TileMap():
                     image, type = self.tileList[int(tile) - 1]
                     self.entrance = Tile(image, type, x * self.tile_size, y * self.tile_size, self.tile_size)
                     tiles.append(self.entrance)
+                elif tile == '72':
+                    image, type = self.tileList[int(tile) - 1]
+                    self.exit = Tile(image, type, x * self.tile_size, y * self.tile_size, self.tile_size)
+                    tiles.append(self.exit)
                 elif tile > '0':
                     image, type = self.tileList[int(tile) - 1]
                     tiles.append(Tile(image, type, x * self.tile_size, y * self.tile_size, self.tile_size))

@@ -13,24 +13,24 @@ TOP_LEFT = 7
 DOWN_LEFT = 8
 
 class WallGen():
-    def __init__(self, floorMap, roomIndex):
+    def __init__(self, floorMap, roomIndex, numRooms):
         self.floorMap = floorMap
         self.wallMap = []
         self.thirdLayer = []
-        self.genMap(roomIndex)
+        self.genMap(roomIndex, numRooms)
         
 
     def initMap(self):
         self.wallMap = [[-1 for x in range(16)] for y in range(9)]
         self.thirdLayer = [[-1 for x in range(16)] for y in range(9)]
 
-    def genMap(self, roomIndex):
+    def genMap(self, roomIndex, numRooms):
         self.initMap()
         self.genFloors()
         self.genWalls()
         self.genBorders()
         self.fillWalls()
-        self.genDoors(roomIndex)
+        self.genDoors(roomIndex, numRooms)
         
 
         with open(os.path.join(os.path.dirname(__file__), '..', 'assets/tiles/temprooms', f'room{roomIndex}_2.csv'), 'w', newline='') as file:
@@ -285,10 +285,14 @@ class WallGen():
                     self.wallMap[i][j] = 42 #black tile collidable
 
 
-    def genDoors(self, roomIndex):
+    def genDoors(self, roomIndex, num):
         print('doors')
         flag = True
         flag2 = True
+        if(roomIndex == 0):
+            flag = False
+        if(roomIndex == num):
+            flag2 = False
         while(flag):
             i = randint(0, 8) #actually y 
             j = randint(1, 13) #actually x

@@ -17,6 +17,7 @@ from vfx import VFX
 from gui import *
 from tiles import *
 from RandomGen.roomGen import Room
+from RandomGen.ladderGen import LadderRoom
 from server import Server
 from dirMods import getImages
 
@@ -188,7 +189,23 @@ def get_tile_at(x, y, ent):
     tile_y = round(y / TILE_SIZE)
     if tile_x < 0 or tile_x > 15:
         return True
-    if room_collision_maps[roomIndex][tile_y][tile_x] == "-1":
+
+    if ladder_maps[roomIndex][tile_y][tile_x] == "9" and isinstance(ent, Player):
+        if(roomIndex < roomListLength):
+            room = ladderList[roomIndex]
+            roomIndex += roomListLength
+            player.rect.center = (WIDTH / 2, HEIGHT / 2)
+        return False
+
+    elif ladder_maps[roomIndex][tile_y][tile_x] == "73" and isinstance(ent, Player):
+        if(roomIndex >= roomListLength):
+            roomIndex -= roomListLength
+            room = roomList[roomIndex]
+            tile = room.__getTileMap__(3).getLadder()
+            player.rect.center = (tile.rect.x + (TILE_SIZE / 2), tile.rect.y + TILE_SIZE + (TILE_SIZE / 3))
+        return False
+
+    elif room_collision_maps[roomIndex][tile_y][tile_x] == "-1":
         return False
     
     elif room_collision_maps[roomIndex][tile_y][tile_x] == "71" and isinstance(ent, Player):
@@ -215,6 +232,7 @@ def get_tile_at(x, y, ent):
 
     else:
         return True
+
 
 
 def detect_collision(ent):
@@ -281,17 +299,18 @@ room_fall_maps = []
 
 
 def move_entities():
+    global roomIndex
+    global room
     move_calc_player(player)
     detect_collision(player)
     player.rect.center = (player.rect.centerx + player.dx, player.rect.centery + player.dy)
     player.tile_x = round((player.rect.centerx - TILE_SIZE / 2) / TILE_SIZE)
     player.tile_y = round((player.rect.bottom - TILE_SIZE / 2) / TILE_SIZE)
     player.tile = room_fall_maps[roomIndex][player.tile_y][player.tile_x]
-    if player.tile == "-1" and player.fall == 0 and player.speed <= 5 and player.iframes <= 0:  # for holes
+    tile1 = ladder_maps[roomIndex][player.tile_y][player.tile_x]
+    if player.tile == "-1" and player.fall == 0 and player.speed <= 5 and tile1 != "9" and player.iframes <= 0:  # for holes
         player.fall = 10
         player.get_hit(1)
-    elif player.tile == "-2" and player.fall == 0 and player.speed <= 5:  # for ladders
-        player.fall = 10
         player.iframes = 10
     for b in bosses:
         move_calc_enemy(b)
@@ -428,12 +447,24 @@ def addVFX(type):
             playerVFX.add(VFX(type, (TILE_SIZE, TILE_SIZE), player.rect.center, sprites=shield_vfx))
 
 roomList = []
+ladderList = []
+ladder_maps = []
 roomListLength = randint(3, 6)
 for index, iter in enumerate(range(roomListLength)):
     room = Room(index, NUM_TILES_X, NUM_TILES_Y, TILE_SIZE, roomListLength - 1)
     roomList.append(room)
+    ladderRoom = LadderRoom(index, TILE_SIZE)
+    ladderList.append(ladderRoom)
+    ladder_maps.append(room.getMap(index, 3))
     room_collision_maps.append(room.getMap(index, 2))
     room_fall_maps.append(room.getMap(index, 1))
+
+for index, iter in enumerate(range(roomListLength)):
+    room = ladderList[index]
+    ladder_maps.append(room.getMap(index, 3))
+    room_collision_maps.append(room.getMap(index, 2))
+    room_fall_maps.append(room.getMap(index, 1))
+
 roomIndex = 0
 room = roomList[roomIndex]
 

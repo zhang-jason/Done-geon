@@ -70,3 +70,4 @@ bottomwall_topright_corner, noncollide
 door_closed_exit, collide
 door_open_entrance, collide
 door_open_exit, collide
+floor_ladder_exit,collide

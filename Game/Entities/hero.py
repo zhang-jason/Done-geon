@@ -30,8 +30,8 @@ class Hero(Entity):
         self.image_rect.centerx, self.image_rect.centery = startPosition
 
         # Hitbox Rect
-        self.rect = pygame.rect.Rect(0, 0, TILE_SIZE*2, TILE_SIZE*2)
-        self.rect.centerx, self.rect.centery = startPosition
+        self.rect = pygame.rect.Rect(0, 0, TILE_SIZE, TILE_SIZE*1.3)
+        self.rect.midbottom = self.image_rect.midbottom
 
         self.canMove = False
         self.immune = True

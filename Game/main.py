@@ -297,10 +297,10 @@ def move_entities():
     for b in bosses:
         move_calc_enemy(b)
         detect_collision(b)
-        b.x = b.rect.centerx + b.dx
-        b.y = b.rect.centery + b.dy
-        b.rect.center = (b.x, b.y)
-        b.image_rect.center = (b.x, b.y)
+        x = b.image_rect.centerx + b.dx
+        y = b.image_rect.centery + b.dy
+        b.image_rect.center = (x, y)
+        b.rect.midbottom = b.image_rect.midbottom
     for e in enemies:
         if e.canMove:
             move_calc_enemy(e)
@@ -576,6 +576,7 @@ while True:
                 WIN.blit(p.image, p.rect)
                 p.update()
             for b in bosses:
+                #pygame.draw.rect(WIN, (0,0,0), b.rect) HITBOX
                 WIN.blit(b.image, b.image_rect)
                 b.update(projectiles)
             get_player_move(player, keys)

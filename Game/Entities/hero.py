@@ -47,6 +47,8 @@ class Hero(Entity):
         self.action_finished = False
         self.animation_speed = 0.05
         self.immune_period = 0
+        self.attackPosition = (0,0)
+        self.attackRadius = 1
 
         self.start = True
 
@@ -68,7 +70,7 @@ class Hero(Entity):
             if pygame.time.get_ticks() >= self.action_cooldown and self.action_finished:
                 # print(f'Curr Time: {pygame.time.get_ticks()}')
                 # print(f'CD Time: {self.action_cooldown}')
-                self.chooseState(self.__inRange__())
+                self.chooseState(self.__inRange__(self.player))
                 self.action_cooldown = pygame.time.get_ticks() + 5000
 
             if self.immune_period >= 0:
@@ -83,6 +85,7 @@ class Hero(Entity):
                 self.current_sprite += 0.20
                 if self.current_sprite >= len(self.currentSprites):
                     self.action_finished = True
+                    self.canMove = True
                     self.current_sprite = len(self.currentSprites) - 1
             elif self.currentSprites in (self.idleSprites, self.runSprites):
                 self.current_sprite += 0.05
@@ -109,7 +112,7 @@ class Hero(Entity):
 
         if self.action_finished:
             if inRange:
-                action_list = ['Run','Melee','Immune']
+                action_list = ['Melee','Immune']
             else:
                 action_list = ['Run', 'Ranged', 'Immune']
 
@@ -127,6 +130,7 @@ class Hero(Entity):
                     self.current_sprite = 0
                 case 'Ranged':
                     self.action_finished = False
+                    self.canMove = False
                     self.currentSprites = self.rangedSprites
                     self.current_sprite = 0
                 case 'Immune':
@@ -141,13 +145,13 @@ class Hero(Entity):
 
 
 
-    def __inRange__(self):
-        attackPosition = self.player.rect.center
-        attackRadius = 2 * hypot(attackPosition[0] - self.rect.bottomright[0], attackPosition[1] - self.rect.bottomright[1])
-        distance = hypot(attackPosition[0] - self.player.rect.centerx, attackPosition[1] - self.player.rect.centery)
+    def __inRange__(self, ent):
+        self.attackPosition = self.rect.center
+        self.attackRadius = 2 * hypot(self.attackPosition[0] - self.rect.bottomright[0], self.attackPosition[1] - self.rect.bottomright[1])
+        distance = hypot(self.attackPosition[0] - ent.rect.centerx, self.attackPosition[1] - ent.rect.centery)
         #self.canAttack = pygame.time.get_ticks() + 480
         
-        if distance <= attackRadius:
+        if distance <= self.attackRadius:
             #self.player.get_hit(self.damage)
             return True
         else:

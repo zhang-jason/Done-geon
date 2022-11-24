@@ -63,7 +63,7 @@ class Player(Entity):
     def get_hit(self, hitDmg):
         if (self.current_health - hitDmg) > 0:
             self.current_health -= hitDmg
-            self.iframes = 60
+            self.iframes = 120
             mixer.Sound.play(self.hurt_sound)
         else:
             self.current_health = 0

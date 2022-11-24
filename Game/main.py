@@ -287,10 +287,9 @@ def move_entities():
     player.tile_x = round((player.rect.centerx - TILE_SIZE / 2) / TILE_SIZE)
     player.tile_y = round((player.rect.bottom - TILE_SIZE / 2) / TILE_SIZE)
     player.tile = room_fall_maps[roomIndex][player.tile_y][player.tile_x]
-    if player.tile == "-1" and player.fall == 0 and player.speed <= 5:  # for holes
+    if player.tile == "-1" and player.fall == 0 and player.speed <= 5 and player.iframes <= 0:  # for holes
         player.fall = 10
         player.get_hit(1)
-        player.iframes = 10
     elif player.tile == "-2" and player.fall == 0 and player.speed <= 5:  # for ladders
         player.fall = 10
         player.iframes = 10
@@ -380,6 +379,17 @@ def detect_player_melee():
                     staticVFX.add(VFX('Blood', (TILE_SIZE, TILE_SIZE), e.rect.center, True, blood_vfx))
                     e.kill()
                     player.bones += 1
+
+def detect_boss_melee(b):
+    if b.__inRange__(player) and b.currentSprites is b.meleeSprites:
+        if not player.immune and not player.iframes and b.current_sprite >= 3:
+            print('hit')
+            player.get_hit(b.damage)
+
+    for m in minions:
+        if b.__inRange__(m) and b.currentSprites is b.meleeSprites:
+            m.get_hit(b.damage)
+
 
 def detect_item(p):
     if player.rect.collidepoint(p.rect.center):
@@ -576,7 +586,8 @@ while True:
                 WIN.blit(p.image, p.rect)
                 p.update()
             for b in bosses:
-                #pygame.draw.rect(WIN, (0,0,0), b.rect) HITBOX
+                #pygame.draw.rect(WIN, (0,0,0), b.rect) # HITBOX
+                #pygame.draw.circle(WIN, (240,248,255), b.attackPosition, b.attackRadius) # ATTACK HITBOX
                 WIN.blit(b.image, b.image_rect)
                 b.update(projectiles)
             get_player_move(player, keys)
@@ -590,6 +601,8 @@ while True:
                 detect_item(p)
             for t in room.traps:
                 detect_trap(t)
+            for b in bosses:
+                detect_boss_melee(b)
             player.update()
             if mouse_pressed:
                 player.attacking = True

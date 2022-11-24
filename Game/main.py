@@ -251,7 +251,7 @@ def detect_projectile_collision(p):
 def move_calc_enemy(ent):
     player_x = ent.player.rect.centerx
     player_y = ent.player.rect.centery
-    if ent.speed == 0:
+    if ent.speed == 0 or ent.canMove == False:
         ent.dx = 0
         ent.dy = 0
     else:
@@ -269,7 +269,9 @@ def move_calc_enemy(ent):
             ent.dx = diff_x_scaled
             ent.dy = diff_y_scaled
 
-    if ent.dx < 0:
+    diff_x = player_x - ent.rect.centerx
+
+    if ent.dx < 0 or diff_x < 0:
         ent.flippedImage = True
     else:
         ent.flippedImage = False
@@ -292,6 +294,13 @@ def move_entities():
     elif player.tile == "-2" and player.fall == 0 and player.speed <= 5:  # for ladders
         player.fall = 10
         player.iframes = 10
+    for b in bosses:
+        move_calc_enemy(b)
+        detect_collision(b)
+        b.x = b.rect.centerx + b.dx
+        b.y = b.rect.centery + b.dy
+        b.rect.center = (b.x, b.y)
+        b.image_rect.center = (b.x, b.y)
     for e in enemies:
         if e.canMove:
             move_calc_enemy(e)
@@ -311,7 +320,6 @@ def move_entities():
         p.y += p.dy
         p.rect.center = (int(p.x), int(p.y))
         detect_projectile_collision(p)
-        # TODO: remove projectiles upon OOB or tile collision?
 
 def detect_projectile(p):
     if p.type:  # true for friendly
@@ -529,8 +537,7 @@ while True:
             enemy_choice = ['Wizard', 'Knight']
             if len(enemies) < 1:
                 if(room.wave1):
-                    #bosses.add(Hero(random_spawn(), player, TILE_SIZE))
-                    #bosses.add(Priestess(random_spawn(), player, TILE_SIZE))
+                    bosses.add(Hero((WIDTH//2, HEIGHT//2), player, TILE_SIZE))
                     for i in range(round(player.bones / 4 + 1)):
                         spawn_coord = random_spawn()
                         match choice(enemy_choice):
@@ -543,6 +550,7 @@ while True:
                         staticVFX.add(VFX('Enemy_Spawn', (TILE_SIZE, TILE_SIZE), spawned_enemy.rect.midtop, True, enemy_spawn_vfx))
                     room.wave1 = False
                 elif(room.wave2):
+                    bosses.add(Priestess((WIDTH//2, HEIGHT//2), player, TILE_SIZE))
                     for i in range(round(player.bones / 4 + 1)):
                         spawn_coord = random_spawn()
                         match choice(enemy_choice):
@@ -568,7 +576,7 @@ while True:
                 WIN.blit(p.image, p.rect)
                 p.update()
             for b in bosses:
-                WIN.blit(b.image, b.rect)
+                WIN.blit(b.image, b.image_rect)
                 b.update(projectiles)
             get_player_move(player, keys)
             move_entities()

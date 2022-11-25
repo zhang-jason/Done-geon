@@ -401,7 +401,7 @@ def detect_player_melee():
 
 def detect_boss_melee(b):
     if b.__inRange__(player) and b.currentSprites is b.meleeSprites:
-        if not player.immune and not player.iframes and b.current_sprite >= 3:
+        if not player.immune and not player.iframes and b.current_sprite >= b.MELEE_START:
             player.get_hit(b.damage)
 
     for m in minions:

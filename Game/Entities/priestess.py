@@ -52,6 +52,7 @@ class Priestess(Entity):
         x, y = self.image_rect.center
         y += self.TILE_SIZE
         self.attackZone.midleft = (x, y)
+        self.MELEE_START = 4
 
         self.start = True
 

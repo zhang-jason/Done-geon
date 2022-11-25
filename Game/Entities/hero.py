@@ -49,6 +49,7 @@ class Hero(Entity):
         self.immune_period = 0
         self.attackPosition = (0,0)
         self.attackRadius = 1
+        self.MELEE_START = 10
 
         self.start = True
 

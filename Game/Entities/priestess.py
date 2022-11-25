@@ -1,5 +1,5 @@
 from os.path import join, dirname
-from math import hypot
+from math import sin, cos, radians
 from random import choices
 from Entities.enemy import Entity
 from Entities.projectile import Projectile
@@ -48,6 +48,7 @@ class Priestess(Entity):
         self.action_finished = False
         self.animation_speed = 0.05
         self.immune_period = 0
+        self.projectile_fired = True
         self.attackZone = pygame.rect.Rect(0,0,TILE_SIZE*2.25,TILE_SIZE)
         x, y = self.image_rect.center
         y += self.TILE_SIZE
@@ -113,6 +114,35 @@ class Priestess(Entity):
                 self.image = pygame.transform.flip(self.currentSprites[int(self.current_sprite)], False, False)
                 self.attackZone.midleft = (x, y)
 
+            if self.flippedImage:
+                self.image = pygame.transform.flip(self.currentSprites[int(self.current_sprite)], True, False)
+            else:
+                self.image = pygame.transform.flip(self.currentSprites[int(self.current_sprite)], False, False)
+
+            if self.currentSprites is self.rangedSprites and int(self.current_sprite) == 13 and not self.projectile_fired:
+                size = (self.TILE_SIZE, self.TILE_SIZE)
+                if self.flippedImage:
+                    x, y = self.rect.bottomleft
+                    origin = (x - self.TILE_SIZE, y)
+                    target = (x - self.TILE_SIZE, y - self.TILE_SIZE)
+                    angle = 0
+                    for x in range(7):
+                        output = self.__rotate__(origin, target, radians(angle))
+                        projectiles.add(Projectile(origin, output, False, 'Water_Arrow', size, self.projectileSprites))
+                        angle -= 30
+
+                else:
+                    x, y = self.rect.bottomright
+                    origin = (x + self.TILE_SIZE, y)
+                    target = (x + self.TILE_SIZE, y - self.TILE_SIZE)
+                    angle = 0
+                    for x in range(7):
+                        output = self.__rotate__(origin, target, radians(angle))
+                        projectiles.add(Projectile(origin, output, False, 'Water_Arrow', size, self.projectileSprites))
+                        angle += 30
+                
+                self.projectile_fired = True
+
     def chooseState(self, inRange):
         if self.health <= 0:
             self.action = 'Death'
@@ -142,6 +172,7 @@ class Priestess(Entity):
                 case 'Ranged':
                     self.action_finished = False
                     self.canMove = False
+                    self.projectile_fired = False
                     self.currentSprites = self.rangedSprites
                     self.current_sprite = 0
                 case 'Immune':
@@ -154,9 +185,16 @@ class Priestess(Entity):
 
         print(self.action)
 
-
-
     def __inRange__(self, ent):
         if self.attackZone.colliderect(ent.rect):
             return True
         return False
+
+    # Use to perform projectile attacks in a semicircle
+    def __rotate__(self, origin, target, angle):
+        ox, oy = origin
+        tx, ty = target
+
+        qx = ox + cos(angle) * (tx - ox) - sin(angle) * (ty - oy)
+        qy = oy + sin(angle) * (tx - ox) - cos(angle) * (ty - oy)
+        return qx, qy

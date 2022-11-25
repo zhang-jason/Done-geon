@@ -12,6 +12,7 @@ class Hero(Entity):
     def __init__(self, startPosition, player, TILE_SIZE):
         super(Hero, self).__init__()
         size = (TILE_SIZE*8,TILE_SIZE*8//2.25)
+        self.TILE_SIZE = TILE_SIZE
         
         self.idleSprites = getImages((join(dirname(dirname(__file__)), 'assets/Hero/Idle')), size)
         self.runSprites = getImages((join(dirname(dirname(__file__)), 'assets/Hero/Run')), size)
@@ -47,6 +48,7 @@ class Hero(Entity):
         self.action_finished = False
         self.animation_speed = 0.05
         self.immune_period = 0
+        self.projectile_fired = True
         self.attackPosition = (0,0)
         self.attackRadius = 1
         self.MELEE_START = 10
@@ -105,6 +107,15 @@ class Hero(Entity):
             else:
                 self.image = pygame.transform.flip(self.currentSprites[int(self.current_sprite)], False, False)
 
+            if self.currentSprites is self.rangedSprites and int(self.current_sprite) == 12 and not self.projectile_fired:
+                size = (self.TILE_SIZE*2, self.TILE_SIZE*2)
+                if self.flippedImage:
+                    bossPos = self.rect.topleft
+                else:
+                    bossPos = self.rect.topright
+                projectiles.add(Projectile(bossPos, self.player.rect.center, False, 'Magic_Ball', size, self.projectileSprites))
+                self.projectile_fired = True
+
     def chooseState(self, inRange):
         if self.health <= 0:
             self.action = 'Death'
@@ -134,6 +145,7 @@ class Hero(Entity):
                 case 'Ranged':
                     self.action_finished = False
                     self.canMove = False
+                    self.projectile_fired = False
                     self.currentSprites = self.rangedSprites
                     self.current_sprite = 0
                 case 'Immune':

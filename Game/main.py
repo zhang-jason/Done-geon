@@ -402,7 +402,6 @@ def detect_player_melee():
 def detect_boss_melee(b):
     if b.__inRange__(player) and b.currentSprites is b.meleeSprites:
         if not player.immune and not player.iframes and b.current_sprite >= 3:
-            print('hit')
             player.get_hit(b.damage)
 
     for m in minions:
@@ -618,7 +617,6 @@ while True:
                 p.update()
             for b in bosses:
                 #pygame.draw.rect(WIN, (0,0,0), b.rect) # HITBOX
-                #pygame.draw.circle(WIN, (240,248,255), b.attackPosition, b.attackRadius) # ATTACK HITBOX
                 WIN.blit(b.image, b.image_rect)
                 b.update(projectiles)
             get_player_move(player, keys)

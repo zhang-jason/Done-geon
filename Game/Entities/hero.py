@@ -1,6 +1,6 @@
 from os.path import join, dirname
 from math import hypot
-from random import choice
+from random import choices
 from Entities.enemy import Entity
 from Entities.projectile import Projectile
 import pygame
@@ -81,7 +81,7 @@ class Hero(Entity):
 
             if self.currentSprites is self.idleSprites and self.dx == 0 and self.dy == 0:
                 self.currentSprites = self.idleSprites
-            if self.currentSprites not in (self.idleSprites, self.runSprites, self.immuneSprites):
+            if self.currentSprites in (self.meleeSprites, self.rangedSprites):
                 self.current_sprite += 0.20
                 if self.current_sprite >= len(self.currentSprites):
                     self.action_finished = True
@@ -113,10 +113,12 @@ class Hero(Entity):
         if self.action_finished:
             if inRange:
                 action_list = ['Melee','Immune']
+                weights = (75, 25)
             else:
                 action_list = ['Run', 'Ranged', 'Immune']
+                weights = (40, 40, 20)
 
-            self.action = choice(action_list)
+            self.action = choices(action_list, weights)[0]
 
             match self.action:
                 case 'Run':
@@ -146,12 +148,12 @@ class Hero(Entity):
 
 
     def __inRange__(self, ent):
-        self.attackPosition = self.rect.center
-        self.attackRadius = 2 * hypot(self.attackPosition[0] - self.rect.bottomright[0], self.attackPosition[1] - self.rect.bottomright[1])
-        distance = hypot(self.attackPosition[0] - ent.rect.centerx, self.attackPosition[1] - ent.rect.centery)
+        attackPosition = self.rect.center
+        attackRadius = 2 * hypot(attackPosition[0] - self.rect.bottomright[0], attackPosition[1] - self.rect.bottomright[1])
+        distance = hypot(attackPosition[0] - ent.rect.centerx, attackPosition[1] - ent.rect.centery)
         #self.canAttack = pygame.time.get_ticks() + 480
         
-        if distance <= self.attackRadius:
+        if distance <= attackRadius:
             #self.player.get_hit(self.damage)
             return True
         else:

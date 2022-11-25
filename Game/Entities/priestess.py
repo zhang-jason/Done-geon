@@ -1,6 +1,6 @@
 from os.path import join, dirname
 from math import hypot
-from random import choice
+from random import choices
 from Entities.enemy import Entity
 from Entities.projectile import Projectile
 import pygame
@@ -12,6 +12,7 @@ class Priestess(Entity):
     def __init__(self, startPosition, player, TILE_SIZE):
         super(Priestess, self).__init__()
         size = (TILE_SIZE*8,TILE_SIZE*8//2.25)
+        self.TILE_SIZE = TILE_SIZE
         
         self.idleSprites = getImages((join(dirname(dirname(__file__)), 'assets/Priestess/Idle')), size)
         self.runSprites = getImages((join(dirname(dirname(__file__)), 'assets/Priestess/Run')), size)
@@ -40,13 +41,17 @@ class Priestess(Entity):
         self.health = 50
         self.player = player
         self.collidable = 1
-        self.damage = 2
+        self.damage = 1
 
         self.action = 'Idle'
         self.action_cooldown = pygame.time.get_ticks() + 1080
         self.action_finished = False
         self.animation_speed = 0.05
         self.immune_period = 0
+        self.attackZone = pygame.rect.Rect(0,0,TILE_SIZE*2.25,TILE_SIZE)
+        x, y = self.image_rect.center
+        y += self.TILE_SIZE
+        self.attackZone.midleft = (x, y)
 
         self.start = True
 
@@ -97,10 +102,15 @@ class Priestess(Entity):
                     self.action_finished = True
                     self.current_sprite = len(self.currentSprites) - 1
 
+            x, y = self.image_rect.center
+            y += self.TILE_SIZE
+
             if self.flippedImage:
                 self.image = pygame.transform.flip(self.currentSprites[int(self.current_sprite)], True, False)
+                self.attackZone.midright = (x, y)
             else:
                 self.image = pygame.transform.flip(self.currentSprites[int(self.current_sprite)], False, False)
+                self.attackZone.midleft = (x, y)
 
     def chooseState(self, inRange):
         if self.health <= 0:
@@ -111,10 +121,12 @@ class Priestess(Entity):
         if self.action_finished:
             if inRange:
                 action_list = ['Melee','Immune']
+                weights = (75, 25)
             else:
                 action_list = ['Run', 'Ranged', 'Immune']
+                weights = (40, 40, 20)
 
-            self.action = choice(action_list)
+            self.action = choices(action_list, weights)[0]
 
             match self.action:
                 case 'Run':
@@ -144,13 +156,6 @@ class Priestess(Entity):
 
 
     def __inRange__(self, ent):
-        self.attackPosition = self.rect.center
-        self.attackRadius = 2 * hypot(self.attackPosition[0] - self.rect.bottomright[0], self.attackPosition[1] - self.rect.bottomright[1])
-        distance = hypot(self.attackPosition[0] - ent.rect.centerx, self.attackPosition[1] - ent.rect.centery)
-        #self.canAttack = pygame.time.get_ticks() + 480
-        
-        if distance <= self.attackRadius:
-            #self.player.get_hit(self.damage)
+        if self.attackZone.colliderect(ent.rect):
             return True
-        else:
-            return False
+        return False

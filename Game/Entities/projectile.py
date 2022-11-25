@@ -7,14 +7,14 @@ from os.path import join, dirname, isfile
 
 class Projectile(Entity):
     # Team is whether Player or Enemy used projectile, Ability is type of projectile (e.g. fireball, arrow, etc.)
-    def __init__(self, startPosition, endPosition, friendly, ability, size, sprites=None):
+    def __init__(self, startPosition, endPosition, friendly, ability, size, sprites=None, restart=0):
         super(Projectile, self).__init__()
 
         # Math Stuff
         self.startPosition = startPosition
         self.endPosition = endPosition
         self.speed = 2
-        if ability is 'Arrow':
+        if ability in ('Arrow', 'Phoenix', 'Water_Ball'):
             self.speed = 4
         self.canMove = 0
         angle = math.atan2(endPosition[1] - startPosition[1], endPosition[0] - startPosition[0])
@@ -23,6 +23,7 @@ class Projectile(Entity):
         self.x = startPosition[0]
         self.y = startPosition[1]
         self.type = friendly  # True for Friendly Projectile, false for Enemy; useful for hit detection
+        self.restart = restart # If looping, we can specify a frame to start on
 
         self.collidable = False # with tiles
         self.damage = 1
@@ -59,5 +60,5 @@ class Projectile(Entity):
         # Update Sprite Animation
         self.current_sprite += 0.05
         if self.current_sprite >= len(self.sprites):
-            self.current_sprite = 0
+            self.current_sprite = self.restart
         self.image = self.sprites[int(self.current_sprite)]

@@ -20,7 +20,7 @@ class Hero(Entity):
         self.rangedSprites = getImages((join(dirname(dirname(__file__)), 'assets/Hero/Ranged')), size)
         self.immuneSprites = getImages((join(dirname(dirname(__file__)), 'assets/Hero/Immune')), size)
         self.deathSprites = getImages((join(dirname(dirname(__file__)), 'assets/Hero/Death')), size)
-        self.projectileSprites = getImages((join(dirname(dirname(__file__)), 'assets/Projectiles/Magic_Ball')), (TILE_SIZE, TILE_SIZE))
+        self.projectileSprites = getImages((join(dirname(dirname(__file__)), 'assets/Projectiles/Phoenix')), (TILE_SIZE, TILE_SIZE))
         self.currentSprites = self.idleSprites
         
         self.current_sprite = 0
@@ -113,7 +113,7 @@ class Hero(Entity):
                     bossPos = self.rect.topleft
                 else:
                     bossPos = self.rect.topright
-                projectiles.add(Projectile(bossPos, self.player.rect.center, False, 'Magic_Ball', size, self.projectileSprites))
+                projectiles.add(Projectile(bossPos, self.player.rect.center, False, 'Phoenix', size, self.projectileSprites, 8))
                 self.projectile_fired = True
 
     def chooseState(self, inRange):

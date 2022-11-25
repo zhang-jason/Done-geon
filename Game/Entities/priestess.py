@@ -85,7 +85,7 @@ class Priestess(Entity):
 
             if self.currentSprites is self.idleSprites and self.dx == 0 and self.dy == 0:
                 self.currentSprites = self.idleSprites
-            if self.currentSprites not in (self.idleSprites, self.runSprites, self.immuneSprites):
+            if self.currentSprites in (self.meleeSprites, self.rangedSprites):
                 self.current_sprite += 0.20
                 if self.current_sprite >= len(self.currentSprites):
                     self.action_finished = True

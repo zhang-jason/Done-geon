@@ -7,7 +7,7 @@ from os.path import join, dirname, isfile
 
 class Projectile(Entity):
     # Team is whether Player or Enemy used projectile, Ability is type of projectile (e.g. fireball, arrow, etc.)
-    def __init__(self, startPosition, endPosition, friendly, ability, size, sprites=None, restart=0):
+    def __init__(self, startPosition, endPosition, friendly, ability, size, sprites=None, restart=0, damage=1):
         super(Projectile, self).__init__()
 
         # Math Stuff
@@ -26,7 +26,7 @@ class Projectile(Entity):
         self.restart = restart # If looping, we can specify a frame to start on
 
         self.collidable = False # with tiles
-        self.damage = 1
+        self.damage = damage
 
         # Image and Animations
         self.sprites = []

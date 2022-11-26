@@ -6,7 +6,7 @@ from Entities.projectile import Projectile
 import pygame
 import pygame.locals as c
 from pygame import mixer
-from dirMods import getImages
+from dirMods import getImages, __getSprites__
 
 class Hero(Entity):
     def __init__(self, startPosition, player, TILE_SIZE):
@@ -14,13 +14,13 @@ class Hero(Entity):
         size = (TILE_SIZE*8,TILE_SIZE*8//2.25)
         self.TILE_SIZE = TILE_SIZE
         
-        self.idleSprites = getImages((join(dirname(dirname(__file__)), 'assets/Hero/Idle')), size)
-        self.runSprites = getImages((join(dirname(dirname(__file__)), 'assets/Hero/Run')), size)
-        self.meleeSprites = getImages((join(dirname(dirname(__file__)), 'assets/Hero/Melee')), size)
-        self.rangedSprites = getImages((join(dirname(dirname(__file__)), 'assets/Hero/Ranged')), size)
-        self.immuneSprites = getImages((join(dirname(dirname(__file__)), 'assets/Hero/Immune')), size)
-        self.deathSprites = getImages((join(dirname(dirname(__file__)), 'assets/Hero/Death')), size)
-        self.projectileSprites = getImages((join(dirname(dirname(__file__)), 'assets/Projectiles/Phoenix')), (TILE_SIZE, TILE_SIZE))
+        self.idleSprites = __getSprites__('Hero', 'Idle', size)
+        self.runSprites = __getSprites__('Hero', 'Run', size)
+        self.meleeSprites = __getSprites__('Hero', 'Melee', size)
+        self.rangedSprites = __getSprites__('Hero', 'Ranged', size)
+        self.immuneSprites = __getSprites__('Hero', 'Immune', size)
+        self.deathSprites = __getSprites__('Hero', 'Death', size)
+        self.projectileSprites = getImages((join(dirname(dirname(__file__)), 'assets/Projectiles/Phoenix')), (TILE_SIZE*3, TILE_SIZE*3))
         self.currentSprites = self.idleSprites
         
         self.current_sprite = 0
@@ -38,7 +38,7 @@ class Hero(Entity):
         self.immune = True
         self.spawn_cooldown = 180
         self.speed = 2
-        self.health = 50
+        self.health = 20
         self.player = player
         self.collidable = 1
         self.damage = 2
@@ -65,14 +65,23 @@ class Hero(Entity):
                 self.action_finished = True
                 self.start = False
 
+        if self.health <= 0 and self.action not in ('Death', 'Done'):
+            self.action = 'Death'
+            self.action_finished = False
+            self.canMove = False
+            if self.currentSprites is not self.deathSprites:
+                self.currentSprites = self.deathSprites
+            return
+
+        elif self.currentSprites is self.deathSprites and self.action_finished:
+            return
+
         else:
             if self.currentSprites is not self.runSprites and self.action_finished:
                 self.currentSprites = self.runSprites
                 self.action = 'Run'
 
             if pygame.time.get_ticks() >= self.action_cooldown and self.action_finished:
-                # print(f'Curr Time: {pygame.time.get_ticks()}')
-                # print(f'CD Time: {self.action_cooldown}')
                 self.chooseState(self.__inRange__(self.player))
                 self.action_cooldown = pygame.time.get_ticks() + 5000
 
@@ -81,15 +90,17 @@ class Hero(Entity):
             elif self.currentSprites is self.immuneSprites and self.immune_period <= 0:
                 self.canMove = True
                 self.action_finished = True
+                self.immune = False
 
             if self.currentSprites is self.idleSprites and self.dx == 0 and self.dy == 0:
                 self.currentSprites = self.idleSprites
-            if self.currentSprites in (self.meleeSprites, self.rangedSprites):
+            if self.currentSprites in (self.meleeSprites, self.rangedSprites, self.deathSprites):
                 self.current_sprite += 0.20
                 if self.current_sprite >= len(self.currentSprites):
                     self.action_finished = True
-                    self.canMove = True
                     self.current_sprite = len(self.currentSprites) - 1
+                    if self.currentSprites is not self.deathSprites:
+                        self.canMove = True
             elif self.currentSprites in (self.idleSprites, self.runSprites):
                 self.current_sprite += 0.05
                 if self.current_sprite >= len(self.currentSprites):
@@ -108,27 +119,21 @@ class Hero(Entity):
                 self.image = pygame.transform.flip(self.currentSprites[int(self.current_sprite)], False, False)
 
             if self.currentSprites is self.rangedSprites and int(self.current_sprite) == 12 and not self.projectile_fired:
-                size = (self.TILE_SIZE*2, self.TILE_SIZE*2)
                 if self.flippedImage:
                     bossPos = self.rect.topleft
                 else:
                     bossPos = self.rect.topright
-                projectiles.add(Projectile(bossPos, self.player.rect.center, False, 'Phoenix', size, self.projectileSprites, 8))
+                projectiles.add(Projectile(bossPos, self.player.rect.center, False, 'Phoenix', (self.TILE_SIZE, self.TILE_SIZE), self.projectileSprites, 8))
                 self.projectile_fired = True
 
     def chooseState(self, inRange):
-        if self.health <= 0:
-            self.action = 'Death'
-            self.currentSprites = self.deathSprites
-            return
-
         if self.action_finished:
             if inRange:
                 action_list = ['Melee','Immune']
                 weights = (75, 25)
             else:
                 action_list = ['Run', 'Ranged', 'Immune']
-                weights = (40, 40, 20)
+                weights = (30, 50, 20)
 
             self.action = choices(action_list, weights)[0]
 
@@ -157,8 +162,6 @@ class Hero(Entity):
                     self.current_sprite = 0
 
         print(self.action)
-
-
 
     def __inRange__(self, ent):
         attackPosition = self.rect.center

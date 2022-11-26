@@ -345,10 +345,17 @@ def detect_projectile(p):
             if e.rect.collidepoint(p.rect.center):
                 staticVFX.add(VFX('Projectile_Hit', (TILE_SIZE, TILE_SIZE), e.rect.center, True, projectile_hit_vfx))
                 p.kill()
-                e.health -= p.damage * 4
+                e.health -= p.damage
                 if e.health <= 0:
                     e.kill()
                     player.bones += 1
+        for b in bosses:
+            if b.rect.colliderect(p.rect):
+                staticVFX.add(VFX('Projectile_Hit', (TILE_SIZE, TILE_SIZE), b.rect.center, True, projectile_hit_vfx))
+                p.kill()
+                if not b.immune:
+                    b.health -= p.damage
+                    print(f'Boss Health: {b.health}')
     else:
         for m in minions:
             if m.rect.collidepoint(p.rect.center):
@@ -391,13 +398,37 @@ def detect_player_melee():
             if player.flippedImage:
                 if distance <= attackRadius and direction >= 0:
                     staticVFX.add(VFX('Blood', (TILE_SIZE, TILE_SIZE), e.rect.center, True, blood_vfx))
-                    e.kill()
-                    player.bones += 1
+                    e.health -= player.damage
+                    if e.health <= 0:
+                        e.kill()
+                        player.bones += 1
             else:
                 if distance <= attackRadius and direction <= 0:
                     staticVFX.add(VFX('Blood', (TILE_SIZE, TILE_SIZE), e.rect.center, True, blood_vfx))
-                    e.kill()
-                    player.bones += 1
+                    e.health -= player.damage
+                    if e.health <= 0:
+                        e.kill()
+                        player.bones += 1
+
+        for b in bosses:
+            attackPosition = player.rect.center
+            attackRadius = 2 * hypot(attackPosition[0] - player.rect.bottomright[0], attackPosition[1] - player.rect.bottomright[1])
+            distance = hypot(attackPosition[0] - b.rect.centerx, attackPosition[1] - b.rect.centery)
+            player.canAttack = pygame.time.get_ticks() + 480 # make sure this matches the canAttack in reaper
+
+            direction = attackPosition[0] - b.rect.centerx
+            if player.flippedImage:
+                if distance <= attackRadius and direction >= 0:
+                    staticVFX.add(VFX('Blood', (TILE_SIZE, TILE_SIZE), b.rect.center, True, blood_vfx))
+                    if not b.immune:
+                        b.health -= player.damage
+                        print(f'Boss Health: {b.health}')
+            else:
+                if distance <= attackRadius and direction <= 0:
+                    staticVFX.add(VFX('Blood', (TILE_SIZE, TILE_SIZE), b.rect.center, True, blood_vfx))
+                    if not b.immune:
+                        b.health -= player.damage
+                        print(f'Boss Health: {b.health}')
 
 def detect_boss_melee(b):
     if b.__inRange__(player) and b.currentSprites is b.meleeSprites:
@@ -619,6 +650,9 @@ while True:
                 #pygame.draw.rect(WIN, (0,0,0), b.rect) # HITBOX
                 WIN.blit(b.image, b.image_rect)
                 b.update(projectiles)
+                if b.action == 'Death' and b.action_finished:
+                    b.action = 'Done'
+                    player.bones += 10
             get_player_move(player, keys)
             move_entities()
             for p in projectiles:

@@ -6,7 +6,7 @@ from Entities.projectile import Projectile
 import pygame
 import pygame.locals as c
 from pygame import mixer
-from dirMods import getImages
+from dirMods import getImages, __getSprites__
 
 class Priestess(Entity):
     def __init__(self, startPosition, player, TILE_SIZE):
@@ -14,12 +14,13 @@ class Priestess(Entity):
         size = (TILE_SIZE*8,TILE_SIZE*8//2.25)
         self.TILE_SIZE = TILE_SIZE
         
-        self.idleSprites = getImages((join(dirname(dirname(__file__)), 'assets/Priestess/Idle')), size)
-        self.runSprites = getImages((join(dirname(dirname(__file__)), 'assets/Priestess/Run')), size)
-        self.meleeSprites = getImages((join(dirname(dirname(__file__)), 'assets/Priestess/Melee')), size)
-        self.rangedSprites = getImages((join(dirname(dirname(__file__)), 'assets/Priestess/Ranged')), size)
-        self.immuneSprites = getImages((join(dirname(dirname(__file__)), 'assets/Priestess/Immune')), size)
-        self.deathSprites = getImages((join(dirname(dirname(__file__)), 'assets/Priestess/Death')), size)
+        self.idleSprites = __getSprites__('Priestess', 'Idle', size)
+        self.runSprites = __getSprites__('Priestess', 'Run', size)
+        self.meleeSprites = __getSprites__('Priestess', 'Melee', size)
+        self.rangedSprites = __getSprites__('Priestess', 'Ranged', size)
+        self.immuneSprites = __getSprites__('Priestess', 'Immune', size)
+        self.healSprites = __getSprites__('Priestess', 'Heal', size)
+        self.deathSprites = __getSprites__('Priestess', 'Death', size)
         self.projectileSprites = getImages((join(dirname(dirname(__file__)), 'assets/Projectiles/Water_Ball')), (TILE_SIZE, TILE_SIZE))
         self.currentSprites = self.idleSprites
         
@@ -38,7 +39,8 @@ class Priestess(Entity):
         self.immune = True
         self.spawn_cooldown = 180
         self.speed = 2
-        self.health = 50
+        self.MAX_HEALTH = 20
+        self.health = self.MAX_HEALTH
         self.player = player
         self.collidable = 1
         self.damage = 1
@@ -67,14 +69,23 @@ class Priestess(Entity):
                 self.action_finished = True
                 self.start = False
 
+        if self.health <= 0 and self.action not in ('Death', 'Done'):
+            self.action = 'Death'
+            self.action_finished = False
+            self.canMove = False
+            if self.currentSprites is not self.deathSprites:
+                self.currentSprites = self.deathSprites
+            return
+
+        elif self.currentSprites is self.deathSprites and self.action_finished:
+            return
+
         else:
             if self.currentSprites is not self.runSprites and self.action_finished:
                 self.currentSprites = self.runSprites
                 self.action = 'Run'
 
             if pygame.time.get_ticks() >= self.action_cooldown and self.action_finished:
-                # print(f'Curr Time: {pygame.time.get_ticks()}')
-                # print(f'CD Time: {self.action_cooldown}')
                 self.chooseState(self.__inRange__(self.player))
                 self.action_cooldown = pygame.time.get_ticks() + 5000
 
@@ -83,15 +94,21 @@ class Priestess(Entity):
             elif self.currentSprites is self.immuneSprites and self.immune_period <= 0:
                 self.canMove = True
                 self.action_finished = True
+                self.immune = False
 
             if self.currentSprites is self.idleSprites and self.dx == 0 and self.dy == 0:
                 self.currentSprites = self.idleSprites
-            if self.currentSprites in (self.meleeSprites, self.rangedSprites):
+            if self.currentSprites in (self.meleeSprites, self.rangedSprites, self.deathSprites, self.healSprites):
                 self.current_sprite += 0.20
                 if self.current_sprite >= len(self.currentSprites):
                     self.action_finished = True
-                    self.canMove = True
                     self.current_sprite = len(self.currentSprites) - 1
+                    if self.currentSprites is self.healSprites:
+                        self.health += 10
+                        if self.health > self.MAX_HEALTH:
+                            self.health = self.MAX_HEALTH
+                    if self.currentSprites is not self.deathSprites:
+                        self.canMove = True
             elif self.currentSprites in (self.idleSprites, self.runSprites):
                 self.current_sprite += 0.05
                 if self.current_sprite >= len(self.currentSprites):
@@ -113,11 +130,6 @@ class Priestess(Entity):
             else:
                 self.image = pygame.transform.flip(self.currentSprites[int(self.current_sprite)], False, False)
                 self.attackZone.midleft = (x, y)
-
-            if self.flippedImage:
-                self.image = pygame.transform.flip(self.currentSprites[int(self.current_sprite)], True, False)
-            else:
-                self.image = pygame.transform.flip(self.currentSprites[int(self.current_sprite)], False, False)
 
             if self.currentSprites is self.rangedSprites and int(self.current_sprite) == 13 and not self.projectile_fired:
                 size = (self.TILE_SIZE, self.TILE_SIZE)
@@ -144,18 +156,13 @@ class Priestess(Entity):
                 self.projectile_fired = True
 
     def chooseState(self, inRange):
-        if self.health <= 0:
-            self.action = 'Death'
-            self.currentSprites = self.deathSprites
-            return
-
         if self.action_finished:
             if inRange:
                 action_list = ['Melee','Immune']
                 weights = (75, 25)
             else:
-                action_list = ['Run', 'Ranged', 'Immune']
-                weights = (40, 40, 20)
+                action_list = ['Run', 'Ranged', 'Immune', 'Heal']
+                weights = (30, 40, 10, 20)
 
             self.action = choices(action_list, weights)[0]
 
@@ -181,6 +188,11 @@ class Priestess(Entity):
                     self.immune_period = 480
                     self.immune = True
                     self.currentSprites = self.immuneSprites
+                    self.current_sprite = 0
+                case 'Heal':
+                    self.action_finished = False
+                    self.canMove = False
+                    self.currentSprites = self.healSprites
                     self.current_sprite = 0
 
         print(self.action)

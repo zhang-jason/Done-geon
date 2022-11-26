@@ -443,7 +443,8 @@ def detect_boss_melee(b):
 def detect_item(p):
     if player.rect.collidepoint(p.rect.center):
         player.get_powerup(p)
-        server.sendMsg("p " + p.ability)
+        if p.consumable:
+            server.sendMsg("p " + p.ability)
         p.kill()
 
 def detect_trap(t):

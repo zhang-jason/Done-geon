@@ -308,7 +308,7 @@ def move_entities():
     player.tile_y = round((player.rect.bottom - TILE_SIZE / 2) / TILE_SIZE)
     player.tile = room_fall_maps[roomIndex][player.tile_y][player.tile_x]
     tile1 = ladder_maps[roomIndex][player.tile_y][player.tile_x]
-    if player.tile == "-1" and player.fall == 0 and player.speed <= 5 and tile1 != "9" and player.iframes <= 0:  # for holes
+    if player.tile == "-1" and player.fall == 0 and player.speed <= player.max_speed and tile1 != "9" and player.iframes <= 0:  # for holes
         player.fall = 10
         player.get_hit(1)
         player.iframes = 10
@@ -442,7 +442,7 @@ def detect_boss_melee(b):
 
 def detect_item(p):
     if player.rect.collidepoint(p.rect.center):
-        player.get_powerup(p.ability)
+        player.get_powerup(p)
         server.sendMsg("p " + p.ability)
         p.kill()
 

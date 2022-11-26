@@ -43,7 +43,8 @@ class Player(Entity):
         self.canMove = pygame.time.get_ticks() + 5
         self.attacking = False
         self.moving = False
-        self.speed = 5  # how far it moves
+        self.max_speed = 5           # 
+        self.speed = self.max_speed  # how far it moves
         self.set_speed(self.speed)  # is this necessary? should test later... prior to sprint mechanics
         self.collidable = True
         self.max_health = 4
@@ -75,9 +76,14 @@ class Player(Entity):
         else:
             self.current_health = self.max_health
 
+    # Takes Powerup Object
     def get_powerup(self, powerup):
-        self.powerup = powerup
+        if powerup.consumable:
+            self.powerup = powerup.ability
+        else:
+            self.use_powerup(powerup.ability)
 
+    # Takes Powerup Ability String
     def use_powerup(self,powerup= None):
         if powerup is None:
             powerup = self.powerup
@@ -91,6 +97,16 @@ class Player(Entity):
             case 'Shield':
                 self.powerupTimer = 1000
                 self.immune = True
+            case 'Perm_Damage':
+                self.damage += 2
+            case 'Perm_Speed':
+                self.max_speed += 1
+                self.speed = self.max_speed
+            case 'Full_Heal':
+                self.get_regen(self.max_health)
+            case 'Bones':
+                self.bones += 10
+            
 
         print(f'used {powerup}')
         self.powerup = 'empty'
@@ -112,7 +128,7 @@ class Player(Entity):
             self.iframes -= 1
         if self.sprint_cooldown:
             self.sprint_cooldown -= 1
-            if self.speed > 5:
+            if self.speed > self.max_speed:
                 self.speed -= 1
 
         if self.powerupTimer > 0:
@@ -123,7 +139,7 @@ class Player(Entity):
             if self.powerupTimer == 0:
                 self.powerupChannel.stop()
                 self.powerupChannel = None
-                self.speed = 5
+                self.speed = self.max_speed
                 self.immune = False
 
     # Reset char after dying; doesn't work quite yet

@@ -3,11 +3,12 @@ from Entities.entity import Entity
 from os.path import join, dirname
 
 class Powerup(Entity):
-    def __init__(self, position, ability, TILE_SIZE):
+    def __init__(self, position, ability, TILE_SIZE, consumable=True):
         super(Powerup, self).__init__()
 
         self.position = position
         self.ability = ability
+        self.consumable = consumable
         #self.size = (TILE_SIZE*3//4, TILE_SIZE*3//4)
 
         # Image and Animations

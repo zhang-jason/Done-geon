@@ -1,17 +1,21 @@
 import os
 import csv
+import pygame
+from random import randint, choice
 
 from tiles import TileMap
+from Entities.powerup import Powerup
 
 class LadderRoom():
     def __init__(self, roomIndex, tileSize):
         self.room = self.genRoom(roomIndex, tileSize)
-        self.powerups = []
         self.traps = []
         self.wave1 = False
         self.wave2 = False
         self.locked = False
         self.validTiles = self.findValidTiles(roomIndex)
+        self.powerups = pygame.sprite.Group()
+        self.genPowerups(tileSize)
 
     def genRoom(self, roomIndex, tileSize):
         room = []
@@ -85,6 +89,7 @@ class LadderRoom():
     def drawRoom(self, WIN):
         self.room[0].draw_map(WIN)
         self.room[1].draw_map(WIN)
+        self.powerups.draw(WIN)
         self.room[2].draw_map(WIN)
 
     def getMap(self, roomIndex, layerIndex):
@@ -108,6 +113,21 @@ class LadderRoom():
                     validTiles.append((i, j))
 
         return validTiles
+
+    def genPowerups(self, tileSize):
+        currPowerups = 0
+        maxPowerups = randint(2,4)
+        powerupType = ['Bones', 'Perm_Dmg', 'Perm_Speed', 'Full_Heal']
+
+        while currPowerups < maxPowerups:
+            validCoord = choice(self.validTiles)
+            self.validTiles.remove(validCoord)
+            y = validCoord[0] * tileSize + tileSize // 2
+            x = validCoord[1] * tileSize + tileSize // 2
+            powerupChoice = choice(powerupType)
+            powerupType.remove(powerupChoice)
+            self.powerups.add(Powerup((x, y), powerupChoice, tileSize, False))
+            currPowerups += 1
 
     def __getTileMap__(self, layerIndex, roomIndex, tileSize):
         filename = os.path.join(os.path.dirname(__file__), '..', 'assets/tiles/temprooms',

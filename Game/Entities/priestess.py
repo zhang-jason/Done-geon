@@ -32,7 +32,7 @@ class Priestess(Entity):
         self.image_rect.centerx, self.image_rect.centery = startPosition
 
         # Hitbox Rect
-        self.rect = pygame.rect.Rect(0, 0, TILE_SIZE*0.8, TILE_SIZE*1.2)
+        self.rect = pygame.rect.Rect(0, 0, TILE_SIZE//2, TILE_SIZE)
         self.rect.midbottom = self.image_rect.midbottom
 
         self.canMove = False

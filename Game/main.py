@@ -501,6 +501,7 @@ room = roomList[roomIndex]
 
 def random_spawn(): 
     validCoord = choice(room.validTiles)
+    room.validTiles.remove(validCoord)
     y = validCoord[0] * TILE_SIZE + TILE_SIZE // 2
     x = validCoord[1] * TILE_SIZE + TILE_SIZE // 2
     return (x, y)

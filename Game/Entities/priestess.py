@@ -20,7 +20,7 @@ class Priestess(Entity):
         self.rangedSprites = getImages((join(dirname(dirname(__file__)), 'assets/Priestess/Ranged')), size)
         self.immuneSprites = getImages((join(dirname(dirname(__file__)), 'assets/Priestess/Immune')), size)
         self.deathSprites = getImages((join(dirname(dirname(__file__)), 'assets/Priestess/Death')), size)
-        self.projectileSprites = getImages((join(dirname(dirname(__file__)), 'assets/Projectiles/Magic_Ball')), (TILE_SIZE, TILE_SIZE))
+        self.projectileSprites = getImages((join(dirname(dirname(__file__)), 'assets/Projectiles/Water_Ball')), (TILE_SIZE, TILE_SIZE))
         self.currentSprites = self.idleSprites
         
         self.current_sprite = 0
@@ -128,7 +128,7 @@ class Priestess(Entity):
                     angle = 0
                     for x in range(7):
                         output = self.__rotate__(origin, target, radians(angle))
-                        projectiles.add(Projectile(origin, output, False, 'Water_Arrow', size, self.projectileSprites))
+                        projectiles.add(Projectile(origin, output, False, 'Water_Ball', size, self.projectileSprites, 4))
                         angle -= 30
 
                 else:
@@ -138,7 +138,7 @@ class Priestess(Entity):
                     angle = 0
                     for x in range(7):
                         output = self.__rotate__(origin, target, radians(angle))
-                        projectiles.add(Projectile(origin, output, False, 'Water_Arrow', size, self.projectileSprites))
+                        projectiles.add(Projectile(origin, output, False, 'Water_Ball', size, self.projectileSprites, 4))
                         angle += 30
                 
                 self.projectile_fired = True

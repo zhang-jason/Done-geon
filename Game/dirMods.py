@@ -1,6 +1,6 @@
 import pygame
 from os import listdir, rename
-from os.path import join, isfile
+from os.path import join, dirname, isfile
 
 def getDirCount(dir):
     count = 0
@@ -20,6 +20,23 @@ def getImages(dir, scale):
             spriteList.append(image)
 
     trans_image = pygame.image.load(join(dir, '0.png'))
+    trans_color = trans_image.get_at((0, 0))
+    for x in spriteList:
+        x.set_colorkey(trans_color)
+
+    return spriteList
+
+# For when GetImages goes bonkers
+def __getSprites__(type, status, size):
+    spriteList = []
+
+    dirPath = join(dirname(dirname(__file__)), f'game/assets/{type}/{status}')
+    for i, file in enumerate(listdir(dirPath)):
+        f = join(dirPath, f'{i}.png')
+        if isfile(f):
+            spriteList.append(pygame.transform.scale(pygame.image.load(f), size))
+
+    trans_image = pygame.image.load(join(dirPath, '0.png'))
     trans_color = trans_image.get_at((0, 0))
     for x in spriteList:
         x.set_colorkey(trans_color)

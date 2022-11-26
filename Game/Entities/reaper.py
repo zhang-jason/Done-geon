@@ -1,15 +1,15 @@
 from Entities.playerChar import Player
-from math import sqrt
 import pygame
 import pygame.locals as c
+from dirMods import __getSprites__
 
 class Reaper(Player):
     def __init__(self, startPosition, TILE_SIZE,player= None):
         size = (TILE_SIZE*5//6, TILE_SIZE*5//6)
 
-        self.idleSprites = self.__getSprites__('Reaper', 'Idle', size)
-        self.runSprites = self.__getSprites__('Reaper', 'Run', size)
-        self.attackSprites = self.__getSprites__('Reaper', 'Attack', size)
+        self.idleSprites = __getSprites__('Reaper', 'Idle', size)
+        self.runSprites = __getSprites__('Reaper', 'Run', size)
+        self.attackSprites = __getSprites__('Reaper', 'Attack', size)
         self.currentSprites = self.idleSprites
 
         self.current_sprite = 0
@@ -21,6 +21,7 @@ class Reaper(Player):
             self.rect.centerx, self.rect.centery = player.rect.centerx, player.rect.centery
 
         self.canAttack = pygame.time.get_ticks() + 480
+        self.damage = 4
         super(Reaper, self).__init__(startPosition, TILE_SIZE,player)
 
     def update(self):

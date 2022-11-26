@@ -343,7 +343,7 @@ def detect_projectile(p):
     if p.type:  # true for friendly
         for e in enemies:
             if e.rect.collidepoint(p.rect.center):
-                staticVFX.add(VFX('Projectile_Hit', (TILE_SIZE, TILE_SIZE), e.rect.center, True, projectile_hit_vfx))
+                staticVFX.add(VFX('Projectile_Hit', (TILE_SIZE, TILE_SIZE), (p.x,p.y), True, projectile_hit_vfx))
                 p.kill()
                 e.health -= p.damage
                 if e.health <= 0:
@@ -351,7 +351,7 @@ def detect_projectile(p):
                     player.bones += 1
         for b in bosses:
             if b.rect.colliderect(p.rect):
-                staticVFX.add(VFX('Projectile_Hit', (TILE_SIZE, TILE_SIZE), b.rect.center, True, projectile_hit_vfx))
+                staticVFX.add(VFX('Projectile_Hit', (TILE_SIZE, TILE_SIZE), (p.x,p.y), True, projectile_hit_vfx))
                 p.kill()
                 if not b.immune:
                     b.health -= p.damage
@@ -361,13 +361,13 @@ def detect_projectile(p):
             if m.rect.collidepoint(p.rect.center):
                 p.kill()
                 m.get_hit(p.damage)
-                staticVFX.add(VFX('Blood', (TILE_SIZE, TILE_SIZE), m.rect.center, True, blood_vfx))
+                staticVFX.add(VFX('Blood', (TILE_SIZE, TILE_SIZE), (p.x,p.y), True, blood_vfx))
                 if m.current_health <= 0:
                     m.kill()
         if player.rect.collidepoint(p.rect.center):
             p.kill()
             if not player.immune:
-                staticVFX.add(VFX('Blood', (TILE_SIZE, TILE_SIZE), player.rect.center, True, blood_vfx))
+                staticVFX.add(VFX('Blood', (TILE_SIZE, TILE_SIZE), (p.x,p.y), True, blood_vfx))
                 player.get_hit(p.damage)
 
 def detect_melee(e):

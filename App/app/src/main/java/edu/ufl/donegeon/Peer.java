@@ -227,22 +227,21 @@ class Receiver extends Thread {
                 p.changeVisibility(R.id.PlayerPicRea, View.GONE);
                 p.changeVisibility(R.id.nfc_contents, View.VISIBLE);
             }
-            char type = msg.charAt(0);
-            String value = msg.substring(2);
-            if (type == 'b') {
-                bones = Integer.parseInt(value);
-            } else if (type == 'h') {
-                health = Integer.parseInt(value);
-            } else if (type == 'u' && value.compareTo("empty") != 0) {
-                powerups.put(value, powerups.get(value) - 1 < 0 ? 0 : powerups.get(value) - 1);
-            } else if (type == 'p') {
-                boolean has = powerups.containsKey(value);
-                int count = has ? powerups.get(value) : 0;
-                powerups.put(value, count + 1);
-            }
-            updateUI();
-
         }
+        char type = msg.charAt(0);
+        String value = msg.substring(2);
+        if (type == 'b') {
+            bones = Integer.parseInt(value);
+        } else if (type == 'h') {
+            health = Integer.parseInt(value);
+        } else if (type == 'u' && value.compareTo("empty") != 0) {
+            powerups.put(value, powerups.get(value) - 1 < 0 ? 0 : powerups.get(value) - 1);
+        } else if (type == 'p') {
+            boolean has = powerups.containsKey(value);
+            int count = has ? powerups.get(value) : 0;
+            powerups.put(value, count + 1);
+        }
+        updateUI();
     }
 
     void updateHealthbar(int health){

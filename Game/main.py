@@ -103,6 +103,8 @@ pygame.mouse.set_visible(False)
 cursor_img = pygame.transform.scale(pygame.image.load(
     join(dirname(dirname(__file__)), 'game/assets', 'Crosshair02.png')), (28, 28))
 cursor_img_rect = cursor_img.get_rect()
+background_image = pygame.transform.scale(pygame.image.load(
+    join(dirname(dirname(__file__)), 'game/assets', 'Game BG.png')), (TILE_SIZE*16, TILE_SIZE*9))
 
 print("Created Window")
 
@@ -778,29 +780,39 @@ while True:
 
         case "Start":
             print("Start screen!")
-            WIN.fill(pygame.color.Color(0))
             color = pygame.color.Color(255, 255, 255)
             neon_yellow_color = pygame.color.Color(224, 231, 34)
             title_text = font.render('Done-geon', True, color, pygame.SRCALPHA)
             start_text = font.render('Click Here To Start!', True, color, pygame.SRCALPHA)
-            button_rect = start_text.get_rect()
-            button_rect[0] = width / 6
-            button_rect[1] = height / 2
             run = True
             hovered = False
             mixer.music.load(start_BGM)
             mixer.music.set_volume(audio_BGM)
             mixer.music.play(-1)
             start_text_yellow = False
+            match playerType:
+                case 'Necromancer':
+                    print('Created Necromancer')
+                    player = Necromancer(random_spawn(), TILE_SIZE)
+                case 'Reaper':
+                    print('Created Reaper')
+                    player = Reaper(random_spawn(), TILE_SIZE)
+            player.rect.centerx = width * 2 / 3
+            player.rect.centery = height * 1 / 4
             while run:
                 WIN.fill(pygame.color.Color(0))
-                # WIN.fill(0)
+                WIN.blit(background_image, background_image.get_rect())
+                player.update()
+                WIN.blit(player.image, player.rect)
                 if start_text_yellow:
                     start_text = font.render('Click Here To Start!', True, neon_yellow_color, pygame.SRCALPHA)
                 else:
                     start_text = font.render('Click Here To Start!', True, color, pygame.SRCALPHA)
-                WIN.blit(title_text, (width / 6, height / 3))
-                WIN.blit(start_text, (width / 6, height / 2))
+                WIN.blit(title_text, ((width / 2) - title_text.get_width()/2 - TILE_SIZE, height / 3 - TILE_SIZE))
+                WIN.blit(start_text, ((width / 2) - start_text.get_width()/2 - TILE_SIZE, height / 2 - TILE_SIZE))
+                button_rect = start_text.get_rect()
+                button_rect[0] = width / 2 - start_text.get_width()/2 - TILE_SIZE
+                button_rect[1] = height / 2 - TILE_SIZE
                 pygame.mouse.set_visible(True)
                 for event in pygame.event.get():
                     mouse = pygame.mouse.get_pos()

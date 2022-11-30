@@ -226,7 +226,7 @@ def get_tile_at(x, y, ent):
         tile = room.__getTileMap__(2).getExit()
         player.rect.center = (tile.rect.x + (TILE_SIZE / 2), tile.rect.y + TILE_SIZE + (TILE_SIZE / 3))
 
-        #screen = "Transition"
+        screen = "Transition"
         return False
 
     elif room_collision_maps[roomIndex][tile_y][tile_x] == "72" and isinstance(ent, Player):
@@ -237,7 +237,7 @@ def get_tile_at(x, y, ent):
         tile = room.__getTileMap__(2).getEntrance()
         player.rect.center = (tile.rect.x + (TILE_SIZE / 2), tile.rect.y - (TILE_SIZE / 2))
 
-        #screen = "Transition"
+        screen = "Transition"
         return False
 
     else:
@@ -492,11 +492,35 @@ def addVFX(type):
 roomList = []
 ladderList = []
 ladder_maps = []
-roomListLength = randint(3, 6)
-for index, iter in enumerate(range(roomListLength)):
-    room = Room(index, NUM_TILES_X, NUM_TILES_Y, TILE_SIZE, roomListLength - 1)
+originalRoomListLength = randint(3, 6)
+desertRoomListLength = randint(3, 6)
+forestRoomListLength = randint(3, 6)
+roomListLength = originalRoomListLength + desertRoomListLength + forestRoomListLength
+
+for index, iter in enumerate(range(originalRoomListLength)):
+    room = Room(index, NUM_TILES_X, NUM_TILES_Y, TILE_SIZE, roomListLength - 1, "Original")
     roomList.append(room)
-    ladderRoom = LadderRoom(index, TILE_SIZE)
+    ladderRoom = LadderRoom(index, TILE_SIZE, "Original")
+    ladderList.append(ladderRoom)
+    ladder_maps.append(room.getMap(index, 3))
+    room_collision_maps.append(room.getMap(index, 2))
+    room_fall_maps.append(room.getMap(index, 1))
+
+for index, iter in enumerate(range(desertRoomListLength)):
+    index += originalRoomListLength
+    room = Room(index, NUM_TILES_X, NUM_TILES_Y, TILE_SIZE, roomListLength - 1, "Desert")
+    roomList.append(room)
+    ladderRoom = LadderRoom(index, TILE_SIZE, "Desert")
+    ladderList.append(ladderRoom)
+    ladder_maps.append(room.getMap(index, 3))
+    room_collision_maps.append(room.getMap(index, 2))
+    room_fall_maps.append(room.getMap(index, 1))
+
+for index, iter in enumerate(range(forestRoomListLength)):
+    index += originalRoomListLength + desertRoomListLength
+    room = Room(index, NUM_TILES_X, NUM_TILES_Y, TILE_SIZE, roomListLength - 1, "Forest")
+    roomList.append(room)
+    ladderRoom = LadderRoom(index, TILE_SIZE, "Forest")
     ladderList.append(ladderRoom)
     ladder_maps.append(room.getMap(index, 3))
     room_collision_maps.append(room.getMap(index, 2))
@@ -626,7 +650,7 @@ while True:
             enemy_choice = ['Wizard', 'Knight']
             if len(enemies) < 1:
                 if(room.wave1):
-                    bosses.add(Hero((WIDTH//2, HEIGHT//2), player, TILE_SIZE))
+                    #bosses.add(Hero((WIDTH//2, HEIGHT//2), player, TILE_SIZE))
                     for i in range(round(player.bones / 4 + 1)):
                         spawn_coord = random_spawn()
                         match choice(enemy_choice):
@@ -639,7 +663,7 @@ while True:
                         staticVFX.add(VFX('Enemy_Spawn', (TILE_SIZE, TILE_SIZE), spawned_enemy.rect.midtop, True, enemy_spawn_vfx))
                     room.wave1 = False
                 elif(room.wave2):
-                    bosses.add(Priestess((WIDTH//2, HEIGHT//2), player, TILE_SIZE))
+                    #bosses.add(Priestess((WIDTH//2, HEIGHT//2), player, TILE_SIZE))
                     for i in range(round(player.bones / 4 + 1)):
                         spawn_coord = random_spawn()
                         match choice(enemy_choice):
@@ -656,7 +680,6 @@ while True:
                     room_collision_maps[roomIndex] = room.getMap(roomIndex, 2)
                     if roomIndex < roomListLength - 1:
                         door_animation = Door((room.__getTileMap__(2).getExit().rect.x, room.__getTileMap__(2).getExit().rect.y), "Original", TILE_SIZE)
-                #elif(room.animation):
                     
                     
             for m in minions:

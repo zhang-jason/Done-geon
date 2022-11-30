@@ -13,7 +13,8 @@ from Entities.traps import Trap
 
 
 class Room():
-    def __init__(self, roomIndex, width, height, tileSize, numRooms):
+    def __init__(self, roomIndex, width, height, tileSize, numRooms, type):
+        self.type = type
         self.width = width
         self.height = height
         self.tileSize = tileSize
@@ -48,11 +49,11 @@ class Room():
     def genMap(self, num):
         room = []
 
-        FloorGen(self.roomIndex, self.width, self.height)
+        FloorGen(self.roomIndex, self.width, self.height, self.type)
         room.append(self.__getTileMap__(1))
 
         floorMap = self.getMap(self.roomIndex, 1)
-        WallGen(floorMap, self.roomIndex, num)
+        WallGen(floorMap, self.roomIndex, num, self.type)
         room.append(self.__getTileMap__(2))
 
         room.append(self.__getTileMap__(3))
@@ -117,4 +118,4 @@ class Room():
     def __getTileMap__(self, layerIndex):
         filename = os.path.join(os.path.dirname(__file__), '..', 'assets/tiles/temprooms',
                                 f'room{self.roomIndex}_{layerIndex}.csv')
-        return TileMap(filename, self.tileSize)
+        return TileMap(filename, self.tileSize, self.type)

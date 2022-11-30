@@ -10,7 +10,8 @@ CLUSTER_LIST = [COLUMN, CHEST, POWERUP]
 
 
 class CollideGen():
-    def __init__(self, floorMap, wallMap, roomIndex):
+    def __init__(self, floorMap, wallMap, roomIndex, type):
+        self.type = type
         self.floorMap = floorMap
         self.wallMap = wallMap
         self.roomIndex = roomIndex

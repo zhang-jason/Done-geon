@@ -13,7 +13,8 @@ TOP_LEFT = 7
 DOWN_LEFT = 8
 
 class WallGen():
-    def __init__(self, floorMap, roomIndex, numRooms):
+    def __init__(self, floorMap, roomIndex, numRooms, type):
+        self.type = type
         self.floorMap = floorMap
         self.wallMap = []
         self.thirdLayer = []

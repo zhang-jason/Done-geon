@@ -17,7 +17,8 @@ class Tile(pygame.sprite.Sprite):
 
 
 class TileMap():
-    def __init__(self, filename, size):
+    def __init__(self, filename, size, type):
+        self.type = type
         self.getTileList()
         self.tile_size = size
         self.start_x, self.start_y = 0, 0
@@ -29,13 +30,30 @@ class TileMap():
 
     def getTileList(self):
         # This may need to have the os.path.join(os.path.dirname(__file__), treatment
-        with open(os.path.join(os.path.dirname(__file__), 'Assets/Tiles/tileID.csv'), mode='r',
-                  encoding='utf-8-sig') as data:
-            self.tileList = []
-            reader = csv.reader(data)
-            for row in reader:
-                if row[0] != None:
-                    self.tileList.append((row[0] + '.png', row[1]))
+        if self.type == "Original":
+            with open(os.path.join(os.path.dirname(__file__), 'Assets/Tiles/tileID_default.csv'), mode='r',
+                      encoding='utf-8-sig') as data:
+                self.tileList = []
+                reader = csv.reader(data)
+                for row in reader:
+                    if row[0] != None:
+                        self.tileList.append((row[0] + '.png', row[1]))
+        elif self.type == "Desert":
+            with open(os.path.join(os.path.dirname(__file__), 'Assets/Tiles/tileID_desert.csv'), mode='r',
+                      encoding='utf-8-sig') as data:
+                self.tileList = []
+                reader = csv.reader(data)
+                for row in reader:
+                    if row[0] != None:
+                        self.tileList.append((row[0] + '.png', row[1]))
+        elif self.type == "Forest":
+            with open(os.path.join(os.path.dirname(__file__), 'Assets/Tiles/tileID_jungle.csv'), mode='r',
+                      encoding='utf-8-sig') as data:
+                self.tileList = []
+                reader = csv.reader(data)
+                for row in reader:
+                    if row[0] != None:
+                        self.tileList.append((row[0] + '.png', row[1]))
 
     def draw_map(self, surface):
         surface.blit(self.map_surface, (0, 0))

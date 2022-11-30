@@ -7,7 +7,8 @@ from tiles import TileMap
 from Entities.powerup import Powerup
 
 class LadderRoom():
-    def __init__(self, roomIndex, tileSize):
+    def __init__(self, roomIndex, tileSize, type):
+        self.type = type
         self.room = self.genRoom(roomIndex, tileSize)
         self.traps = []
         self.wave1 = False
@@ -17,6 +18,7 @@ class LadderRoom():
         self.validTiles = self.findValidTiles(roomIndex)
         self.powerups = pygame.sprite.Group()
         self.genPowerups(tileSize)
+        self.type = type
 
     def genRoom(self, roomIndex, tileSize):
         room = []
@@ -140,4 +142,4 @@ class LadderRoom():
     def __getTileMap__(self, layerIndex, roomIndex, tileSize):
         filename = os.path.join(os.path.dirname(__file__), '..', 'assets/tiles/temprooms',
                                 f'ladder_room{roomIndex}_{layerIndex}.csv')
-        return TileMap(filename, tileSize)
+        return TileMap(filename, tileSize, self.type)

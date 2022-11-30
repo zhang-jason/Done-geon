@@ -91,12 +91,15 @@ class Player(Entity):
             case 'Speed':
                 self.speed += 2
                 self.powerupTimer = 1000
+                self.powerup = 'empty'
             case 'Heal':
                 mixer.Sound.play(self.powerup_one_time)
                 self.get_regen(1)
+                self.powerup = 'empty'
             case 'Shield':
                 self.powerupTimer = 1000
                 self.immune = True
+                self.powerup = 'empty'
             case 'Perm_Damage':
                 self.damage += 2
             case 'Perm_Speed':
@@ -109,7 +112,6 @@ class Player(Entity):
             
 
         print(f'used {powerup}')
-        self.powerup = 'empty'
 
     # def update(self, keys, group, tiles):
     def update(self):

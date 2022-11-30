@@ -1,0 +1,73 @@
+floor_1_jg,noncollide
+floor_2_jg,noncollide
+floor_3_jg,noncollide
+floor_4_jg,noncollide
+floor_5_jg,noncollide
+floor_6_jg,noncollide
+floor_7_jg,noncollide
+floor_8_jg,noncollide
+floor_ladder_jg,collide
+floor_hole_jg,collide
+floor_edge_jg,collide
+chest_full_open_anim_f0,collide
+wall_mid_jg,collide
+wall_right_jg,collide
+wall_top_mid,collide
+wall_top_mid2,collide
+wall_side_mid_left,collide
+wall_side_mid_right,collide
+wall_inner_corner_l_top_left,collide
+wall_inner_corner_l_top_right,collide
+wall_inner_corner_mid_left,collide
+wall_inner_corner_mid_right,collide
+wall_fountain_mid_red_anim_f0,collide
+wall_fountain_basin_red_anim_f0,collide
+column_top,noncollide
+column_mid,noncollide
+column_base,collide
+wall_corner_bottom_left, noncollide
+wall_corner_bottom_right, noncollide
+wall_corner_top_left_1, noncollide
+wall_corner_top_right_1, noncollide
+three_sides_left, noncollide
+three_sides_right, noncollide
+three_sides_top, noncollide
+three_sides_bottom, noncollide
+two_sides_left_right, noncollide
+two_sides_top_bottom, noncollide
+wall_side_top_right, noncollide
+wall_side_top_left, noncollide
+top_left_corner, noncollide
+top_right_corner, noncollide
+black, collide
+bottom_right_corner_with_corner, noncollide
+bottom_left_corner_with_corner, noncollide
+top_right_corner_with_corner, noncollide
+top_left_corner_with_corner, noncollide
+bottomleft_bottomright_corners, noncollide
+bottomleft_topleft_topright_corners, noncollide
+bottomright_bottomleft_topleft_corners, noncollide
+bottomright_bottomleft_topright_corners, noncollide
+bottomright_topleft_corners, noncollide
+bottomright_topleft_topright_corners, noncollide
+bottomright_topright_corners, noncollide
+four_corners, noncollide
+topright_topleft_corners, noncollide
+topright_bottomleft_corners, noncollide
+topleft_bottomleft_corners, noncollide
+rightwall_bottomleft_corner, noncollide
+rightwall_bottomleft_topleft_corners, noncollide
+rightwall_topleft_corner, noncollide
+leftwall_bottomright_corner, noncollide
+leftwall_bottomright_topright_corners, noncollide
+leftwall_topright_corner, noncollide
+topwall_bottomleft_corner, noncollide
+topwall_bottomright_bottomleft_corners, noncollide
+topwall_bottomright_corner, noncollide
+bottomwall_topleft_corner, noncollide
+bottomwall_topleft_topright_corners, noncollide
+bottomwall_topright_corner, noncollide
+door_closed_exit, collide
+door_open_entrance, collide
+door_open_exit, collide
+floor_ladder_exit_jg,collide

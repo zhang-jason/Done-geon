@@ -879,7 +879,7 @@ while True:
                             run = False
                 pygame.display.update()
 
-        case "Win":
+        case "WIN":
             window_width = TILE_SIZE * 16
             window_height = TILE_SIZE * 9
             color = pygame.color.Color(255, 255, 255)
@@ -900,8 +900,62 @@ while True:
             mixer.music.load(lose_BGM)
             mixer.music.set_volume(audio_BGM)
             mixer.music.play(-1)
+            match playerType:
+                case 'Necromancer':
+                    print('Created Necromancer')
+                    player = Necromancer(random_spawn(), TILE_SIZE)
+                case 'Reaper':
+                    print('Created Reaper')
+                    player = Reaper(random_spawn(), TILE_SIZE)
+            player.rect.centerx = window_width * 3 / 4
+            player.rect.centery = window_height * 1 / 4
+            priestess_spawn = (player.rect.centerx - TILE_SIZE, player.rect.bottom - TILE_SIZE)
+            hero_spawn = (player.rect.centerx + 5 * TILE_SIZE, player.rect.bottom - TILE_SIZE)
+            bosses.add(Priestess(priestess_spawn, player, TILE_SIZE))
+            bosses.add(Hero(hero_spawn, player, TILE_SIZE))
+            bool1 = True
+            for b in bosses:
+                if bool1:
+                    b.image = pygame.transform.rotate(b.image, angle=90)
+                    bool1 = False
+                else:
+                    b.image = pygame.transform.rotate(b.image, angle=270)
+            bone_image = pygame.transform.scale(pygame.image.load(
+                join(dirname(dirname(__file__)), f'game/assets/powerups', f'bones.png')), (TILE_SIZE*3//4, TILE_SIZE*3//4))
+            trans_image = pygame.image.load(
+                join(dirname(dirname(__file__)), 'game/assets/powerups', f'bones.png'))
+            trans_color = trans_image.get_at((0, 0))
+            bone_image.set_colorkey(trans_color)
+            bone_list = []
+            y = 1
+            x = 0
+            offset = 0
+            for i in range(0, player.bones):
+                if x == -y:
+                    x = 0
+                    y += 1
+                else:
+                    if x <= 0:
+                        x = -x + 1
+                    else:
+                        x = -x
+                if y > 6:
+                    offset += 1
+                    y = y % 6
+                bone_y = player.rect.centery + TILE_SIZE * y
+                bone_x = player.rect.centerx + TILE_SIZE * x + TILE_SIZE / 4 * offset
+                # 1,0, 1,1 1,-1 2,0 2,1 2,-1 2,2 2,-2
+                # y = i%count(x) or 1x3,2x5,
+                # x = range +-
+                bone_list.append((bone_x, bone_y))
             while run:
-                WIN.fill(0)
+                WIN.fill(pygame.color.Color(0))
+                for x in bone_list:
+                    WIN.blit(bone_image, x)
+                for b in bosses:
+                    WIN.blit(b.image, b.image_rect)
+                player.update()
+                WIN.blit(player.image, player.rect)
                 WIN.blit(title_text, (width / 6, height / 3.5))
                 WIN.blit(start_text, (width / 6, height / 2))
                 WIN.blit(game_text, (width / 6, height / 2.5))

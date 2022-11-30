@@ -879,7 +879,7 @@ while True:
                             run = False
                 pygame.display.update()
 
-        case "WIN":
+        case "Win":
             window_width = TILE_SIZE * 16
             window_height = TILE_SIZE * 9
             color = pygame.color.Color(255, 255, 255)

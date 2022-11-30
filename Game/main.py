@@ -498,7 +498,10 @@ forestRoomListLength = randint(3, 6)
 roomListLength = originalRoomListLength + desertRoomListLength + forestRoomListLength
 
 for index, iter in enumerate(range(originalRoomListLength)):
-    room = Room(index, NUM_TILES_X, NUM_TILES_Y, TILE_SIZE, roomListLength - 1, "Original")
+    boss = False
+    if index == originalRoomListLength - 1:
+        boss = True
+    room = Room(index, NUM_TILES_X, NUM_TILES_Y, TILE_SIZE, roomListLength - 1, "Original", boss)
     roomList.append(room)
     ladderRoom = LadderRoom(index, TILE_SIZE, "Original")
     ladderList.append(ladderRoom)
@@ -507,8 +510,11 @@ for index, iter in enumerate(range(originalRoomListLength)):
     room_fall_maps.append(room.getMap(index, 1))
 
 for index, iter in enumerate(range(desertRoomListLength)):
+    boss = False
+    if index == desertRoomListLength - 1:
+        boss = True
     index += originalRoomListLength
-    room = Room(index, NUM_TILES_X, NUM_TILES_Y, TILE_SIZE, roomListLength - 1, "Desert")
+    room = Room(index, NUM_TILES_X, NUM_TILES_Y, TILE_SIZE, roomListLength - 1, "Desert", boss)
     roomList.append(room)
     ladderRoom = LadderRoom(index, TILE_SIZE, "Desert")
     ladderList.append(ladderRoom)
@@ -517,8 +523,11 @@ for index, iter in enumerate(range(desertRoomListLength)):
     room_fall_maps.append(room.getMap(index, 1))
 
 for index, iter in enumerate(range(forestRoomListLength)):
+    boss = False
+    if index == forestRoomListLength - 1:
+        boss = True
     index += originalRoomListLength + desertRoomListLength
-    room = Room(index, NUM_TILES_X, NUM_TILES_Y, TILE_SIZE, roomListLength - 1, "Forest")
+    room = Room(index, NUM_TILES_X, NUM_TILES_Y, TILE_SIZE, roomListLength - 1, "Forest", boss)
     roomList.append(room)
     ladderRoom = LadderRoom(index, TILE_SIZE, "Forest")
     ladderList.append(ladderRoom)
@@ -648,7 +657,7 @@ while True:
 
             # Update Functions
             enemy_choice = ['Wizard', 'Knight']
-            if len(enemies) < 1:
+            if len(enemies) < 1 and len(bosses) < 1:
                 if(room.wave1):
                     #bosses.add(Hero((WIDTH//2, HEIGHT//2), player, TILE_SIZE))
                     for i in range(round(player.bones / 4 + 1)):
@@ -664,20 +673,31 @@ while True:
                     room.wave1 = False
                 elif(room.wave2):
                     #bosses.add(Priestess((WIDTH//2, HEIGHT//2), player, TILE_SIZE))
-                    for i in range(round(player.bones / 4 + 1)):
-                        spawn_coord = random_spawn()
-                        match choice(enemy_choice):
-                            #set bool to true to make boss
-                            case 'Wizard':
-                                spawned_enemy = Wizard(spawn_coord, player, TILE_SIZE,False)
-                            case 'Knight':
-                                spawned_enemy = Knight(spawn_coord, player, TILE_SIZE,False)
-                        enemies.add(spawned_enemy)
-                        staticVFX.add(VFX('Enemy_Spawn', (TILE_SIZE, TILE_SIZE), spawned_enemy.rect.midtop, True, enemy_spawn_vfx))
+                    if room.boss:
+                        if room.type == "Original":
+                            bosses.add(Priestess((WIDTH//2, HEIGHT//2), player, TILE_SIZE))
+                        elif room.type == "Desert":
+                            bosses.add(Hero((WIDTH//2, HEIGHT//2), player, TILE_SIZE))
+                        elif room.type == "Forest":
+                            bosses.add(Priestess((WIDTH//2, HEIGHT//2), player, TILE_SIZE))
+                            bosses.add(Hero((WIDTH//2, HEIGHT//2), player, TILE_SIZE))
+                    else:
+                        for i in range(round(player.bones / 4 + 1)):
+                            spawn_coord = random_spawn()
+                            match choice(enemy_choice):
+                                #set bool to true to make boss
+                                case 'Wizard':
+                                    spawned_enemy = Wizard(spawn_coord, player, TILE_SIZE,False)
+                                case 'Knight':
+                                    spawned_enemy = Knight(spawn_coord, player, TILE_SIZE,False)
+                            enemies.add(spawned_enemy)
+                            staticVFX.add(VFX('Enemy_Spawn', (TILE_SIZE, TILE_SIZE), spawned_enemy.rect.midtop, True, enemy_spawn_vfx))
                     room.wave2 = False
                 elif(room.locked):
                     room.unlock()
                     room_collision_maps[roomIndex] = room.getMap(roomIndex, 2)
+                    if room.type == "Forest" and room.boss:
+                        screen = "Win"
                     if roomIndex < roomListLength - 1:
                         door_animation = Door((room.__getTileMap__(2).getExit().rect.x, room.__getTileMap__(2).getExit().rect.y), "Original", TILE_SIZE)
                     
@@ -698,6 +718,7 @@ while True:
                 if b.action == 'Death' and b.action_finished:
                     b.action = 'Done'
                     player.bones += 10
+                    b.kill()
             get_player_move(player, keys)
             move_entities()
             for p in projectiles:

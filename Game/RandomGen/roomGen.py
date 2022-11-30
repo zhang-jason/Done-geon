@@ -13,7 +13,7 @@ from Entities.traps import Trap
 
 
 class Room():
-    def __init__(self, roomIndex, width, height, tileSize, numRooms, type):
+    def __init__(self, roomIndex, width, height, tileSize, numRooms, type, boss):
         self.type = type
         self.width = width
         self.height = height
@@ -29,6 +29,7 @@ class Room():
         self.wave2 = True
         self.locked = True
         self.animation = True
+        self.boss = boss
 
     def getMap(self, roomIndex, layerIndex):
         map = []

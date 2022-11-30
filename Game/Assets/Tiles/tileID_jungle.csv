@@ -67,7 +67,7 @@ topwall_bottomright_corner, noncollide
 bottomwall_topleft_corner, noncollide
 bottomwall_topleft_topright_corners, noncollide
 bottomwall_topright_corner, noncollide
-door_closed_exit, collide
-door_open_entrance, collide
-door_open_exit, collide
+door_closed_exit_jg, collide
+door_open_entrance_jg, collide
+door_open_exit_jg, collide
 floor_ladder_exit_jg,collide

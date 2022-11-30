@@ -918,16 +918,6 @@ while True:
             projectiles = pygame.sprite.Group()
             minions = pygame.sprite.Group()
             bosses = pygame.sprite.Group()
-            match playerType:
-                case 'Necromancer':
-                    print('Created Necromancer')
-                    player = Necromancer(random_spawn(), TILE_SIZE)
-                case 'Reaper':
-                    print('Created Reaper')
-                    player = Reaper(random_spawn(), TILE_SIZE)
-            mouse_pressed = 0
-            health = HealthBar(WIN, player, TILE_SIZE)
-            bone_bar = BoneCounter(WIN, player, TILE_SIZE)
 
             roomList = []
             ladderList = []
@@ -985,6 +975,18 @@ while True:
 
             roomIndex = 0
             room = roomList[roomIndex]
+
+            match playerType:
+                case 'Necromancer':
+                    print('Created Necromancer')
+                    player = Necromancer(random_spawn(), TILE_SIZE)
+                case 'Reaper':
+                    print('Created Reaper')
+                    player = Reaper(random_spawn(), TILE_SIZE)
+            mouse_pressed = 0
+            health = HealthBar(WIN, player, TILE_SIZE)
+            bone_bar = BoneCounter(WIN, player, TILE_SIZE)
+            
             screen = "Game"
             mixer.music.load(game_BGM)
             mixer.music.set_volume(audio_BGM)

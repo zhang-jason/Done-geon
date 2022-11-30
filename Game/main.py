@@ -19,7 +19,7 @@ from tiles import *
 from RandomGen.roomGen import Room
 from RandomGen.ladderGen import LadderRoom
 from server import Server
-from dirMods import getImages
+from dirMods import getImages, __getSprites__
 
 import pygame
 from pygame import constants
@@ -53,6 +53,7 @@ dirSFX = join(dirname(dirname(__file__)), 'game/assets/SFX/Menu')
 menu_hover = mixer.Sound(join(dirSFX, 'Hover.wav'))
 menu_click = mixer.Sound(join(dirSFX, 'Click.wav'))
 lose_sound = mixer.Sound(join(dirSFX, 'Lose.wav'))
+win_sound = mixer.Sound(join(dirSFX, 'Win.wav'))
 start_BGM = join(dirSFX, 'Start_BGM.wav')
 lose_BGM = join(dirSFX, 'Lose_BGM.wav')
 
@@ -65,6 +66,7 @@ player_death = mixer.Sound(join(dirSFX, 'Death.wav'))
 dirSFX = join(dirname(dirname(__file__)), 'game/assets/SFX/Game/Env')
 spike_trap = mixer.Sound(join(dirSFX, 'Spike.wav'))
 fire_trap = mixer.Sound(join(dirSFX, 'Fire.wav'))
+perm_powerup = mixer.Sound(join(dirSFX, 'Perm_Powerup.wav'))
 game_BGM = join(dirSFX, 'Game_BGM.wav')
 
 # Sound Settings Adjustment
@@ -445,6 +447,8 @@ def detect_item(p):
         player.get_powerup(p)
         if p.consumable:
             server.sendMsg("p " + p.ability)
+        else:
+            mixer.Sound.play(perm_powerup)
         p.kill()
 
 def detect_trap(t):
@@ -548,8 +552,6 @@ while True:
                 mouse_pressed = 1
             elif event.button == 3:
                 mouse_right_pressed = 1
-            # if event.button == 1:
-            #     player.attack(projectiles)
 
         if event.type == constants.MOUSEBUTTONUP:
             if event.button == 1:
@@ -720,8 +722,6 @@ while True:
             if player.get_health() <= 0:
                 server.sendMsg("lose")
                 screen = "Lose"
-                mixer.stop()
-                mixer.music.stop()
 
         case "Start":
             print("Start screen!")
@@ -770,8 +770,6 @@ while True:
                             screen = "Reset"
                             run = False
                 pygame.display.update()
-            mixer.stop()
-            mixer.music.stop()
 
         case "Lose":
             print("Lose screen!")
@@ -826,18 +824,74 @@ while True:
                     if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                         if button_rect.collidepoint(mouse):
                             mixer.Sound.play(menu_click)
-                            mixer.music.stop()
                             screen = "Start"
                             run = False
                     if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                         if button_rect_2.collidepoint(mouse):
                             mixer.Sound.play(menu_click)
-                            mixer.music.stop()
                             screen = "Reset"
                             run = False
                 pygame.display.update()
-            mixer.stop()
-            mixer.music.stop()
+
+        case "Win":
+            color = pygame.color.Color(255, 255, 255)
+            neon_yellow_color = pygame.color.Color(224, 231, 34)
+            title_text = font.render('You Win!', True, color, pygame.SRCALPHA)
+            start_text = font.render('Click Here To Return To Menu!', True, color, pygame.SRCALPHA)
+            game_text = font.render('Click Here To Play Again!', True, color, pygame.SRCALPHA)
+            button_rect = start_text.get_rect()
+            button_rect[0] = width / 6
+            button_rect[1] = height / 2
+            button_rect_2 = game_text.get_rect()
+            button_rect_2[0] = width / 6
+            button_rect_2[1] = height / 2.5
+            run = True
+            startHovered = False
+            playHovered = False
+            mixer.Sound.play(win_sound)
+            mixer.music.load(lose_BGM)
+            mixer.music.set_volume(audio_BGM)
+            mixer.music.play(-1)
+            while run:
+                WIN.fill(0)
+                WIN.blit(title_text, (width / 6, height / 3.5))
+                WIN.blit(start_text, (width / 6, height / 2))
+                WIN.blit(game_text, (width / 6, height / 2.5))
+                pygame.mouse.set_visible(True)
+                for event in pygame.event.get():
+                    mouse = pygame.mouse.get_pos()
+                    if button_rect.collidepoint(mouse):
+                        start_text = font.render('Click Here To Return To Menu!', True, neon_yellow_color, pygame.SRCALPHA)
+                        if not startHovered:
+                            startHovered = True
+                            mixer.Sound.play(menu_hover)
+                    else:
+                        start_text = font.render('Click Here To Return To Menu!', True, color, pygame.SRCALPHA)
+                        startHovered = False
+                    if button_rect_2.collidepoint(mouse):
+                        game_text = font.render('Click Here To Play Again!', True, neon_yellow_color, pygame.SRCALPHA)
+                        if not playHovered:
+                            playHovered = True
+                            mixer.Sound.play(menu_hover)
+                    else:
+                        game_text = font.render('Click Here To Play Again!', True, color, pygame.SRCALPHA)
+                        playHovered = False
+                    if event.type == pygame.QUIT:
+                        pygame.quit()
+                        server.endServer()
+                        clearTempContents()
+                        sys.exit()
+                    if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                        if button_rect.collidepoint(mouse):
+                            mixer.Sound.play(menu_click)
+                            screen = "Start"
+                            run = False
+                    if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                        if button_rect_2.collidepoint(mouse):
+                            mixer.Sound.play(menu_click)
+                            screen = "Reset"
+                            run = False
+                pygame.display.update()
 
         case "Reset":
             enemies = pygame.sprite.Group()
@@ -854,6 +908,9 @@ while True:
             health = HealthBar(WIN, player, TILE_SIZE)
             bone_bar = BoneCounter(WIN, player, TILE_SIZE)
             screen = "Game"
+            mixer.music.load(game_BGM)
+            mixer.music.set_volume(audio_BGM)
+            mixer.music.play()
 
         #case "Transition":
             #WIN.fill(0)

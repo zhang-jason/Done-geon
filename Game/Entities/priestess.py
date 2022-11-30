@@ -99,7 +99,7 @@ class Priestess(Entity):
             if self.currentSprites is self.idleSprites and self.dx == 0 and self.dy == 0:
                 self.currentSprites = self.idleSprites
             if self.currentSprites in (self.meleeSprites, self.rangedSprites, self.deathSprites, self.healSprites):
-                self.current_sprite += 0.20
+                self.current_sprite += 0.15
                 if self.current_sprite >= len(self.currentSprites):
                     self.action_finished = True
                     self.current_sprite = len(self.currentSprites) - 1
@@ -110,13 +110,13 @@ class Priestess(Entity):
                     if self.currentSprites is not self.deathSprites:
                         self.canMove = True
             elif self.currentSprites in (self.idleSprites, self.runSprites):
-                self.current_sprite += 0.05
+                self.current_sprite += 0.15
                 if self.current_sprite >= len(self.currentSprites):
                     self.current_sprite = 0
             elif self.currentSprites is self.immuneSprites:
-                self.current_sprite += 0.20
-                if self.current_sprite >= len(self.currentSprites) - 2 and self.immune:
-                    self.current_sprite = len(self.currentSprites) - 3
+                self.current_sprite += 0.15
+                if self.current_sprite >= len(self.currentSprites) - 3 and self.immune:
+                    self.current_sprite = len(self.currentSprites) - 4
                 elif self.current_sprite >= len(self.currentSprites) and not self.immune:
                     self.action_finished = True
                     self.current_sprite = len(self.currentSprites) - 1

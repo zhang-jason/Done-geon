@@ -95,18 +95,18 @@ class Hero(Entity):
             if self.currentSprites is self.idleSprites and self.dx == 0 and self.dy == 0:
                 self.currentSprites = self.idleSprites
             if self.currentSprites in (self.meleeSprites, self.rangedSprites, self.deathSprites):
-                self.current_sprite += 0.20
+                self.current_sprite += 0.15
                 if self.current_sprite >= len(self.currentSprites):
                     self.action_finished = True
                     self.current_sprite = len(self.currentSprites) - 1
                     if self.currentSprites is not self.deathSprites:
                         self.canMove = True
             elif self.currentSprites in (self.idleSprites, self.runSprites):
-                self.current_sprite += 0.05
+                self.current_sprite += 0.15
                 if self.current_sprite >= len(self.currentSprites):
                     self.current_sprite = 0
             elif self.currentSprites is self.immuneSprites:
-                self.current_sprite += 0.20
+                self.current_sprite += 0.15
                 if self.current_sprite >= len(self.currentSprites) - 2 and self.immune:
                     self.current_sprite = len(self.currentSprites) - 3
                 elif self.current_sprite >= len(self.currentSprites) and not self.immune:
@@ -118,7 +118,7 @@ class Hero(Entity):
             else:
                 self.image = pygame.transform.flip(self.currentSprites[int(self.current_sprite)], False, False)
 
-            if self.currentSprites is self.rangedSprites and int(self.current_sprite) == 12 and not self.projectile_fired:
+            if self.currentSprites is self.rangedSprites and int(self.current_sprite) == 8 and not self.projectile_fired:
                 if self.flippedImage:
                     bossPos = self.rect.topleft
                 else:

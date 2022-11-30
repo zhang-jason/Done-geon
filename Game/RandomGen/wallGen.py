@@ -286,7 +286,6 @@ class WallGen():
 
 
     def genDoors(self, roomIndex, num):
-        print('doors')
         flag = True
         flag2 = True
         if(roomIndex == 0):
@@ -314,7 +313,6 @@ class WallGen():
                 else:
                     self.wallMap[i][j] = 70
                     flag2 = False
-        print('doors done')
             
 
 #right self.floorMap[i + 1][j]

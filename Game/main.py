@@ -900,6 +900,7 @@ while True:
             mixer.music.load(lose_BGM)
             mixer.music.set_volume(audio_BGM)
             mixer.music.play(-1)
+            bones = player.bones
             match playerType:
                 case 'Necromancer':
                     print('Created Necromancer')
@@ -907,19 +908,15 @@ while True:
                 case 'Reaper':
                     print('Created Reaper')
                     player = Reaper(random_spawn(), TILE_SIZE)
+            player.bones = bones
             player.rect.centerx = window_width * 3 / 4
             player.rect.centery = window_height * 1 / 4
-            priestess_spawn = (player.rect.centerx - TILE_SIZE, player.rect.bottom - TILE_SIZE)
-            hero_spawn = (player.rect.centerx + 5 * TILE_SIZE, player.rect.bottom - TILE_SIZE)
+            priestess_spawn = (player.rect.centerx - TILE_SIZE * 4 / 3, player.rect.centery)
+            hero_spawn = (player.rect.centerx + TILE_SIZE, player.rect.centery)
             bosses.add(Priestess(priestess_spawn, player, TILE_SIZE))
             bosses.add(Hero(hero_spawn, player, TILE_SIZE))
-            bool1 = True
             for b in bosses:
-                if bool1:
-                    b.image = pygame.transform.rotate(b.image, angle=90)
-                    bool1 = False
-                else:
-                    b.image = pygame.transform.rotate(b.image, angle=270)
+                b.image = b.deathSprites[-1]
             bone_image = pygame.transform.scale(pygame.image.load(
                 join(dirname(dirname(__file__)), f'game/assets/powerups', f'bones.png')), (TILE_SIZE*3//4, TILE_SIZE*3//4))
             trans_image = pygame.image.load(
@@ -929,7 +926,7 @@ while True:
             bone_list = []
             y = 1
             x = 0
-            offset = 0
+            offset = -1
             for i in range(0, player.bones):
                 if x == -y:
                     x = 0

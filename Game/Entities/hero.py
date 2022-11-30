@@ -26,13 +26,13 @@ class Hero(Entity):
         self.current_sprite = 0
         self.image = self.currentSprites[self.current_sprite]
 
-        # Image Display Rect
-        self.image_rect = self.image.get_rect()
-        self.image_rect.centerx, self.image_rect.centery = startPosition
-
         # Hitbox Rect
         self.rect = pygame.rect.Rect(0, 0, TILE_SIZE//1.5, TILE_SIZE)
-        self.rect.midbottom = self.image_rect.midbottom
+        self.rect.centerx, self.rect.centery = startPosition
+
+        # Image Display Rect
+        self.image_rect = self.image.get_rect()
+        self.image_rect.midbottom = self.rect.midbottom
 
         self.canMove = False
         self.immune = True

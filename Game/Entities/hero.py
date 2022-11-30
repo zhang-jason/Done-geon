@@ -38,7 +38,7 @@ class Hero(Entity):
         self.immune = True
         self.spawn_cooldown = 180
         self.speed = 2
-        self.health = 20
+        self.health = 50
         self.player = player
         self.collidable = 1
         self.damage = 2

@@ -39,7 +39,7 @@ class Priestess(Entity):
         self.immune = True
         self.spawn_cooldown = 180
         self.speed = 2
-        self.MAX_HEALTH = 20
+        self.MAX_HEALTH = 50
         self.health = self.MAX_HEALTH
         self.player = player
         self.collidable = 1

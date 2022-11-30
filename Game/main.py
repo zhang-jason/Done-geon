@@ -85,6 +85,7 @@ def setVolume(audio_sfx):
     player_death.set_volume(audio_sfx)
     spike_trap.set_volume(audio_sfx)
     fire_trap.set_volume(audio_sfx)
+    perm_powerup(audio_sfx)
     player.setVolume(audio_sfx)
 
 # Preloading Some Longer Animations for Performance
@@ -637,24 +638,13 @@ while True:
 
     match screen:
         case "Game":
-            #print("Game!")
-            if player.fall == 1:
-                enemies = pygame.sprite.Group()
-                projectiles = pygame.sprite.Group()
-                #roomIndex += 1
-                #if roomIndex >= len(roomList):
-                    #roomIndex = 0
-                #room = roomList[roomIndex]
             if room.locked == False and room.animation and roomIndex < roomListLength - 1:
                 door_animation.update()
                 WIN.blit(door_animation.image, door_animation.rect)
                 if door_animation.current_sprite == 13:
                     room.animation = False
             room.drawRoom(WIN)
-
-            # hitbox = (player.rect.topleft[0], player.rect.topleft[1], player.rect.width, player.rect.height) # NEW
-            # pygame.draw.rect(WIN, (255,0,0), hitbox,2)
-
+            
             # Update Functions
             enemy_choice = ['Wizard', 'Knight']
             if len(enemies) < 1 and len(bosses) < 1:

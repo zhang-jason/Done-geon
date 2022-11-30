@@ -47,7 +47,7 @@ print(WIDTH)
 print(HEIGHT)  # Just double-checking my math here
 
 fontDir = join(dirname(dirname(__file__)), 'Game/', 'Toriko.ttf')
-font = pygame.font.Font(fontDir, round(TILE_SIZE))
+font = pygame.font.Font(fontDir, TILE_SIZE)
 
 # Sound Effects (Not BGM)
 dirSFX = join(dirname(dirname(__file__)), 'game/assets/SFX/Menu')
@@ -693,8 +693,8 @@ while True:
                         screen = "Win"
                     if roomIndex < roomListLength - 1:
                         door_animation = Door((room.__getTileMap__(2).getExit().rect.x, room.__getTileMap__(2).getExit().rect.y), "Original", TILE_SIZE)
-                    
-                    
+
+
             for m in minions:
                 WIN.blit(m.image, m.rect)
                 m.update(projectiles, enemies)
@@ -780,6 +780,8 @@ while True:
 
         case "Start":
             print("Start screen!")
+            window_width = TILE_SIZE * 16
+            window_height = TILE_SIZE * 9
             color = pygame.color.Color(255, 255, 255)
             neon_yellow_color = pygame.color.Color(224, 231, 34)
             title_text = font.render('Done-geon', True, color, pygame.SRCALPHA)
@@ -797,8 +799,8 @@ while True:
                 case 'Reaper':
                     print('Created Reaper')
                     player = Reaper(random_spawn(), TILE_SIZE)
-            player.rect.centerx = width * 2 / 3
-            player.rect.centery = height * 1 / 4
+            player.rect.centerx = window_width * 3 / 4
+            player.rect.centery = window_height * 1 / 4
             while run:
                 WIN.fill(pygame.color.Color(0))
                 WIN.blit(background_image, background_image.get_rect())
@@ -808,11 +810,11 @@ while True:
                     start_text = font.render('Click Here To Start!', True, neon_yellow_color, pygame.SRCALPHA)
                 else:
                     start_text = font.render('Click Here To Start!', True, color, pygame.SRCALPHA)
-                WIN.blit(title_text, ((width / 2) - title_text.get_width()/2 - TILE_SIZE, height / 3 - TILE_SIZE))
-                WIN.blit(start_text, ((width / 2) - start_text.get_width()/2 - TILE_SIZE, height / 2 - TILE_SIZE))
+                WIN.blit(title_text, ((width / 2) - title_text.get_width()/2 - TILE_SIZE, window_height / 3 - TILE_SIZE / 2))
+                WIN.blit(start_text, ((width / 2) - start_text.get_width()/2 - TILE_SIZE, window_height / 2 - TILE_SIZE / 2))
                 button_rect = start_text.get_rect()
-                button_rect[0] = width / 2 - start_text.get_width()/2 - TILE_SIZE
-                button_rect[1] = height / 2 - TILE_SIZE
+                button_rect[0] = window_width / 2 - start_text.get_width()/2
+                button_rect[1] = window_height / 2 - TILE_SIZE / 2
                 pygame.mouse.set_visible(True)
                 for event in pygame.event.get():
                     mouse = pygame.mouse.get_pos()
@@ -857,8 +859,20 @@ while True:
             mixer.music.load(lose_BGM)
             mixer.music.set_volume(audio_BGM)
             mixer.music.play(-1)
+            for x in range(0, 30):
+                spawn_coord = random_spawn()
+                match x % 2:
+                    # set bool to true to make boss
+                    case 0:
+                        spawned_enemy = Wizard(spawn_coord, player, TILE_SIZE, False)
+                    case 1:
+                        spawned_enemy = Knight(spawn_coord, player, TILE_SIZE, False)
+                enemies.add(spawned_enemy)
             while run:
                 WIN.fill(0)
+                for e in enemies:
+                    WIN.blit(e.image, e.rect)
+                    e.update(projectiles)
                 WIN.blit(title_text, (width / 6, height / 3.5))
                 WIN.blit(start_text, (width / 6, height / 2))
                 WIN.blit(game_text, (width / 6, height / 2.5))

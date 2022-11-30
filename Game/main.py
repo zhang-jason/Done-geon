@@ -649,8 +649,7 @@ while True:
             enemy_choice = ['Wizard', 'Knight']
             if len(enemies) < 1 and len(bosses) < 1:
                 if(room.wave1):
-                    #bosses.add(Hero((WIDTH//2, HEIGHT//2), player, TILE_SIZE))
-                    for i in range(round(player.bones / 4 + 1)):
+                    for i in range(round((roomIndex * 10 / 18) + 1)):
                         spawn_coord = random_spawn()
                         match choice(enemy_choice):
                             #set bool to true to make boss
@@ -674,7 +673,7 @@ while True:
                             spawn_coord = random_spawn()
                             bosses.add(Hero(spawn_coord, player, TILE_SIZE))
                     else:
-                        for i in range(round(player.bones / 4 + 1)):
+                        for i in range(round((roomIndex * 10 / 18) + 1)):
                             spawn_coord = random_spawn()
                             match choice(enemy_choice):
                                 #set bool to true to make boss

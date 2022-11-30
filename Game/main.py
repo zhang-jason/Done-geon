@@ -322,7 +322,7 @@ def move_entities():
     if player.tile == "-1" and player.fall == 0 and player.speed <= player.max_speed and tile1 != "9" and player.iframes <= 0:  # for holes
         player.fall = 10
         player.get_hit(1)
-        player.iframes = 10
+        player.iframes = 120
     for b in bosses:
         move_calc_enemy(b)
         detect_collision(b)
@@ -950,6 +950,7 @@ while True:
             enemies = pygame.sprite.Group()
             projectiles = pygame.sprite.Group()
             minions = pygame.sprite.Group()
+            bosses = pygame.sprite.Group()
             match playerType:
                 case 'Necromancer':
                     print('Created Necromancer')

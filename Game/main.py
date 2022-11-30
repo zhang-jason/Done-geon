@@ -795,17 +795,19 @@ while True:
 
         case "Lose":
             print("Lose screen!")
+            window_width = TILE_SIZE * 16
+            window_height = TILE_SIZE * 9
             color = pygame.color.Color(255, 255, 255)
             neon_yellow_color = pygame.color.Color(224, 231, 34)
             title_text = font.render('Game Over!', True, color, pygame.SRCALPHA)
             start_text = font.render('Click Here To Return To Menu!', True, color, pygame.SRCALPHA)
             game_text = font.render('Click Here To Play Again!', True, color, pygame.SRCALPHA)
             button_rect = start_text.get_rect()
-            button_rect[0] = width / 6
-            button_rect[1] = height / 2
+            button_rect[0] = window_width / 6
+            button_rect[1] = window_height / 2
             button_rect_2 = game_text.get_rect()
-            button_rect_2[0] = width / 6
-            button_rect_2[1] = height / 2.5
+            button_rect_2[0] = window_width / 6
+            button_rect_2[1] = window_height / 2.5
             run = True
             startHovered = False
             playHovered = False
@@ -823,14 +825,24 @@ while True:
                     case 1:
                         spawned_enemy = Knight(spawn_coord, player, TILE_SIZE, False)
                 enemies.add(spawned_enemy)
+            match playerType:
+                case 'Necromancer':
+                    print('Created Necromancer')
+                    player = Necromancer(random_spawn(), TILE_SIZE)
+                case 'Reaper':
+                    print('Created Reaper')
+                    player = Reaper(random_spawn(), TILE_SIZE)
+            player.rect.centerx = window_width * 2 / 3
+            player.rect.centery = window_height * 1 / 4
             while run:
                 WIN.fill(0)
                 for e in enemies:
                     WIN.blit(e.image, e.rect)
                     e.update(projectiles)
-                WIN.blit(title_text, (width / 6, height / 3.5))
-                WIN.blit(start_text, (width / 6, height / 2))
-                WIN.blit(game_text, (width / 6, height / 2.5))
+                WIN.blit(pygame.transform.rotate(player.image, angle=90), player.rect)
+                WIN.blit(title_text, (window_width / 6, window_height / 3.5))
+                WIN.blit(start_text, (window_width / 6, window_height / 2))
+                WIN.blit(game_text, (window_width / 6, window_height / 2.5))
                 pygame.mouse.set_visible(True)
                 for event in pygame.event.get():
                     mouse = pygame.mouse.get_pos()
@@ -868,6 +880,8 @@ while True:
                 pygame.display.update()
 
         case "Win":
+            window_width = TILE_SIZE * 16
+            window_height = TILE_SIZE * 9
             color = pygame.color.Color(255, 255, 255)
             neon_yellow_color = pygame.color.Color(224, 231, 34)
             title_text = font.render('You Win!', True, color, pygame.SRCALPHA)

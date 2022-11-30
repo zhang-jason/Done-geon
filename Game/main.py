@@ -971,6 +971,63 @@ while True:
             mouse_pressed = 0
             health = HealthBar(WIN, player, TILE_SIZE)
             bone_bar = BoneCounter(WIN, player, TILE_SIZE)
+
+            roomList = []
+            ladderList = []
+            ladder_maps = []
+            room_collision_maps = []
+            room_fall_maps = []
+            originalRoomListLength = randint(3, 6)
+            desertRoomListLength = randint(3, 6)
+            forestRoomListLength = randint(3, 6)
+            roomListLength = originalRoomListLength + desertRoomListLength + forestRoomListLength
+
+            for index, iter in enumerate(range(originalRoomListLength)):
+                boss = False
+                if index == originalRoomListLength - 1:
+                    boss = True
+                room = Room(index, NUM_TILES_X, NUM_TILES_Y, TILE_SIZE, roomListLength - 1, "Original", boss)
+                roomList.append(room)
+                ladderRoom = LadderRoom(index, TILE_SIZE, "Original")
+                ladderList.append(ladderRoom)
+                ladder_maps.append(room.getMap(index, 3))
+                room_collision_maps.append(room.getMap(index, 2))
+                room_fall_maps.append(room.getMap(index, 1))
+
+            for index, iter in enumerate(range(desertRoomListLength)):
+                boss = False
+                if index == desertRoomListLength - 1:
+                    boss = True
+                index += originalRoomListLength
+                room = Room(index, NUM_TILES_X, NUM_TILES_Y, TILE_SIZE, roomListLength - 1, "Desert", boss)
+                roomList.append(room)
+                ladderRoom = LadderRoom(index, TILE_SIZE, "Desert")
+                ladderList.append(ladderRoom)
+                ladder_maps.append(room.getMap(index, 3))
+                room_collision_maps.append(room.getMap(index, 2))
+                room_fall_maps.append(room.getMap(index, 1))
+
+            for index, iter in enumerate(range(forestRoomListLength)):
+                boss = False
+                if index == forestRoomListLength - 1:
+                    boss = True
+                index += originalRoomListLength + desertRoomListLength
+                room = Room(index, NUM_TILES_X, NUM_TILES_Y, TILE_SIZE, roomListLength - 1, "Forest", boss)
+                roomList.append(room)
+                ladderRoom = LadderRoom(index, TILE_SIZE, "Forest")
+                ladderList.append(ladderRoom)
+                ladder_maps.append(room.getMap(index, 3))
+                room_collision_maps.append(room.getMap(index, 2))
+                room_fall_maps.append(room.getMap(index, 1))
+
+            for index, iter in enumerate(range(roomListLength)):
+                room = ladderList[index]
+                ladder_maps.append(room.getMap(index, 3))
+                room_collision_maps.append(room.getMap(index, 2))
+                room_fall_maps.append(room.getMap(index, 1))
+
+            roomIndex = 0
+            room = roomList[roomIndex]
             screen = "Game"
             mixer.music.load(game_BGM)
             mixer.music.set_volume(audio_BGM)

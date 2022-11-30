@@ -218,7 +218,7 @@ def get_tile_at(x, y, ent):
     elif room_collision_maps[roomIndex][tile_y][tile_x] == "-1":
         return False
     
-    elif room_collision_maps[roomIndex][tile_y][tile_x] == "71" and isinstance(ent, Player):
+    elif room_collision_maps[roomIndex][tile_y][tile_x] == "71" and isinstance(ent, Player) and room.locked == False:
         roomIndex -= 1
         if(roomIndex < 0):
             roomIndex = len(roomList) - 1
@@ -229,7 +229,7 @@ def get_tile_at(x, y, ent):
         screen = "Transition"
         return False
 
-    elif room_collision_maps[roomIndex][tile_y][tile_x] == "72" and isinstance(ent, Player):
+    elif room_collision_maps[roomIndex][tile_y][tile_x] == "72" and isinstance(ent, Player) and room.locked == False:
         roomIndex += 1
         if(roomIndex >= len(roomList)):
             roomIndex = 0

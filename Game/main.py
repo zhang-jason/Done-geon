@@ -85,7 +85,7 @@ def setVolume(audio_sfx):
     player_death.set_volume(audio_sfx)
     spike_trap.set_volume(audio_sfx)
     fire_trap.set_volume(audio_sfx)
-    perm_powerup(audio_sfx)
+    perm_powerup.set_volume(audio_sfx)
     player.setVolume(audio_sfx)
 
 # Preloading Some Longer Animations for Performance
@@ -644,7 +644,7 @@ while True:
                 if door_animation.current_sprite == 13:
                     room.animation = False
             room.drawRoom(WIN)
-            
+
             # Update Functions
             enemy_choice = ['Wizard', 'Knight']
             if len(enemies) < 1 and len(bosses) < 1:

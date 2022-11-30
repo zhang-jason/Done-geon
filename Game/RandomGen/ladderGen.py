@@ -13,6 +13,7 @@ class LadderRoom():
         self.wave1 = False
         self.wave2 = False
         self.locked = False
+        self.animation = False
         self.validTiles = self.findValidTiles(roomIndex)
         self.powerups = pygame.sprite.Group()
         self.genPowerups(tileSize)
@@ -23,38 +24,45 @@ class LadderRoom():
         wall_map = [[-1 for x in range(16)] for y in range(9)]
         third_map = [[-1 for x in range(16)] for y in range(9)]
 
-        for i in range(6, 10):
-            for j in range(3, 6):
+        for i in range(5, 11):
+            for j in range(2, 7):
                 floor_map[j][i] = 1
         
-        for i in range(6, 10):
-            j = 2
+        for i in range(5, 11):
+            j = 1
             wall_map[j][i] = 14
-            j = 6
+            j = 7
             wall_map[j][i] = 13
         for j in range(0, 9):
-            for i in range(0, 6):
+            for i in range(0, 5):
                 wall_map[j][i] = 42
-            for i in range(10, 16):
+            for i in range(11, 16):
                 wall_map[j][i] = 42
+
+        j = 0
+        for i in range(5, 11):
+            wall_map[j][i] = 42
+        j = 8
+        for i in range(5, 11):
+            wall_map[j][i] = 42
         
-        third_map[2][6] = 30 #top left L corner
-        third_map[5][6] = 28 #bottom left L corner
-        third_map[2][9] = 31 #top right L corner
-        third_map[5][9] = 20 #bottom right L corner
-        for j in range(3, 5):
-            i = 6
+        third_map[1][5] = 30 #top left L corner
+        third_map[6][5] = 28 #bottom left L corner
+        third_map[1][10] = 31 #top right L corner
+        third_map[6][10] = 20 #bottom right L corner
+        for j in range(2, 6):
+            i = 5
             third_map[j][i] = 18 #left wall
-            i = 9
+            i = 10
             third_map[j][i] = 17 #right wall
 
-        for i in range(7, 9):
-            j = 2
+        for i in range(6, 10):
+            j = 1
             third_map[j][i] = 16 #top wall
-            j = 5
+            j = 6
             third_map[j][i] = 15 #bottom wall
         
-        third_map[3][7] = 73 #ladder
+        third_map[2][6] = 73 #ladder
 
         
         with open(os.path.join(os.path.dirname(__file__), '..', 'assets/tiles/temprooms', f'ladder_room{roomIndex}_1.csv'),

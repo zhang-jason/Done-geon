@@ -27,6 +27,7 @@ class Room():
         self.wave1 = True
         self.wave2 = True
         self.locked = True
+        self.animation = True
 
     def getMap(self, roomIndex, layerIndex):
         map = []

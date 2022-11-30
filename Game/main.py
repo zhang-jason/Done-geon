@@ -13,6 +13,7 @@ from Entities.knight import Knight
 from Entities.minion import Minion
 from Entities.hero import Hero
 from Entities.priestess import Priestess
+from Entities.doors import Door
 from vfx import VFX
 from gui import *
 from tiles import *
@@ -127,6 +128,7 @@ mouse_right_pressed = 0
 key_shift_pressed = 0
 key_e_pressed = 0
 minion_cooldown = pygame.time.get_ticks() + 720
+ladder_cooldown = pygame.time.get_ticks() + 720
 # server test variables
 time = 0
 roomIndex = 0
@@ -185,6 +187,7 @@ def get_tile_at(x, y, ent):
     global room
     global screen
     global player
+    global ladder_cooldown
     x = x - TILE_SIZE / 2
     y = y - TILE_SIZE / 2
     tile_x = round(x / TILE_SIZE)
@@ -192,19 +195,24 @@ def get_tile_at(x, y, ent):
     if tile_x < 0 or tile_x > 15:
         return True
 
-    if ladder_maps[roomIndex][tile_y][tile_x] == "9" and isinstance(ent, Player):
+    if ladder_maps[roomIndex][tile_y][tile_x] == "9" and isinstance(ent, Player) and pygame.time.get_ticks() > ladder_cooldown and room.locked == False:
         if(roomIndex < roomListLength):
             room = ladderList[roomIndex]
+            tile = room.__getTileMap__(3, roomIndex, TILE_SIZE).getLadder()
             roomIndex += roomListLength
-            player.rect.center = (WIDTH / 2, HEIGHT / 2)
+            player.rect.center = (tile.rect.x + (TILE_SIZE / 2), tile.rect.y + TILE_SIZE + (TILE_SIZE / 3))
+            ladder_cooldown = pygame.time.get_ticks() + 720
+            screen = "Transition"
         return False
 
-    elif ladder_maps[roomIndex][tile_y][tile_x] == "73" and isinstance(ent, Player):
+    elif ladder_maps[roomIndex][tile_y][tile_x] == "73" and isinstance(ent, Player) and pygame.time.get_ticks() > ladder_cooldown:
         if(roomIndex >= roomListLength):
             roomIndex -= roomListLength
             room = roomList[roomIndex]
             tile = room.__getTileMap__(3).getLadder()
-            player.rect.center = (tile.rect.x + (TILE_SIZE / 2), tile.rect.y + TILE_SIZE + (TILE_SIZE / 3))
+            player.rect.center = (tile.rect.x + (TILE_SIZE / 2), tile.rect.y - (TILE_SIZE / 3))
+            ladder_cooldown = pygame.time.get_ticks() + 720
+            screen = "Transition"
         return False
 
     elif room_collision_maps[roomIndex][tile_y][tile_x] == "-1":
@@ -539,6 +547,7 @@ def spawnMinion():
     minions.add(spawned_minion)
     staticVFX.add(VFX('Minion_Spawn', (TILE_SIZE, TILE_SIZE), spawned_minion.rect.center, True, minion_spawn_vfx))
 
+door_animation = Door((room.__getTileMap__(2).getExit().rect.x, room.__getTileMap__(2).getExit().rect.y), "Original", TILE_SIZE)
 while True:
     # User interaction:
     for event in pygame.event.get():
@@ -603,6 +612,11 @@ while True:
                 #if roomIndex >= len(roomList):
                     #roomIndex = 0
                 #room = roomList[roomIndex]
+            if room.locked == False and room.animation and roomIndex < roomListLength - 1:
+                door_animation.update()
+                WIN.blit(door_animation.image, door_animation.rect)
+                if door_animation.current_sprite == 13:
+                    room.animation = False
             room.drawRoom(WIN)
 
             # hitbox = (player.rect.topleft[0], player.rect.topleft[1], player.rect.width, player.rect.height) # NEW
@@ -640,7 +654,11 @@ while True:
                 elif(room.locked):
                     room.unlock()
                     room_collision_maps[roomIndex] = room.getMap(roomIndex, 2)
-                    #room.drawRoom(WIN)
+                    if roomIndex < roomListLength - 1:
+                        door_animation = Door((room.__getTileMap__(2).getExit().rect.x, room.__getTileMap__(2).getExit().rect.y), "Original", TILE_SIZE)
+                #elif(room.animation):
+                    
+                    
             for m in minions:
                 WIN.blit(m.image, m.rect)
                 m.update(projectiles, enemies)
@@ -912,10 +930,15 @@ while True:
             mixer.music.set_volume(audio_BGM)
             mixer.music.play()
 
-        #case "Transition":
-            #WIN.fill(0)
-            #pygame.time.delay(3000)
-            #screen = "Game"
+        case "Transition":
+            enemies = pygame.sprite.Group()
+            projectiles = pygame.sprite.Group()
+            minions = pygame.sprite.Group()
+            transition_time = pygame.time.get_ticks() + 1000
+            while pygame.time.get_ticks() < transition_time:
+                WIN.fill(0)
+                pygame.display.update()
+            screen = "Game"
 
         case other:
             print("Invalid state, return to start screen!")

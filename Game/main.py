@@ -674,13 +674,15 @@ while True:
                 elif(room.wave2):
                     #bosses.add(Priestess((WIDTH//2, HEIGHT//2), player, TILE_SIZE))
                     if room.boss:
+                        spawn_coord = random_spawn()
                         if room.type == "Original":
-                            bosses.add(Priestess((WIDTH//2, HEIGHT//2), player, TILE_SIZE))
+                            bosses.add(Priestess(spawn_coord, player, TILE_SIZE))
                         elif room.type == "Desert":
-                            bosses.add(Hero((WIDTH//2, HEIGHT//2), player, TILE_SIZE))
+                            bosses.add(Hero(spawn_coord, player, TILE_SIZE))
                         elif room.type == "Forest":
-                            bosses.add(Priestess((WIDTH//2, HEIGHT//2), player, TILE_SIZE))
-                            bosses.add(Hero((WIDTH//2, HEIGHT//2), player, TILE_SIZE))
+                            bosses.add(Priestess(spawn_coord, player, TILE_SIZE))
+                            spawn_coord = random_spawn()
+                            bosses.add(Hero(spawn_coord, player, TILE_SIZE))
                     else:
                         for i in range(round(player.bones / 4 + 1)):
                             spawn_coord = random_spawn()
@@ -972,7 +974,7 @@ while True:
             screen = "Game"
             mixer.music.load(game_BGM)
             mixer.music.set_volume(audio_BGM)
-            mixer.music.play()
+            mixer.music.play(-1)
 
         case "Transition":
             enemies = pygame.sprite.Group()

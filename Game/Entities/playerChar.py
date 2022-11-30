@@ -100,10 +100,10 @@ class Player(Entity):
                 self.powerupTimer = 1000
                 self.immune = True
                 self.powerup = 'empty'
-            case 'Perm_Damage':
-                self.damage += 2
+            case 'Perm_Dmg':
+                self.damage += 1
             case 'Perm_Speed':
-                self.max_speed += 1
+                self.max_speed += 0.5
                 self.speed = self.max_speed
             case 'Full_Heal':
                 self.get_regen(self.max_health)

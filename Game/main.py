@@ -1104,8 +1104,12 @@ while True:
                 player = Necromancer(random_spawn(), TILE_SIZE,player)
             case 'Reaper':
                 player = Reaper(random_spawn(), TILE_SIZE,player)
+        for e in enemies:
+            e.player = player
         for m in minions:
             m.player = player
+        for b in bosses:
+            b.player = player
     if server.newMinion:
         server.newMinion = False
         minionType = server.minionType

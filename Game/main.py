@@ -1124,5 +1124,5 @@ while True:
     if updateCount % 600 == 0:
         print("FPS:", int(FPS_CLOCK.get_fps()))
         updateCount = 1
-    FPS_CLOCK.tick(120)
+    FPS_CLOCK.tick(75)
     # end while loop

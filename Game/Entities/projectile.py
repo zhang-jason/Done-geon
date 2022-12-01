@@ -14,6 +14,7 @@ class Projectile(Entity):
         self.startPosition = startPosition
         self.endPosition = endPosition
         self.speed = 2
+        self.ability = ability
         if ability in ('Arrow', 'Phoenix', 'Water_Ball'):
             self.speed = 4
         self.canMove = 0

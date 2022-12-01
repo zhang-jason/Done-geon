@@ -377,11 +377,20 @@ def detect_projectile(p):
                 staticVFX.add(VFX('Blood', (TILE_SIZE, TILE_SIZE), (p.x,p.y), True, blood_vfx))
                 if m.current_health <= 0:
                     m.kill()
-        if player.rect.collidepoint(p.rect.center):
-            p.kill()
-            if not player.immune:
-                staticVFX.add(VFX('Blood', (TILE_SIZE, TILE_SIZE), (p.x,p.y), True, blood_vfx))
-                player.get_hit(p.damage)
+        if p.ability == 'Phoenix':
+            hitboxRect = p.rect.copy()
+            hitboxRect.inflate_ip(-200, -200)
+            if player.rect.colliderect(hitboxRect):
+                p.kill()
+                if not player.immune:
+                    staticVFX.add(VFX('Blood', (TILE_SIZE, TILE_SIZE), (p.x,p.y), True, blood_vfx))
+                    player.get_hit(p.damage)
+        else:
+            if player.rect.collidepoint(p.rect.center):
+                p.kill()
+                if not player.immune:
+                    staticVFX.add(VFX('Blood', (TILE_SIZE, TILE_SIZE), (p.x,p.y), True, blood_vfx))
+                    player.get_hit(p.damage)
 
 def detect_melee(e):
     for m in minions:
